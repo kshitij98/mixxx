@@ -758,7 +758,6 @@ class MixxxCore(Feature):
                    "effects/effectmanifest.cpp",
                    "effects/effectmanifestparameter.cpp",
 
-                   "effects/effectchain.cpp",
                    "effects/effect.cpp",
                    "effects/effectparameter.cpp",
 
