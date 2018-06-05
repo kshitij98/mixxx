@@ -24,6 +24,10 @@ EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
           m_dMix(0),
           m_pEngineEffectChain(nullptr),
           m_bAddedToEngine(false) {
+    qDebug() << "EffectChain::EffectChain " << id << ' ' << pPrototype;
+    VERIFY_OR_DEBUG_ASSERT(false) {
+        return;
+    }
 }
 
 EffectChain::~EffectChain() {
@@ -273,6 +277,8 @@ void EffectChain::addEffect(EffectPointer pEffect) {
 void EffectChain::replaceEffect(unsigned int effectSlotNumber,
                                 EffectPointer pEffect) {
     //qDebug() << debugString() << "replaceEffect" << effectSlotNumber << pEffect;
+    // NOTE(Kshitij) : Remove the following return statement and debug the actual problem
+    // return;
     while (effectSlotNumber >= static_cast<unsigned int>(m_effects.size())) {
         if (pEffect.isNull()) {
             return;

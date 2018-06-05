@@ -94,6 +94,7 @@ class EffectChain : public QObject {
                                       const QDomElement& element);
     static EffectChainPointer clone(EffectChainPointer pChain);
 
+
   signals:
     // Signal that indicates that an effect has been added or removed.
     void effectChanged(unsigned int effectSlotNumber);
@@ -104,7 +105,7 @@ class EffectChain : public QObject {
     void mixModeChanged(EffectChainMixMode type);
     void channelStatusChanged(const QString& group, bool enabled);
 
-  private:
+  public:
     QString debugString() const {
         return QString("EffectChain(%1)").arg(m_id);
     }
@@ -127,6 +128,8 @@ class EffectChain : public QObject {
     bool m_bAddedToEngine;
 
     DISALLOW_COPY_AND_ASSIGN(EffectChain);
+
+  private:
 };
 
 #endif /* EFFECTCHAIN_H */

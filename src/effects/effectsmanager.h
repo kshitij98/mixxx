@@ -63,7 +63,8 @@ class EffectsManager : public QObject {
     OutputEffectRackPointer addOutputsEffectRack();
     OutputEffectRackPointer getOutputsEffectRack();
 
-    void loadEffectChains();
+    // NOTE(Kshitij) : Use new functions 
+    // void loadEffectChains();
 
     EffectRackPointer getEffectRack(const QString& group);
     EffectSlotPointer getEffectSlot(const QString& group);

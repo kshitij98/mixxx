@@ -58,8 +58,9 @@ class EffectChainManager : public QObject {
     EffectChainPointer getNextEffectChain(EffectChainPointer pEffectChain);
     EffectChainPointer getPrevEffectChain(EffectChainPointer pEffectChain);
 
-    bool saveEffectChains();
-    void loadEffectChains();
+    // NOTE(Kshitij) : New functions for saving and loading
+    // bool saveEffectChains();
+    // void loadEffectChains();
 
     // Reloads all effect to the slots to update parameter assignements
     void refeshAllRacks();

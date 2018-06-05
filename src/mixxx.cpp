@@ -263,7 +263,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(30);
 
-    m_pEffectsManager->loadEffectChains();
+    // m_pEffectsManager->loadEffectChains();
 
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();

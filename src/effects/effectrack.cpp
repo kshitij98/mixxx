@@ -43,25 +43,45 @@ void EffectRack::addToEngine() {
     m_pEffectsManager->writeRequest(pRequest);
 
     // Add all effect chains.
+    // NOTE(Kshitij) : Updated the for loop
+    // for (int i = 0; i < m_effectChainSlots.size(); ++i) {
+    //     EffectChainSlotPointer pSlot = m_effectChainSlots[i];
+    //     EffectChainPointer pChain = pSlot->getEffectChain();
+    //     if (pChain) {
+    //         // Add the effect to the engine.
+    //         pChain->addToEngine(m_pEngineEffectRack, i);
+    //         // Update its parameters in the engine.
+    //         pChain->updateEngineState();
+    //     }
+    // }
     for (int i = 0; i < m_effectChainSlots.size(); ++i) {
         EffectChainSlotPointer pSlot = m_effectChainSlots[i];
-        EffectChainPointer pChain = pSlot->getEffectChain();
-        if (pChain) {
+        // EffectChainPointer pChain = pSlot->getEffectChain();
+        // NOTE(Kshitij) : Find out a better workaround than isEmpty() check
+        // if (!pSlot->isEmpty()) {
             // Add the effect to the engine.
-            pChain->addToEngine(m_pEngineEffectRack, i);
+            pSlot->addToEngine(m_pEngineEffectRack, i);
             // Update its parameters in the engine.
-            pChain->updateEngineState();
-        }
+            pSlot->updateEngineState();
+        // }
     }
 }
 
 void EffectRack::removeFromEngine() {
     // Order doesn't matter when removing.
+    // NOTE(Kshitij) : Removed effect chain from engine
+    // for (int i = 0; i < m_effectChainSlots.size(); ++i) {
+    //     EffectChainSlotPointer pSlot = m_effectChainSlots[i];
+    //     EffectChainPointer pChain = pSlot->getEffectChain();
+    //     if (pChain) {
+    //         pChain->removeFromEngine(m_pEngineEffectRack, i);
+    //     }
+    // }
     for (int i = 0; i < m_effectChainSlots.size(); ++i) {
         EffectChainSlotPointer pSlot = m_effectChainSlots[i];
-        EffectChainPointer pChain = pSlot->getEffectChain();
-        if (pChain) {
-            pChain->removeFromEngine(m_pEngineEffectRack, i);
+        // EffectChainPointer pChain = pSlot->getEffectChain();
+        if (!pSlot->isEmpty()) {
+            pSlot->removeFromEngine(m_pEngineEffectRack, i);
         }
     }
 
@@ -95,6 +115,7 @@ void EffectRack::addEffectChainSlotInternal(EffectChainSlotPointer pChainSlot) {
     m_effectChainSlots.append(pChainSlot);
     m_controlNumEffectChainSlots.forceSet(
         m_controlNumEffectChainSlots.get() + 1);
+    qDebug() << "Total effect chain slots = " << m_controlNumEffectChainSlots.get();
 }
 
 EffectChainSlotPointer EffectRack::getEffectChainSlot(int i) {
@@ -105,8 +126,11 @@ EffectChainSlotPointer EffectRack::getEffectChainSlot(int i) {
     return m_effectChainSlots[i];
 }
 
+// NOTE(Kshitij) : Why are we using a clone of the EffectChain?
 void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,
                                EffectChainPointer pLoadedChain) {
+    qDebug() << "!!! EffectRack::loadNextChain()";
+
     if (pLoadedChain) {
         pLoadedChain = pLoadedChain->prototype();
     }
@@ -120,9 +144,10 @@ void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,
     m_effectChainSlots[iChainSlotNumber]->updateRoutingSwitches();
 }
 
-
+// NOTE(Kshitij) : Why are we using a clone of the EffectChain?
 void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
                                EffectChainPointer pLoadedChain) {
+    qDebug() << "!!! EffectRack::loadPrevChain()";
     if (pLoadedChain) {
         pLoadedChain = pLoadedChain->prototype();
     }
@@ -139,6 +164,7 @@ void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
 void EffectRack::maybeLoadEffect(const unsigned int iChainSlotNumber,
                                  const unsigned int iEffectSlotNumber,
                                  const QString& id) {
+    qDebug() << "maybeLoadEffect" << id;
     if (iChainSlotNumber >= static_cast<unsigned int>(m_effectChainSlots.size())) {
         return;
     }
@@ -157,9 +183,15 @@ void EffectRack::maybeLoadEffect(const unsigned int iChainSlotNumber,
     }
 
     if (loadNew) {
-        EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+        // NOTE(Kshitij) : Replaced with new effect
+        // EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+        // EffectPointer pEffect = m_pEffectsManager->instantiateEffect(id);
+        // pChain->replaceEffect(iEffectSlotNumber, pEffect);
+        
+        // EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+        qDebug() << "Instantiating " << id << "...";
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(id);
-        pChain->replaceEffect(iEffectSlotNumber, pEffect);
+        pChainSlot->replaceEffect(iEffectSlotNumber, pEffect);
     }
 }
 
@@ -174,9 +206,14 @@ void EffectRack::loadNextEffect(const unsigned int iChainSlotNumber,
     QString nextEffectId = m_pEffectsManager->getNextEffectId(effectId);
     EffectPointer pNextEffect = m_pEffectsManager->instantiateEffect(nextEffectId);
 
+    // NOTE(Kshitij) : Replaced with new effect
+    // EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
+    // EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+    // pChain->replaceEffect(iEffectSlotNumber, pNextEffect);
+
     EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
-    EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
-    pChain->replaceEffect(iEffectSlotNumber, pNextEffect);
+    // EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+    pChainSlot->replaceEffect(iEffectSlotNumber, pNextEffect);
 }
 
 
@@ -191,9 +228,14 @@ void EffectRack::loadPrevEffect(const unsigned int iChainSlotNumber,
     QString prevEffectId = m_pEffectsManager->getPrevEffectId(effectId);
     EffectPointer pPrevEffect = m_pEffectsManager->instantiateEffect(prevEffectId);
 
+    // NOTE(Kshitij) : Replaced with new effect
+    // EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
+    // EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+    // pChain->replaceEffect(iEffectSlotNumber, pPrevEffect);
+
     EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
-    EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
-    pChain->replaceEffect(iEffectSlotNumber, pPrevEffect);
+    // EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+    pChainSlot->replaceEffect(iEffectSlotNumber, pPrevEffect);
 }
 
 QDomElement EffectRack::toXml(QDomDocument* doc) const {
@@ -214,8 +256,11 @@ QDomElement EffectRack::toXml(QDomDocument* doc) const {
 
 void EffectRack::refresh() {
     for (const auto& pChainSlot: m_effectChainSlots) {
-        EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
-        pChain->refreshAllEffects();
+        // NOTE(Kshitij) : refreshing all chainslots than effect chains
+        // EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+        // pChain->refreshAllEffects();
+        // EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+        pChainSlot->refreshAllEffects();
     }
 }
 
@@ -238,8 +283,10 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
 
     QString group = formatEffectChainSlotGroupString(getRackNumber(),
                                                      iChainSlotNumber);
+    
+
     EffectChainSlot* pChainSlot =
-            new EffectChainSlot(this, group, iChainSlotNumber);
+            new EffectChainSlot(this, group, iChainSlotNumber, m_pEffectsManager);
 
     for (int i = 0; i < kNumEffectsPerUnit; ++i) {
         pChainSlot->addEffectSlot(
@@ -277,12 +324,21 @@ OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager,
 
     const QString unitGroup = "[OutputEffectRack_[Master]]";
     // Hard code only one EffectChainSlot
-    EffectChainSlot* pChainSlot = new EffectChainSlot(this, unitGroup, 0);
-    EffectChainPointer pChain(new EffectChain(m_pEffectsManager, unitGroup));
-    pChainSlot->loadEffectChainToSlot(pChain);
-    pChain->addToEngine(getEngineEffectRack(), 0);
+    // NOTE(Kshitij) : Removed the EffectChain object and instantiated EffectChainSlot only
+    EffectChainSlot* pChainSlot = new EffectChainSlot(this, unitGroup, 0, m_pEffectsManager, unitGroup);
+    // <<<< HEAD
+    // EffectChainPointer pChain(new EffectChain(m_pEffectsManager, unitGroup));
+    // pChainSlot->loadEffectChainToSlot(pChain);
+    // pChain->addToEngine(getEngineEffectRack(), 0);
+    // // Add a single EffectSlot for the master EQ effect
+    // pChainSlot->addEffectSlot("[OutputEffectRack_[Master]_Effect1]");
+    // ---------
+    // EffectChainPointer pChain(new EffectChain(m_pEffectsManager, unitGroup));
+    pChainSlot->loadEffectChainToSlot();
+    pChainSlot->addToEngine(getEngineEffectRack(), 0);
     // Add a single EffectSlot for the master EQ effect
     pChainSlot->addEffectSlot("[OutputEffectRack_[Master]_Effect1]");
+    // >>>> HEAD
 
     connect(pChainSlot, SIGNAL(nextChain(unsigned int, EffectChainPointer)),
             this, SLOT(loadNextChain(unsigned int, EffectChainPointer)));
@@ -309,8 +365,12 @@ OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager,
     DEBUG_ASSERT(masterHandleAndGroup != nullptr);
 
     pChainSlot->registerInputChannel(*masterHandleAndGroup);
-    pChain->enableForInputChannel(*masterHandleAndGroup);
-    pChain->setMix(1.0);
+
+    // NOTE(Kshitij) : Update chain slot rather than effect chain
+    // pChain->enableForInputChannel(*masterHandleAndGroup);
+    // pChain->setMix(1.0);
+    pChainSlot->enableForInputChannel(*masterHandleAndGroup);
+    pChainSlot->setMix(1.0);
 
     EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
     addEffectChainSlotInternal(pChainSlotPointer);
@@ -332,20 +392,29 @@ void PerGroupRack::setupForGroup(const QString& groupName) {
     int iChainSlotNumber = m_groupToChainSlot.size();
     QString chainSlotGroup = formatEffectChainSlotGroupForGroup(
         getRackNumber(), iChainSlotNumber, groupName);
+    qDebug() << "Chain slot group = " << chainSlotGroup;
     EffectChainSlot* pChainSlot = new EffectChainSlot(this, chainSlotGroup,
-                                                      iChainSlotNumber);
+                                                      iChainSlotNumber,
+                                                      m_pEffectsManager,
+                                                      chainSlotGroup);
     EffectChainSlotPointer pChainSlotPointer(pChainSlot);
     addEffectChainSlotInternal(pChainSlotPointer);
     m_groupToChainSlot[groupName] = pChainSlotPointer;
 
     // TODO(rryan): Set up next/prev signals.
 
-    EffectChainPointer pChain(new EffectChain(m_pEffectsManager, chainSlotGroup));
-    pChainSlot->loadEffectChainToSlot(pChain);
-    pChain->addToEngine(getEngineEffectRack(), iChainSlotNumber);
+    // EffectChainPointer pChain(new EffectChain(m_pEffectsManager, chainSlotGroup));
+    pChainSlot->loadEffectChainToSlot();
+
+    // NOTE(Kshitij) : Updated the following functions:
+    // pChain->addToEngine(getEngineEffectRack(), iChainSlotNumber);
+    // // Set the chain to be fully wet.
+    // pChain->setMix(1.0);
+    // pChain->updateEngineState();
+    pChainSlot->addToEngine(getEngineEffectRack(), iChainSlotNumber);
     // Set the chain to be fully wet.
-    pChain->setMix(1.0);
-    pChain->updateEngineState();
+    pChainSlot->setMix(1.0);
+    pChainSlot->updateEngineState();
 
     // TODO(rryan): remove.
     const ChannelHandleAndGroup* handleAndGroup = nullptr;
@@ -375,8 +444,9 @@ bool PerGroupRack::loadEffectToGroup(const QString& groupName, EffectPointer pEf
         return false;
     }
 
-    EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
-    pChain->replaceEffect(0, pEffect);
+    // NOTE(Kshitij) : Removed effect chain and using slot instead
+    // EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+    pChainSlot->replaceEffect(0, pEffect);
     pChainSlot->updateRoutingSwitches();
 
     if (pEffect != nullptr) {

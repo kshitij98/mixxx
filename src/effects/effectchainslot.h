@@ -10,17 +10,34 @@
 #include "util/class.h"
 #include "effects/effectchain.h"
 
+// START EFFECTCHAIN
+#include <QDomDocument>
+
+#include "effects/defs.h"
+#include "engine/channelhandle.h"
+#include "effects/effect.h"
+// END EFFECTCHAIN
+
 class ControlObject;
 class ControlPushButton;
 class ControlEncoder;
 class EffectChainSlot;
+
+class EffectsManager;
+class EngineEffectRack;
+class EngineEffectChain;
+class EffectChain;
+typedef QSharedPointer<EffectChain> EffectChainPointer;
+
 
 class EffectChainSlot : public QObject {
     Q_OBJECT
   public:
     EffectChainSlot(EffectRack* pRack,
                     const QString& group,
-                    const unsigned int iChainNumber);
+                    const unsigned int iChainNumber,
+                    EffectsManager* pEffectsManager,
+                    const QString& id = QString());
     virtual ~EffectChainSlot();
 
     // Get the ID of the loaded EffectChain
@@ -30,7 +47,7 @@ class EffectChainSlot : public QObject {
     EffectSlotPointer addEffectSlot(const QString& group);
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
 
-    void loadEffectChainToSlot(EffectChainPointer pEffectChain);
+    void loadEffectChainToSlot(EffectChainPointer pEffectChain = EffectChainPointer());
     void updateRoutingSwitches();
     EffectChainPointer getEffectChain() const;
     EffectChainPointer getOrCreateEffectChain(EffectsManager* pEffectsManager);
@@ -52,6 +69,81 @@ class EffectChainSlot : public QObject {
 
     QDomElement toXml(QDomDocument* doc) const;
     void loadChainSlotFromXml(const QDomElement& effectChainElement);
+
+
+
+    // START EffectChain
+    void addToEngine(EngineEffectRack* pRack, int iIndex);
+    void removeFromEngine(EngineEffectRack* pRack, int iIndex);
+    void updateEngineState();
+
+    // The ID of an EffectChain is a unique ID given to it to help associate it
+    // with the preset from which it was loaded.
+    // const QString& id() const;
+
+    // Whether the chain is enabled (eligible for processing).
+    bool enabled() const;
+    void setEnabled(bool enabled);
+
+    // Activates EffectChain processing for the provided channel.
+    void enableForInputChannel(const ChannelHandleAndGroup& handle_group);
+    bool enabledForChannel(const ChannelHandleAndGroup& handle_group) const;
+    const QSet<ChannelHandleAndGroup>& enabledChannels() const;
+    void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
+
+    EffectChainPointer prototype() const;
+
+    // Get the human-readable name of the EffectChain
+    const QString& name() const;
+    void setName(const QString& name);
+
+    // Get the human-readable description of the EffectChain
+    QString description() const;
+    void setDescription(const QString& description);
+
+    double mix() const;
+    void setMix(const double& dMix);
+
+    static QString mixModeToString(EffectChainMixMode type) {
+        switch (type) {
+            case EffectChainMixMode::DrySlashWet:
+                return "DRY/WET";
+            case EffectChainMixMode::DryPlusWet:
+                return "DRY+WET";
+            default:
+                return "UNKNOWN";
+        }
+    }
+    static EffectChainMixMode mixModeFromString(const QString& typeStr) {
+        if (typeStr == "DRY/WET") {
+            return EffectChainMixMode::DrySlashWet;
+        } else if (typeStr == "DRY+WET") {
+            return EffectChainMixMode::DryPlusWet;
+        } else {
+            return EffectChainMixMode::NumMixModes;
+        }
+    }
+
+    EffectChainMixMode mixMode() const;
+    void setMixMode(EffectChainMixMode type);
+
+    void addEffect(EffectPointer pEffect);
+    void replaceEffect(unsigned int effectSlotNumber, EffectPointer pEffect);
+    void removeEffect(unsigned int effectSlotNumber);
+    void refreshAllEffects();
+
+    const QList<EffectPointer>& effects() const;
+    unsigned int numEffects() const;
+
+    EngineEffectChain* getEngineEffectChain();
+
+    static EffectChainPointer createFromXml(EffectsManager* pEffectsManager,
+                                      const QDomElement& element);
+    static EffectChainPointer clone(EffectChainPointer pChain);
+    // END EffectChain
+
+    bool isEmpty() const;
+    // EffectRack* rack() const;
 
   signals:
     // Indicates that the effect pEffect has been loaded into slotNumber of
@@ -121,6 +213,8 @@ class EffectChainSlot : public QObject {
         return QString("EffectChainSlot(%1)").arg(m_group);
     }
 
+    void sendParameterUpdate();
+
     const unsigned int m_iChainSlotNumber;
     const QString m_group;
     EffectRack* m_pEffectRack;
@@ -168,6 +262,24 @@ class EffectChainSlot : public QObject {
 
     QList<EffectSlotPointer> m_slots;
     QSignalMapper m_channelStatusMapper;
+
+
+    // START EffectChain
+    EffectsManager* m_pEffectsManager;
+    EffectChainPointer m_pPrototype;
+
+    bool m_bEnabled;
+    QString m_id;
+    QString m_name;
+    QString m_description;
+    EffectChainMixMode m_mixMode;
+    double m_dMix;
+
+    QSet<ChannelHandleAndGroup> m_enabledInputChannels;
+    QList<EffectPointer> m_effects;
+    EngineEffectChain* m_pEngineEffectChain;
+    bool m_bAddedToEngine;
+    // END EffectChain
 
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
 };
