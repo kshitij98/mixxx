@@ -160,6 +160,8 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
     // enabling/disabling signal. For example, the Echo effect clears its
     // internal buffer for the channel when it gets the intermediate disabling signal.
 
+    qDebug() << debugString();
+
     EffectEnableState effectiveEffectEnableState =
         m_effectEnableStateForChannelMatrix[inputHandle][outputHandle];
 

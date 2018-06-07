@@ -73,8 +73,6 @@ class EffectChainSlot : public QObject {
 
 
     // START EffectChain
-    void addToEngine(EngineEffectRack* pRack, int iIndex);
-    void removeFromEngine(EngineEffectRack* pRack, int iIndex);
     void updateEngineState();
 
     // The ID of an EffectChain is a unique ID given to it to help associate it
@@ -213,6 +211,8 @@ class EffectChainSlot : public QObject {
         return QString("EffectChainSlot(%1)").arg(m_group);
     }
 
+    void addToEngine(EngineEffectRack* pRack, int iIndex);
+    void removeFromEngine(EngineEffectRack* pRack, int iIndex);
     void sendParameterUpdate();
 
     const unsigned int m_iChainSlotNumber;

@@ -114,6 +114,8 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
                                        ConfigKey(m_group, "focused_effect"),
                                        true);
     m_pControlChainFocusedEffect->setButtonMode(ControlPushButton::TOGGLE);
+
+    addToEngine(m_pEffectRack->getEngineEffectRack(), m_iChainSlotNumber);
 }
 
 EffectChainSlot::~EffectChainSlot() {
@@ -142,6 +144,7 @@ EffectChainSlot::~EffectChainSlot() {
 
     m_slots.clear();
     m_pEffectChain.clear();
+    removeFromEngine(m_pEffectRack->getEngineEffectRack(), m_iChainSlotNumber);
 }
 
 // START EFFECTCHAIN
@@ -420,7 +423,6 @@ void EffectChainSlot::addEffect(EffectPointer pEffect) {
     }
     // emit(effectChanged(m_effects.size() - 1));
     slotChainEffectChanged(m_effects.size() - 1);
-
 }
 
 void EffectChainSlot::replaceEffect(unsigned int effectSlotNumber,
@@ -447,6 +449,11 @@ void EffectChainSlot::replaceEffect(unsigned int effectSlotNumber,
     if (!pEffect.isNull()) {
         if (m_bAddedToEngine) {
             qDebug() << "Adding " << pEffect->getManifest()->id() << " at " << effectSlotNumber;
+            qDebug() << "INPUT CHANNELS: ";
+            for (auto channel : m_enabledInputChannels) {
+                qDebug() << channel;
+            }
+            qDebug() << "END INPUT CHANNELS";
             pEffect->addToEngine(m_pEngineEffectChain, effectSlotNumber, m_enabledInputChannels);
         }
     }
@@ -479,6 +486,7 @@ EngineEffectChain* EffectChainSlot::getEngineEffectChain() {
 }
 
 void EffectChainSlot::sendParameterUpdate() {
+    qDebug() << "ADDEDD TO ENGINE = " << m_bAddedToEngine;
     if (!m_bAddedToEngine) {
         return;
     }
@@ -584,6 +592,12 @@ void EffectChainSlot::slotChainChannelStatusChanged(const QString& group,
 void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber,
                                              bool shouldEmit) {
     qDebug() << debugString() << "slotChainEffectChanged" << effectSlotNumber;
+
+    qDebug() << "START-----";
+    for (auto &channel : m_enabledInputChannels) {
+        qDebug() << channel;
+    }
+    qDebug() << "END-----";
     // NOTE(Kshitij) : m_pEffectChain dependancy
     // if (m_pEffectChain) {
     //     const QList<EffectPointer> effects = m_pEffectChain->effects();
@@ -698,6 +712,10 @@ void EffectChainSlot::updateRoutingSwitches() {
     // VERIFY_OR_DEBUG_ASSERT(m_pEffectChain) {
     //     return;
     // }
+
+    VERIFY_OR_DEBUG_ASSERT(false) {
+        return;
+    }
     
     // NOTE(Kshitij) : Removed m_pEffectChain dependancy
     // if (!m_pEffectChain) {
@@ -711,9 +729,9 @@ void EffectChainSlot::updateRoutingSwitches() {
     //     }
     // }
     qDebug() << "updatingRoutingSwitches()";
-    if (isEmpty()) {
-        return;
-    }
+    // if (isEmpty()) {
+    //     return;
+    // }
     for (const ChannelInfo* pChannelInfo : m_channelInfoByName) {
         if (pChannelInfo->pEnabled->toBool()) {
             enableForInputChannel(pChannelInfo->handle_group);
@@ -730,44 +748,45 @@ EffectChainPointer EffectChainSlot::getEffectChain() const {
 
 // TODO(Kshitij) : Return EffectChainPreset instead of EffectChain
 // IMPORTANT(Kshitij) : Check what to return and keep the code working
-EffectChainPointer EffectChainSlot::getOrCreateEffectChain(
-        EffectsManager* pEffectsManager) {
-    // if (!m_pEffectChain) {
-    //     EffectChainPointer pEffectChain(
-    //             new EffectChain(pEffectsManager, QString()));
-    //     //: Name for an empty effect chain, that is created after eject
-    //     pEffectChain->setName(tr("Empty Chain"));
-    //     loadEffectChainToSlot(pEffectChain);
-    //     pEffectChain->addToEngine(m_pEffectRack->getEngineEffectRack(), m_iChainSlotNumber);
-    //     pEffectChain->updateEngineState();
-    //     updateRoutingSwitches();
-    // }
-    // return m_pEffectChain;
-    if (isEmpty()) {
-        // EffectChainPointer pEffectChain(
-        //         new EffectChain(pEffectsManager, QString()));
-        // IMPORTANT(Kshitij) : Id is still null, isEmpty() would still return true. Update isEmpty function and its name or update the id here as well.
-        //: Name for an empty effect chain, that is created after eject
-        setName(tr("Empty Chain"));
-        loadEffectChainToSlot();
-        addToEngine(m_pEffectRack->getEngineEffectRack(), m_iChainSlotNumber);
-        updateEngineState();
-        updateRoutingSwitches();
-    }
-    return m_pEffectChain;
-}
+// EffectChainPointer EffectChainSlot::getOrCreateEffectChain(
+//         EffectsManager* pEffectsManager) {
+//     // if (!m_pEffectChain) {
+//     //     EffectChainPointer pEffectChain(
+//     //             new EffectChain(pEffectsManager, QString()));
+//     //     //: Name for an empty effect chain, that is created after eject
+//     //     pEffectChain->setName(tr("Empty Chain"));
+//     //     loadEffectChainToSlot(pEffectChain);
+//     //     pEffectChain->addToEngine(m_pEffectRack->getEngineEffectRack(), m_iChainSlotNumber);
+//     //     pEffectChain->updateEngineState();
+//     //     updateRoutingSwitches();
+//     // }
+//     // return m_pEffectChain;
+//     if (isEmpty()) {
+//         // EffectChainPointer pEffectChain(
+//         //         new EffectChain(pEffectsManager, QString()));
+//         // IMPORTANT(Kshitij) : Id is still null, isEmpty() would still return true. Update isEmpty function and its name or update the id here as well.
+//         //: Name for an empty effect chain, that is created after eject
+//         setName(tr("Empty Chain"));
+//         loadEffectChainToSlot();
+//         // addToEngine(m_pEffectRack->getEngineEffectRack(), m_iChainSlotNumber);
+//         updateEngineState();
+//         updateRoutingSwitches();
+//     }
+//     return m_pEffectChain;
+// }
 
 void EffectChainSlot::clear() {
     // Stop listening to signals from any loaded effect
-    if (m_pEffectChain) {
-        m_pEffectChain->removeFromEngine(m_pEffectRack->getEngineEffectRack(),
-                                         m_iChainSlotNumber);
-        for (EffectSlotPointer pSlot : m_slots) {
-            pSlot->clear();
-        }
-        m_pEffectChain->disconnect(this);
-        m_pEffectChain.clear();
-    }
+    // NOTE(Kshitij) : Removed m_pEffectChain usage
+    // if (m_pEffectChain) {
+    //     m_pEffectChain->removeFromEngine(m_pEffectRack->getEngineEffectRack(),
+    //                                      m_iChainSlotNumber);
+    //     for (EffectSlotPointer pSlot : m_slots) {
+    //         pSlot->clear();
+    //     }
+    //     m_pEffectChain->disconnect(this);
+    //     m_pEffectChain.clear();
+    // }
     m_pControlNumEffects->forceSet(0.0);
     m_pControlChainLoaded->forceSet(0.0);
     m_pControlChainMixMode->set(
@@ -808,6 +827,8 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_g
         return;
     }
 
+    qDebug() << "registerInputChannel" << handle_group;
+
     double initialValue = 0.0;
     int deckNumber;
     if (PlayerManager::isDeckGroup(handle_group.name(), &deckNumber) &&
@@ -824,6 +845,14 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_g
     m_channelStatusMapper.setMapping(pEnableControl, handle_group.name());
     connect(pEnableControl, SIGNAL(valueChanged(double)),
             &m_channelStatusMapper, SLOT(map()));
+
+    // NOTE(Kshitij) : Already enabled input channels should be added
+    // IMPORTANT(Kshitij) : Is this enough to init?
+    if (pInfo->pEnabled->toBool()) {
+        enableForInputChannel(pInfo->handle_group);
+    } else {
+        disableForInputChannel(pInfo->handle_group);
+    }
 }
 
 void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber) {
@@ -952,6 +981,7 @@ void EffectChainSlot::slotChannelStatusChanged(const QString& group) {
     // }
     // TODO(Kshitij) : Check the avaibility of effect chain in this slot. Similarly in other functions
     // if (m_pEffectChain) {
+        qDebug() << "slotChannelStatusChanged";
         ChannelInfo* pChannelInfo = m_channelInfoByName.value(group, NULL);
         if (pChannelInfo != NULL && pChannelInfo->pEnabled != NULL) {
             bool bEnable = pChannelInfo->pEnabled->toBool();
