@@ -5,18 +5,15 @@
 #include <QMap>
 #include <QList>
 #include <QSignalMapper>
+#include <QDomDocument>
 
 #include "engine/channelhandle.h"
 #include "util/class.h"
 #include "effects/effectchain.h"
-
-// START EFFECTCHAIN
-#include <QDomDocument>
-
 #include "effects/defs.h"
 #include "engine/channelhandle.h"
 #include "effects/effect.h"
-// END EFFECTCHAIN
+
 
 class ControlObject;
 class ControlPushButton;
@@ -71,14 +68,6 @@ class EffectChainSlot : public QObject {
     void loadChainSlotFromXml(const QDomElement& effectChainElement);
 
 
-
-    // START EffectChain
-    void updateEngineState();
-
-    // The ID of an EffectChain is a unique ID given to it to help associate it
-    // with the preset from which it was loaded.
-    // const QString& id() const;
-
     // Whether the chain is enabled (eligible for processing).
     bool enabled() const;
     void setEnabled(bool enabled);
@@ -89,6 +78,7 @@ class EffectChainSlot : public QObject {
     const QSet<ChannelHandleAndGroup>& enabledChannels() const;
     void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
 
+    void updateEngineState();
     EffectChainPointer prototype() const;
 
     // Get the human-readable name of the EffectChain
@@ -129,19 +119,13 @@ class EffectChainSlot : public QObject {
     void replaceEffect(unsigned int effectSlotNumber, EffectPointer pEffect);
     void removeEffect(unsigned int effectSlotNumber);
     void refreshAllEffects();
-
+    
     const QList<EffectPointer>& effects() const;
-    unsigned int numEffects() const;
-
     EngineEffectChain* getEngineEffectChain();
+    unsigned int numEffects() const;
 
     static EffectChainPointer createFromXml(EffectsManager* pEffectsManager,
                                       const QDomElement& element);
-    static EffectChainPointer clone(EffectChainPointer pChain);
-    // END EffectChain
-
-    bool isEmpty() const;
-    // EffectRack* rack() const;
 
   signals:
     // Indicates that the effect pEffect has been loaded into slotNumber of
@@ -219,8 +203,6 @@ class EffectChainSlot : public QObject {
     const QString m_group;
     EffectRack* m_pEffectRack;
 
-    EffectChainPointer m_pEffectChain;
-
     ControlPushButton* m_pControlClear;
     ControlObject* m_pControlNumEffects;
     ControlObject* m_pControlNumEffectSlots;
@@ -264,7 +246,6 @@ class EffectChainSlot : public QObject {
     QSignalMapper m_channelStatusMapper;
 
 
-    // START EffectChain
     EffectsManager* m_pEffectsManager;
     EffectChainPointer m_pPrototype;
 
@@ -278,8 +259,6 @@ class EffectChainSlot : public QObject {
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;
     QList<EffectPointer> m_effects;
     EngineEffectChain* m_pEngineEffectChain;
-    bool m_bAddedToEngine;
-    // END EffectChain
 
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
 };

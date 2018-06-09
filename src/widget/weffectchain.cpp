@@ -39,17 +39,8 @@ void WEffectChain::chainUpdated() {
     QString name = tr("None");
     QString description = tr("No effect chain loaded.");
     if (m_pEffectChainSlot) {
-        // NOTE(Kshitij) : Removed effect chain and using effectchainslot
-        // EffectChainPointer pChain = m_pEffectChainSlot->getEffectChain();
-        // if (pChain) {
-        //     name = pChain->name();
-        //     description = pChain->description();
-        // }
-        // EffectChainPointer pChain = m_pEffectChainSlot->getEffectChain();
-        // if (pChain) {
         name = m_pEffectChainSlot->name();
         description = m_pEffectChainSlot->description();
-        // }
     }
     setText(name);
     setBaseTooltip(description);

@@ -348,59 +348,6 @@ void EffectsManager::setup() {
     // Add postfader effect racks
     addStandardEffectRack();
     addOutputsEffectRack();
-
-    // NOTE(Kshitij) : Why are we adding single-effect effect chains on startup?
-//     EffectChainPointer pChain(new EffectChain(
-//            this, "org.mixxx.effectchain.flanger"));
-//     pChain->setName(tr("Flanger"));
-//     EffectPointer pEffect = instantiateEffect(
-//            "org.mixxx.effects.flanger");
-//     pChain->addEffect(pEffect);
-//     m_pEffectChainManager->addEffectChain(pChain);
-
-//     pChain = EffectChainPointer(new EffectChain(
-//             this, "org.mixxx.effectchain.bitcrusher"));
-//     pChain->setName(tr("BitCrusher"));
-//     pEffect = instantiateEffect("org.mixxx.effects.bitcrusher");
-//     pChain->addEffect(pEffect);
-//     m_pEffectChainManager->addEffectChain(pChain);
-
-//     pChain = EffectChainPointer(new EffectChain(
-//             this, "org.mixxx.effectchain.filter"));
-//     pChain->setName(tr("Filter"));
-//     pEffect = instantiateEffect("org.mixxx.effects.filter");
-//     pChain->addEffect(pEffect);
-//     m_pEffectChainManager->addEffectChain(pChain);
-
-// #ifndef __MACAPPSTORE__
-//     pChain = EffectChainPointer(new EffectChain(
-//             this, "org.mixxx.effectchain.reverb"));
-//     pChain->setName(tr("Reverb"));
-//     pEffect = instantiateEffect("org.mixxx.effects.reverb");
-//     pChain->addEffect(pEffect);
-//     m_pEffectChainManager->addEffectChain(pChain);
-// #endif
-
-//     pChain = EffectChainPointer(new EffectChain(
-//             this, "org.mixxx.effectchain.echo"));
-//     pChain->setName(tr("Echo"));
-//     pEffect = instantiateEffect("org.mixxx.effects.echo");
-//     pChain->addEffect(pEffect);
-//     m_pEffectChainManager->addEffectChain(pChain);
-
-//     pChain = EffectChainPointer(new EffectChain(
-//             this, "org.mixxx.effectchain.autopan"));
-//     pChain->setName(tr("AutoPan"));
-//     pEffect = instantiateEffect("org.mixxx.effects.autopan");
-//     pChain->addEffect(pEffect);
-//     m_pEffectChainManager->addEffectChain(pChain);
-
-//     pChain = EffectChainPointer(new EffectChain(
-//             this, "org.mixxx.effectchain.tremolo"));
-//     pChain->setName(tr("Tremolo"));
-//     pEffect = instantiateEffect("org.mixxx.effects.tremolo");
-//     pChain->addEffect(pEffect);
-//     m_pEffectChainManager->addEffectChain(pChain);
 }
 
 // NOTE(Kshitij) : Use new functions for effect loading using Effect Preset
