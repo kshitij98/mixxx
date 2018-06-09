@@ -141,6 +141,20 @@ class EffectsManager : public QObject {
 
     bool m_underDestruction;
 
+    // START EFFECTCHAINMANAGER
+    // UserSettingsPointer m_pConfig;
+    // EffectsManager* m_pEffectsManager;
+    // QList<StandardEffectRackPointer> m_standardEffectRacks;
+    // QList<EqualizerRackPointer> m_equalizerEffectRacks;
+    // QList<QuickEffectRackPointer> m_quickEffectRacks;
+    // OutputEffectRackPointer m_pOutputEffectRack;
+    // QHash<QString, EffectRackPointer> m_effectRacksByGroup;
+    // QList<EffectChainPointer> m_effectChains;
+    // QSet<ChannelHandleAndGroup> m_registeredInputChannels;
+    // QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
+    // END EFFECTCHAINMANAGER
+
+
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };
 

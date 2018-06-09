@@ -97,50 +97,50 @@ EffectRackPointer EffectChainManager::getEffectRack(const QString& group) {
     return m_effectRacksByGroup.value(group);
 }
 
-void EffectChainManager::addEffectChain(EffectChainPointer pEffectChain) {
-    if (pEffectChain) {
-        m_effectChains.append(pEffectChain);
+void EffectChainManager::addEffectChain(EffectChainSlotPointer pEffectChainSlot) {
+    if (pEffectChainSlot) {
+        m_effectChainSlots.append(pEffectChainSlot);
     }
 }
 
-void EffectChainManager::removeEffectChain(EffectChainPointer pEffectChain) {
-    if (pEffectChain) {
-        m_effectChains.removeAll(pEffectChain);
+void EffectChainManager::removeEffectChain(EffectChainSlotPointer pEffectChainSlot) {
+    if (pEffectChainSlot) {
+        m_effectChainSlots.removeAll(pEffectChainSlot);
     }
 }
 
-EffectChainPointer EffectChainManager::getNextEffectChain(EffectChainPointer pEffectChain) {
-    if (m_effectChains.isEmpty())
-        return EffectChainPointer();
+EffectChainSlotPointer EffectChainManager::getNextEffectChain(EffectChainSlotPointer pEffectChainSlot) {
+    if (m_effectChainSlots.isEmpty())
+        return EffectChainSlotPointer();
 
-    if (!pEffectChain) {
-        return m_effectChains[0];
+    if (!pEffectChainSlot) {
+        return m_effectChainSlots[0];
     }
 
-    int indexOf = m_effectChains.lastIndexOf(pEffectChain);
+    int indexOf = m_effectChainSlots.lastIndexOf(pEffectChainSlot);
     if (indexOf == -1) {
         qWarning() << debugString() << "WARNING: getNextEffectChain called for an unmanaged EffectChain";
-        return m_effectChains[0];
+        return m_effectChainSlots[0];
     }
 
-    return m_effectChains[(indexOf + 1) % m_effectChains.size()];
+    return m_effectChainSlots[(indexOf + 1) % m_effectChainSlots.size()];
 }
 
-EffectChainPointer EffectChainManager::getPrevEffectChain(EffectChainPointer pEffectChain) {
-    if (m_effectChains.isEmpty())
-        return EffectChainPointer();
+EffectChainSlotPointer EffectChainManager::getPrevEffectChain(EffectChainSlotPointer pEffectChainSlot) {
+    if (m_effectChainSlots.isEmpty())
+        return EffectChainSlotPointer();
 
-    if (!pEffectChain) {
-        return m_effectChains[m_effectChains.size()-1];
+    if (!pEffectChainSlot) {
+        return m_effectChainSlots[m_effectChainSlots.size()-1];
     }
 
-    int indexOf = m_effectChains.lastIndexOf(pEffectChain);
+    int indexOf = m_effectChainSlots.lastIndexOf(pEffectChainSlot);
     if (indexOf == -1) {
         qWarning() << debugString() << "WARNING: getPrevEffectChain called for an unmanaged EffectChain";
-        return m_effectChains[m_effectChains.size()-1];
+        return m_effectChainSlots[m_effectChainSlots.size()-1];
     }
 
-    return m_effectChains[(indexOf - 1 + m_effectChains.size()) % m_effectChains.size()];
+    return m_effectChainSlots[(indexOf - 1 + m_effectChainSlots.size()) % m_effectChainSlots.size()];
 }
 
 void EffectChainManager::refeshAllRacks() {

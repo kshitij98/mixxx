@@ -9,7 +9,6 @@
 
 #include "engine/channelhandle.h"
 #include "util/class.h"
-#include "effects/effectchain.h"
 #include "effects/defs.h"
 #include "engine/channelhandle.h"
 #include "effects/effect.h"
@@ -23,8 +22,6 @@ class EffectChainSlot;
 class EffectsManager;
 class EngineEffectRack;
 class EngineEffectChain;
-class EffectChain;
-typedef QSharedPointer<EffectChain> EffectChainPointer;
 
 
 class EffectChainSlot : public QObject {
@@ -44,10 +41,8 @@ class EffectChainSlot : public QObject {
     EffectSlotPointer addEffectSlot(const QString& group);
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
 
-    void loadEffectChainToSlot(EffectChainPointer pEffectChain = EffectChainPointer());
+    void loadEffectChainToSlot();
     void updateRoutingSwitches();
-    EffectChainPointer getEffectChain() const;
-    EffectChainPointer getOrCreateEffectChain(EffectsManager* pEffectsManager);
 
     void registerInputChannel(const ChannelHandleAndGroup& handle_group);
 
@@ -79,7 +74,6 @@ class EffectChainSlot : public QObject {
     void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
 
     void updateEngineState();
-    EffectChainPointer prototype() const;
 
     // Get the human-readable name of the EffectChain
     const QString& name() const;
@@ -124,8 +118,8 @@ class EffectChainSlot : public QObject {
     EngineEffectChain* getEngineEffectChain();
     unsigned int numEffects() const;
 
-    static EffectChainPointer createFromXml(EffectsManager* pEffectsManager,
-                                      const QDomElement& element);
+    static EffectChainSlotPointer createFromXml(EffectsManager* pEffectsManager,
+                                                const QDomElement& element);
 
   signals:
     // Indicates that the effect pEffect has been loaded into slotNumber of
@@ -136,21 +130,21 @@ class EffectChainSlot : public QObject {
 
     // Indicates that the given EffectChain was loaded into this
     // EffectChainSlot
-    void effectChainLoaded(EffectChainPointer pEffectChain);
+    void effectChainLoaded(EffectChainSlotPointer pEffectChain);
 
     // Signal that whoever is in charge of this EffectChainSlot should load the
     // next EffectChain into it.
     void nextChain(unsigned int iChainSlotNumber,
-                   EffectChainPointer pEffectChain);
+                   EffectChainSlotPointer pEffectChain);
 
     // Signal that whoever is in charge of this EffectChainSlot should load the
     // previous EffectChain into it.
     void prevChain(unsigned int iChainSlotNumber,
-                   EffectChainPointer pEffectChain);
+                   EffectChainSlotPointer pEffectChain);
 
     // Signal that whoever is in charge of this EffectChainSlot should clear
     // this EffectChain (by removing the chain from this EffectChainSlot).
-    void clearChain(unsigned int iChainNumber, EffectChainPointer pEffectChain);
+    void clearChain(unsigned int iChainNumber, EffectChainSlotPointer pEffectChain);
 
     // Signal that whoever is in charge of this EffectChainSlot should load the
     // next Effect into the specified EffectSlot.
@@ -247,7 +241,6 @@ class EffectChainSlot : public QObject {
 
 
     EffectsManager* m_pEffectsManager;
-    EffectChainPointer m_pPrototype;
 
     bool m_bEnabled;
     QString m_id;
