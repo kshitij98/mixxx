@@ -9,7 +9,6 @@
 
 #include "engine/channelhandle.h"
 #include "util/class.h"
-#include "effects/effectchain.h"
 #include "effects/defs.h"
 #include "engine/channelhandle.h"
 #include "effects/effect.h"
@@ -44,7 +43,7 @@ class EffectChainSlot : public QObject {
     EffectSlotPointer addEffectSlot(const QString& group);
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
 
-    void loadEffectChainToSlot(EffectChainPointer pEffectChain = EffectChainPointer());
+    void loadEffectChainToSlot();
     void updateRoutingSwitches();
     EffectChainPointer getEffectChain() const;
     EffectChainPointer getOrCreateEffectChain(EffectsManager* pEffectsManager);
@@ -79,7 +78,6 @@ class EffectChainSlot : public QObject {
     void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
 
     void updateEngineState();
-    EffectChainPointer prototype() const;
 
     // Get the human-readable name of the EffectChain
     const QString& name() const;
@@ -247,7 +245,6 @@ class EffectChainSlot : public QObject {
 
 
     EffectsManager* m_pEffectsManager;
-    EffectChainPointer m_pPrototype;
 
     bool m_bEnabled;
     QString m_id;

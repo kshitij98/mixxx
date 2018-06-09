@@ -396,41 +396,41 @@ void EffectChainSlot::sendParameterUpdate() {
 // static
 EffectChainPointer EffectChainSlot::createFromXml(EffectsManager* pEffectsManager,
                                         const QDomElement& element) {
-    if (!element.hasChildNodes()) {
-        // An empty element <EffectChain/> is treated as an ejected Chain (null)
-        return EffectChainPointer();
-    }
+    // if (!element.hasChildNodes()) {
+    //     // An empty element <EffectChain/> is treated as an ejected Chain (null)
+    //     return EffectChainPointer();
+    // }
 
-    QString id = XmlParse::selectNodeQString(element,
-                                             EffectXml::ChainId);
-    QString name = XmlParse::selectNodeQString(element,
-                                               EffectXml::ChainName);
-    QString description = XmlParse::selectNodeQString(element,
-                                                      EffectXml::ChainDescription);
-    QString mixModeStr = XmlParse::selectNodeQString(element,
-                                                           EffectXml::ChainMixMode);
+    // QString id = XmlParse::selectNodeQString(element,
+    //                                          EffectXml::ChainId);
+    // QString name = XmlParse::selectNodeQString(element,
+    //                                            EffectXml::ChainName);
+    // QString description = XmlParse::selectNodeQString(element,
+    //                                                   EffectXml::ChainDescription);
+    // QString mixModeStr = XmlParse::selectNodeQString(element,
+    //                                                        EffectXml::ChainMixMode);
 
-    EffectChainPointer pChain(new EffectChain(pEffectsManager, id));
-    pChain->setName(name);
-    pChain->setDescription(description);
-    EffectChainMixMode mixMode = mixModeFromString(mixModeStr);
-    if (mixMode != EffectChainMixMode::NumMixModes) {
-        pChain->setMixMode(mixMode);
-    }
+    // EffectChainPointer pChain(new EffectChain(pEffectsManager, id));
+    // pChain->setName(name);
+    // pChain->setDescription(description);
+    // EffectChainMixMode mixMode = mixModeFromString(mixModeStr);
+    // if (mixMode != EffectChainMixMode::NumMixModes) {
+    //     pChain->setMixMode(mixMode);
+    // }
 
-    QDomElement effects = XmlParse::selectElement(element, EffectXml::EffectsRoot);
-    QDomNodeList effectChildren = effects.childNodes();
+    // QDomElement effects = XmlParse::selectElement(element, EffectXml::EffectsRoot);
+    // QDomNodeList effectChildren = effects.childNodes();
 
-    for (int i = 0; i < effectChildren.count(); ++i) {
-        QDomNode effect = effectChildren.at(i);
-        if (effect.isElement()) {
-            EffectPointer pEffect = Effect::createFromXml(
-                pEffectsManager, effect.toElement());
-            pChain->addEffect(pEffect);
-        }
-    }
+    // for (int i = 0; i < effectChildren.count(); ++i) {
+    //     QDomNode effect = effectChildren.at(i);
+    //     if (effect.isElement()) {
+    //         EffectPointer pEffect = Effect::createFromXml(
+    //             pEffectsManager, effect.toElement());
+    //         pChain->addEffect(pEffect);
+    //     }
+    // }
 
-    return pChain;
+    // return pChain;
 }
 
 QString EffectChainSlot::id() const {
@@ -506,8 +506,7 @@ void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber,
     }
 }
 
-void EffectChainSlot::loadEffectChainToSlot(EffectChainPointer pEffectChain) {
-    qDebug() << debugString() << "loadEffectChainToSlot" << (pEffectChain ? pEffectChain->id() : "(null)");
+void EffectChainSlot::loadEffectChainToSlot() {
     clear();
 
     m_pControlChainLoaded->forceSet(true);

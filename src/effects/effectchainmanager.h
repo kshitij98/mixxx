@@ -6,7 +6,6 @@
 #include <QHash>
 
 #include "preferences/usersettings.h"
-#include "effects/effectchain.h"
 #include "effects/effectrack.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
