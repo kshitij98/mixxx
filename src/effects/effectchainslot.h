@@ -22,9 +22,6 @@ class EffectChainSlot;
 class EffectsManager;
 class EngineEffectRack;
 class EngineEffectChain;
-class EffectChain;
-typedef QSharedPointer<EffectChain> EffectChainPointer;
-
 
 class EffectChainSlot : public QObject {
     Q_OBJECT
@@ -45,8 +42,6 @@ class EffectChainSlot : public QObject {
 
     void loadEffectChainToSlot();
     void updateRoutingSwitches();
-    EffectChainPointer getEffectChain() const;
-    EffectChainPointer getOrCreateEffectChain(EffectsManager* pEffectsManager);
 
     void registerInputChannel(const ChannelHandleAndGroup& handle_group);
 
@@ -67,16 +62,14 @@ class EffectChainSlot : public QObject {
     void loadChainSlotFromXml(const QDomElement& effectChainElement);
 
 
-    // Whether the chain is enabled (eligible for processing).
-    bool enabled() const;
-    void setEnabled(bool enabled);
-
     // Activates EffectChain processing for the provided channel.
+    // TODO(Kshitij) : Make this function private once EffectRack layer is removed
     void enableForInputChannel(const ChannelHandleAndGroup& handle_group);
     bool enabledForChannel(const ChannelHandleAndGroup& handle_group) const;
     const QSet<ChannelHandleAndGroup>& enabledChannels() const;
     void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
 
+    // TODO(Kshitij) : Make this function private once EffectRack layer is removed
     void updateEngineState();
 
     // Get the human-readable name of the EffectChain
@@ -87,7 +80,7 @@ class EffectChainSlot : public QObject {
     QString description() const;
     void setDescription(const QString& description);
 
-    double mix() const;
+    // TODO(Kshitij) : Make this function private once EffectRack layer is removed
     void setMix(const double& dMix);
 
     static QString mixModeToString(EffectChainMixMode type) {
@@ -110,9 +103,6 @@ class EffectChainSlot : public QObject {
         }
     }
 
-    EffectChainMixMode mixMode() const;
-    void setMixMode(EffectChainMixMode type);
-
     void addEffect(EffectPointer pEffect);
     void replaceEffect(unsigned int effectSlotNumber, EffectPointer pEffect);
     void removeEffect(unsigned int effectSlotNumber);
@@ -122,8 +112,8 @@ class EffectChainSlot : public QObject {
     EngineEffectChain* getEngineEffectChain();
     unsigned int numEffects() const;
 
-    static EffectChainPointer createFromXml(EffectsManager* pEffectsManager,
-                                      const QDomElement& element);
+    static EffectChainSlotPointer createFromXml(EffectsManager* pEffectsManager,
+                                                const QDomElement& element);
 
   signals:
     // Indicates that the effect pEffect has been loaded into slotNumber of
@@ -134,21 +124,21 @@ class EffectChainSlot : public QObject {
 
     // Indicates that the given EffectChain was loaded into this
     // EffectChainSlot
-    void effectChainLoaded(EffectChainPointer pEffectChain);
+    void effectChainLoaded(EffectChainSlotPointer pEffectChain);
 
     // Signal that whoever is in charge of this EffectChainSlot should load the
     // next EffectChain into it.
     void nextChain(unsigned int iChainSlotNumber,
-                   EffectChainPointer pEffectChain);
+                   EffectChainSlotPointer pEffectChain);
 
     // Signal that whoever is in charge of this EffectChainSlot should load the
     // previous EffectChain into it.
     void prevChain(unsigned int iChainSlotNumber,
-                   EffectChainPointer pEffectChain);
+                   EffectChainSlotPointer pEffectChain);
 
     // Signal that whoever is in charge of this EffectChainSlot should clear
     // this EffectChain (by removing the chain from this EffectChainSlot).
-    void clearChain(unsigned int iChainNumber, EffectChainPointer pEffectChain);
+    void clearChain(unsigned int iChainNumber, EffectChainSlotPointer pEffectChain);
 
     // Signal that whoever is in charge of this EffectChainSlot should load the
     // next Effect into the specified EffectSlot.
@@ -167,11 +157,9 @@ class EffectChainSlot : public QObject {
 
 
   private slots:
+    void slotChainUpdated(double v);
     void slotChainEffectChanged(unsigned int effectSlotNumber, bool shouldEmit=true);
     void slotChainNameChanged(const QString& name);
-    void slotChainEnabledChanged(bool enabled);
-    void slotChainMixChanged(double mix);
-    void slotChainMixModeChanged(EffectChainMixMode mixMode);
     void slotChainChannelStatusChanged(const QString& group, bool enabled);
 
     void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);
@@ -179,10 +167,7 @@ class EffectChainSlot : public QObject {
     void slotClearEffect(unsigned int iEffectSlotNumber);
 
     void slotControlClear(double v);
-    void slotControlChainEnabled(double v);
-    void slotControlChainMix(double v);
     void slotControlChainSuperParameter(double v, bool force = false);
-    void slotControlChainMixMode(double v);
     void slotControlChainSelector(double v);
     void slotControlChainNextPreset(double v);
     void slotControlChainPrevPreset(double v);
@@ -246,12 +231,9 @@ class EffectChainSlot : public QObject {
 
     EffectsManager* m_pEffectsManager;
 
-    bool m_bEnabled;
     QString m_id;
     QString m_name;
     QString m_description;
-    EffectChainMixMode m_mixMode;
-    double m_dMix;
 
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;
     QList<EffectPointer> m_effects;

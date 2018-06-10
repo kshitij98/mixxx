@@ -113,7 +113,8 @@ bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
             if (kEffectDebugOutput) {
                 qDebug() << debugString() << this << "SET_EFFECT_CHAIN_PARAMETERS"
                          << "enabled" << message.SetEffectChainParameters.enabled
-                         << "mix" << message.SetEffectChainParameters.mix;
+                         << "mix" << message.SetEffectChainParameters.mix
+                         << "mix_mode" << static_cast<int>(message.SetEffectChainParameters.mix_mode);
             }
             response.success = updateParameters(message);
             break;
@@ -270,7 +271,6 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
 
         for (EngineEffect* pEffect: m_effects) {
             if (pEffect != nullptr) {
-                qDebug() << "### Applying effect " << pEffect->name();
                 // Select an unused intermediate buffer for the next output
                 if (pIntermediateInput == m_buffer1.data()) {
                     pIntermediateOutput = m_buffer2.data();
