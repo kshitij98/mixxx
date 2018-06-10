@@ -103,9 +103,6 @@ class EffectChainSlot : public QObject {
         }
     }
 
-    EffectChainMixMode mixMode() const;
-    void setMixMode(EffectChainMixMode type);
-
     void addEffect(EffectPointer pEffect);
     void replaceEffect(unsigned int effectSlotNumber, EffectPointer pEffect);
     void removeEffect(unsigned int effectSlotNumber);
@@ -163,7 +160,6 @@ class EffectChainSlot : public QObject {
     void slotChainUpdated(double v);
     void slotChainEffectChanged(unsigned int effectSlotNumber, bool shouldEmit=true);
     void slotChainNameChanged(const QString& name);
-    void slotChainMixModeChanged(EffectChainMixMode mixMode);
     void slotChainChannelStatusChanged(const QString& group, bool enabled);
 
     void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);
@@ -172,7 +168,6 @@ class EffectChainSlot : public QObject {
 
     void slotControlClear(double v);
     void slotControlChainSuperParameter(double v, bool force = false);
-    void slotControlChainMixMode(double v);
     void slotControlChainSelector(double v);
     void slotControlChainNextPreset(double v);
     void slotControlChainPrevPreset(double v);
@@ -239,7 +234,6 @@ class EffectChainSlot : public QObject {
     QString m_id;
     QString m_name;
     QString m_description;
-    EffectChainMixMode m_mixMode;
 
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;
     QList<EffectPointer> m_effects;
