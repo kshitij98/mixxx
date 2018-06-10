@@ -31,6 +31,7 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
           m_pEffectsManager(pEffectsManager),
           m_id(id),
           m_name(""),
+          m_description(""),
           m_pEngineEffectChain(nullptr) {
     qDebug() << "EffectChainSlot::EffectChainSlot " << pRack << ' ' << group << ' ' << iChainNumber;
 
@@ -193,8 +194,7 @@ const QString& EffectChainSlot::name() const {
 
 void EffectChainSlot::setName(const QString& name) {
     m_name = name;
-    // emit(nameChanged(name));
-    slotChainNameChanged(name);
+    emit(updated());
 }
 
 QString EffectChainSlot::description() const {
@@ -203,7 +203,7 @@ QString EffectChainSlot::description() const {
 
 void EffectChainSlot::setDescription(const QString& description) {
     m_description = description;
-    // emit(descriptionChanged(description));
+    emit(updated());
 }
 
 void EffectChainSlot::enableForInputChannel(const ChannelHandleAndGroup& handle_group) {
@@ -416,10 +416,6 @@ void EffectChainSlot::setSuperParameter(double value, bool force) {
 
 void EffectChainSlot::setSuperParameterDefaultValue(double value) {
     m_pControlChainSuperParameter->setDefaultValue(value);
-}
-
-void EffectChainSlot::slotChainNameChanged(const QString&) {
-    emit(updated());
 }
 
 void EffectChainSlot::slotChainUpdated(double v) {
