@@ -80,8 +80,6 @@ class EffectChainSlot : public QObject {
     QString description() const;
     void setDescription(const QString& description);
 
-    double mix() const;
-
     // TODO(Kshitij) : Make this function private once EffectRack layer is removed
     void setMix(const double& dMix);
 
@@ -162,10 +160,9 @@ class EffectChainSlot : public QObject {
 
 
   private slots:
-    void slotChainUpdated();
+    void slotChainUpdated(double v);
     void slotChainEffectChanged(unsigned int effectSlotNumber, bool shouldEmit=true);
     void slotChainNameChanged(const QString& name);
-    void slotChainMixChanged(double mix);
     void slotChainMixModeChanged(EffectChainMixMode mixMode);
     void slotChainChannelStatusChanged(const QString& group, bool enabled);
 
@@ -174,8 +171,6 @@ class EffectChainSlot : public QObject {
     void slotClearEffect(unsigned int iEffectSlotNumber);
 
     void slotControlClear(double v);
-    // void slotControlChainEnabled(double v);
-    void slotControlChainMix(double v);
     void slotControlChainSuperParameter(double v, bool force = false);
     void slotControlChainMixMode(double v);
     void slotControlChainSelector(double v);
@@ -241,12 +236,10 @@ class EffectChainSlot : public QObject {
 
     EffectsManager* m_pEffectsManager;
 
-    bool m_bEnabled;
     QString m_id;
     QString m_name;
     QString m_description;
     EffectChainMixMode m_mixMode;
-    double m_dMix;
 
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;
     QList<EffectPointer> m_effects;
