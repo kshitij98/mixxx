@@ -158,17 +158,17 @@ void EffectRack::loadPrevEffect(const unsigned int iChainSlotNumber,
 
 QDomElement EffectRack::toXml(QDomDocument* doc) const {
     QDomElement rackElement = doc->createElement("Rack");
-    QDomElement groupElement = doc->createElement("Group");
-    QDomText groupText = doc->createTextNode(m_group);
-    groupElement.appendChild(groupText);
-    rackElement.appendChild(groupElement);
+    // QDomElement groupElement = doc->createElement("Group");
+    // QDomText groupText = doc->createTextNode(m_group);
+    // groupElement.appendChild(groupText);
+    // rackElement.appendChild(groupElement);
 
-    QDomElement chainsElement = doc->createElement("Chains");
-    for (EffectChainSlotPointer pChainSlot : m_effectChainSlots) {
-        QDomElement chain = pChainSlot->toXml(doc);
-        chainsElement.appendChild(chain);
-    }
-    rackElement.appendChild(chainsElement);
+    // QDomElement chainsElement = doc->createElement("Chains");
+    // for (EffectChainSlotPointer pChainSlot : m_effectChainSlots) {
+    //     QDomElement chain = pChainSlot->toXml(doc);
+    //     chainsElement.appendChild(chain);
+    // }
+    // rackElement.appendChild(chainsElement);
     return rackElement;
 }
 
