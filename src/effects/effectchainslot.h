@@ -23,7 +23,6 @@ class EffectsManager;
 class EngineEffectRack;
 class EngineEffectChain;
 
-
 class EffectChainSlot : public QObject {
     Q_OBJECT
   public:
@@ -63,16 +62,14 @@ class EffectChainSlot : public QObject {
     void loadChainSlotFromXml(const QDomElement& effectChainElement);
 
 
-    // Whether the chain is enabled (eligible for processing).
-    bool enabled() const;
-    void setEnabled(bool enabled);
-
     // Activates EffectChain processing for the provided channel.
+    // TODO(Kshitij) : Make this function private once EffectRack layer is removed
     void enableForInputChannel(const ChannelHandleAndGroup& handle_group);
     bool enabledForChannel(const ChannelHandleAndGroup& handle_group) const;
     const QSet<ChannelHandleAndGroup>& enabledChannels() const;
     void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
 
+    // TODO(Kshitij) : Make this function private once EffectRack layer is removed
     void updateEngineState();
 
     // Get the human-readable name of the EffectChain
@@ -84,6 +81,8 @@ class EffectChainSlot : public QObject {
     void setDescription(const QString& description);
 
     double mix() const;
+
+    // TODO(Kshitij) : Make this function private once EffectRack layer is removed
     void setMix(const double& dMix);
 
     static QString mixModeToString(EffectChainMixMode type) {
@@ -163,9 +162,9 @@ class EffectChainSlot : public QObject {
 
 
   private slots:
+    void slotChainUpdated();
     void slotChainEffectChanged(unsigned int effectSlotNumber, bool shouldEmit=true);
     void slotChainNameChanged(const QString& name);
-    void slotChainEnabledChanged(bool enabled);
     void slotChainMixChanged(double mix);
     void slotChainMixModeChanged(EffectChainMixMode mixMode);
     void slotChainChannelStatusChanged(const QString& group, bool enabled);
@@ -175,7 +174,7 @@ class EffectChainSlot : public QObject {
     void slotClearEffect(unsigned int iEffectSlotNumber);
 
     void slotControlClear(double v);
-    void slotControlChainEnabled(double v);
+    // void slotControlChainEnabled(double v);
     void slotControlChainMix(double v);
     void slotControlChainSuperParameter(double v, bool force = false);
     void slotControlChainMixMode(double v);
