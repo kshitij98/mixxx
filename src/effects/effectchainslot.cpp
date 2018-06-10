@@ -54,12 +54,12 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
     m_pControlChainEnabled->setDefaultValue(true);
     m_pControlChainEnabled->set(true);
     connect(m_pControlChainEnabled, SIGNAL(valueChanged(double)),
-            this, SLOT(slotChainUpdated(double)));
+            this, SLOT(sendParameterUpdate()));
 
     m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), 0.0, 1.0,
                                              false, true, false, true, 1.0);
     connect(m_pControlChainMix, SIGNAL(valueChanged(double)),
-            this, SLOT(slotChainUpdated(double)));
+            this, SLOT(sendParameterUpdate()));
 
     m_pControlChainSuperParameter = new ControlPotmeter(ConfigKey(m_group, "super1"), 0.0, 1.0);
     connect(m_pControlChainSuperParameter, SIGNAL(valueChanged(double)),
@@ -71,7 +71,7 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
     m_pControlChainMixMode->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlChainMixMode->setStates(static_cast<double>(EffectChainMixMode::NumMixModes));
     connect(m_pControlChainMixMode, SIGNAL(valueChanged(double)),
-            this, SLOT(slotChainUpdated(double)));
+            this, SLOT(sendParameterUpdate()));
 
     m_pControlChainNextPreset = new ControlPushButton(ConfigKey(m_group, "next_chain"));
     connect(m_pControlChainNextPreset, SIGNAL(valueChanged(double)),
@@ -178,7 +178,6 @@ void EffectChainSlot::removeFromEngine(EngineEffectRack* pRack, int iIndex) {
 
 void EffectChainSlot::updateEngineState() {
     // Update chain parameters in the engine.
-    sendParameterUpdate();
     for (int i = 0; i < m_effects.size(); ++i) {
         EffectPointer pEffect = m_effects[i];
         if (pEffect) {
@@ -259,7 +258,6 @@ void EffectChainSlot::enableForInputChannel(const ChannelHandleAndGroup& handle_
     request->EnableInputChannelForChain.pEffectStatesMapArray = pEffectStatesMapArray;
 
     m_pEffectsManager->writeRequest(request);
-    // emit(channelStatusChanged(handle_group.name(), true));
     slotChainChannelStatusChanged(handle_group.name(), true);
 }
 
@@ -275,7 +273,6 @@ void EffectChainSlot::disableForInputChannel(const ChannelHandleAndGroup& handle
         request->DisableInputChannelForChain.pChannelHandle = &handle_group.handle();
         m_pEffectsManager->writeRequest(request);
 
-        // emit(channelStatusChanged(handle_group.name(), false));
         slotChainChannelStatusChanged(handle_group.name(), false);
     }
 }
@@ -299,7 +296,6 @@ void EffectChainSlot::addEffect(EffectPointer pEffect) {
 
     m_effects.append(pEffect);
     pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1, m_enabledInputChannels);
-    // emit(effectChanged(m_effects.size() - 1));
     slotChainEffectChanged(m_effects.size() - 1);
 }
 
@@ -323,7 +319,6 @@ void EffectChainSlot::replaceEffect(unsigned int effectSlotNumber,
         pEffect->addToEngine(m_pEngineEffectChain, effectSlotNumber, m_enabledInputChannels);
     }
 
-    // emit(effectChanged(effectSlotNumber));
     slotChainEffectChanged(effectSlotNumber);
 }
 
@@ -333,7 +328,6 @@ void EffectChainSlot::removeEffect(unsigned int effectSlotNumber) {
 
 void EffectChainSlot::refreshAllEffects() {
     for (int i = 0; i < m_effects.size(); ++i) {
-        // emit(effectChanged(i));
         slotChainEffectChanged(i);        
     }
 }
@@ -418,23 +412,15 @@ void EffectChainSlot::setSuperParameterDefaultValue(double value) {
     m_pControlChainSuperParameter->setDefaultValue(value);
 }
 
-void EffectChainSlot::slotChainUpdated(double v) {
-    Q_UNUSED(v);
-    sendParameterUpdate();
-    emit(updated());
-}
-
 void EffectChainSlot::slotChainChannelStatusChanged(const QString& group,
                                                     bool enabled) {
     ChannelInfo* pInfo = m_channelInfoByName.value(group, NULL);
     if (pInfo != NULL && pInfo->pEnabled != NULL) {
         pInfo->pEnabled->set(enabled);
-        emit(updated());
     }
 }
 
-void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber,
-                                             bool shouldEmit) {
+void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber) {
     qDebug() << debugString() << "slotChainEffectChanged" << effectSlotNumber;
     EffectSlotPointer pSlot;
     EffectPointer pEffect;
@@ -455,10 +441,6 @@ void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber,
     m_pControlNumEffects->forceSet(math_min(
             static_cast<unsigned int>(m_slots.size()),
             numEffects()));
-    
-    if (shouldEmit) {
-        emit(updated());
-    }
 }
 
 void EffectChainSlot::loadEffectChainToSlot() {
@@ -468,10 +450,8 @@ void EffectChainSlot::loadEffectChainToSlot() {
     
     // Don't emit because we will below.
     for (int i = 0; i < m_slots.size(); ++i) {
-        slotChainEffectChanged(i, false);
+        slotChainEffectChanged(i);
     }
-
-    emit(updated());
 }
 
 void EffectChainSlot::clear() {
@@ -479,7 +459,6 @@ void EffectChainSlot::clear() {
     m_pControlChainLoaded->forceSet(0.0);
     m_pControlChainMixMode->set(
             static_cast<double>(EffectChainMixMode::DrySlashWet));
-    emit(updated());
 }
 
 unsigned int EffectChainSlot::numSlots() const {

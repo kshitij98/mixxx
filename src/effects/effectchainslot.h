@@ -157,8 +157,9 @@ class EffectChainSlot : public QObject {
 
 
   private slots:
-    void slotChainUpdated(double v);
-    void slotChainEffectChanged(unsigned int effectSlotNumber, bool shouldEmit=true);
+    void sendParameterUpdate();
+    
+    void slotChainEffectChanged(unsigned int effectSlotNumber);
     void slotChainChannelStatusChanged(const QString& group, bool enabled);
 
     void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);
@@ -179,7 +180,6 @@ class EffectChainSlot : public QObject {
 
     void addToEngine(EngineEffectRack* pRack, int iIndex);
     void removeFromEngine(EngineEffectRack* pRack, int iIndex);
-    void sendParameterUpdate();
 
     const unsigned int m_iChainSlotNumber;
     const QString m_group;
