@@ -206,16 +206,7 @@ void EffectChainSlot::setDescription(const QString& description) {
 }
 
 void EffectChainSlot::enableForInputChannel(const ChannelHandleAndGroup& handle_group) {
-    // TODO(Be): remove m_enabledChannels from this class and move this logic
-    // to EffectChainSlot
-    bool bWasAlreadyEnabled = m_enabledInputChannels.contains(handle_group);
-    if (!bWasAlreadyEnabled) {
-        m_enabledInputChannels.insert(handle_group);
-    }
-
-    // The allocation of EffectStates below may be expensive, so avoid it if
-    // not needed.
-    if (bWasAlreadyEnabled) {
+    if (m_enabledInputChannels.contains(handle_group)) {
         return;
     }
 
@@ -258,23 +249,20 @@ void EffectChainSlot::enableForInputChannel(const ChannelHandleAndGroup& handle_
     request->EnableInputChannelForChain.pEffectStatesMapArray = pEffectStatesMapArray;
 
     m_pEffectsManager->writeRequest(request);
-    slotChainChannelStatusChanged(handle_group.name(), true);
-}
 
-bool EffectChainSlot::enabledForChannel(const ChannelHandleAndGroup& handle_group) const {
-    return m_enabledInputChannels.contains(handle_group);
+    m_enabledInputChannels.insert(handle_group);
 }
 
 void EffectChainSlot::disableForInputChannel(const ChannelHandleAndGroup& handle_group) {
-    if (m_enabledInputChannels.remove(handle_group)) {
-        EffectsRequest* request = new EffectsRequest();
-        request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
-        request->pTargetChain = m_pEngineEffectChain;
-        request->DisableInputChannelForChain.pChannelHandle = &handle_group.handle();
-        m_pEffectsManager->writeRequest(request);
-
-        slotChainChannelStatusChanged(handle_group.name(), false);
+    if (!m_enabledInputChannels.remove(handle_group)) {
+        return;
     }
+    
+    EffectsRequest* request = new EffectsRequest();
+    request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
+    request->pTargetChain = m_pEngineEffectChain;
+    request->DisableInputChannelForChain.pChannelHandle = &handle_group.handle();
+    m_pEffectsManager->writeRequest(request);
 }
 
 void EffectChainSlot::setMix(const double& dMix) {
@@ -412,14 +400,6 @@ void EffectChainSlot::setSuperParameterDefaultValue(double value) {
     m_pControlChainSuperParameter->setDefaultValue(value);
 }
 
-void EffectChainSlot::slotChainChannelStatusChanged(const QString& group,
-                                                    bool enabled) {
-    ChannelInfo* pInfo = m_channelInfoByName.value(group, NULL);
-    if (pInfo != NULL && pInfo->pEnabled != NULL) {
-        pInfo->pEnabled->set(enabled);
-    }
-}
-
 void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber) {
     qDebug() << debugString() << "slotChainEffectChanged" << effectSlotNumber;
     EffectSlotPointer pSlot;
@@ -494,8 +474,6 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_g
         return;
     }
 
-    qDebug() << "registerInputChannel" << handle_group;
-
     double initialValue = 0.0;
     int deckNumber;
     if (PlayerManager::isDeckGroup(handle_group.name(), &deckNumber) &&
@@ -509,15 +487,14 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_g
 
     ChannelInfo* pInfo = new ChannelInfo(handle_group, pEnableControl);
     m_channelInfoByName[handle_group.name()] = pInfo;
+
+    // m_channelStatusMapper will emit a mapped(handle_group.name()) signal whenever
+    // the valueChanged(double) signal is emitted by pEnableControl 
     m_channelStatusMapper.setMapping(pEnableControl, handle_group.name());
     connect(pEnableControl, SIGNAL(valueChanged(double)),
             &m_channelStatusMapper, SLOT(map()));
 
-    if (pInfo->pEnabled->toBool()) {
-        enableForInputChannel(pInfo->handle_group);
-    } else {
-        disableForInputChannel(pInfo->handle_group);
-    }
+    slotChannelStatusChanged(handle_group.name());
 }
 
 void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber) {
@@ -583,7 +560,6 @@ void EffectChainSlot::slotControlChainPrevPreset(double v) {
 }
 
 void EffectChainSlot::slotChannelStatusChanged(const QString& group) {
-    qDebug() << "slotChannelStatusChanged";
     ChannelInfo* pChannelInfo = m_channelInfoByName.value(group, NULL);
     if (pChannelInfo != NULL && pChannelInfo->pEnabled != NULL) {
         bool bEnable = pChannelInfo->pEnabled->toBool();

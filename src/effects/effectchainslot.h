@@ -65,7 +65,6 @@ class EffectChainSlot : public QObject {
     // Activates EffectChain processing for the provided channel.
     // TODO(Kshitij) : Make this function private once EffectRack layer is removed
     void enableForInputChannel(const ChannelHandleAndGroup& handle_group);
-    bool enabledForChannel(const ChannelHandleAndGroup& handle_group) const;
     const QSet<ChannelHandleAndGroup>& enabledChannels() const;
     void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
 
@@ -158,10 +157,7 @@ class EffectChainSlot : public QObject {
 
   private slots:
     void sendParameterUpdate();
-    
     void slotChainEffectChanged(unsigned int effectSlotNumber);
-    void slotChainChannelStatusChanged(const QString& group, bool enabled);
-
     void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);
     // Clears the effect in the given position in the loaded EffectChain.
     void slotClearEffect(unsigned int iEffectSlotNumber);
