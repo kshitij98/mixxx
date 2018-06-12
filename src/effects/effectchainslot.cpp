@@ -47,6 +47,9 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
 
     m_pControlChainLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
     m_pControlChainLoaded->setReadOnly();
+    if (id != QString()) {
+        m_pControlChainLoaded->forceSet(1.0);
+    }
 
     m_pControlChainEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
     m_pControlChainEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
@@ -423,17 +426,6 @@ void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber) {
             numEffects()));
 }
 
-void EffectChainSlot::loadEffectChainToSlot() {
-    clear();
-
-    m_pControlChainLoaded->forceSet(true);
-    
-    // Don't emit because we will below.
-    for (int i = 0; i < m_slots.size(); ++i) {
-        slotChainEffectChanged(i);
-    }
-}
-
 void EffectChainSlot::clear() {
     m_pControlNumEffects->forceSet(0.0);
     m_pControlChainLoaded->forceSet(0.0);
@@ -511,6 +503,9 @@ EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
 
 void EffectChainSlot::slotControlClear(double v) {
     if (v > 0) {
+        for (EffectSlotPointer pSlot : m_slots) {
+            pSlot->clear();
+        }
         clear();
     }
 }

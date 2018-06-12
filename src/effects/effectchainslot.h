@@ -40,7 +40,6 @@ class EffectChainSlot : public QObject {
     EffectSlotPointer addEffectSlot(const QString& group);
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
 
-    void loadEffectChainToSlot();
     void updateRoutingSwitches();
 
     void registerInputChannel(const ChannelHandleAndGroup& handle_group);
@@ -211,18 +210,14 @@ class EffectChainSlot : public QObject {
         ChannelHandleAndGroup handle_group;
         ControlObject* pEnabled;
     };
-    QMap<QString, ChannelInfo*> m_channelInfoByName;
 
+    QMap<QString, ChannelInfo*> m_channelInfoByName;
     QList<EffectSlotPointer> m_slots;
     QSignalMapper m_channelStatusMapper;
-
-
     EffectsManager* m_pEffectsManager;
-
     QString m_id;
     QString m_name;
     QString m_description;
-
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;
     QList<EffectPointer> m_effects;
     EngineEffectChain* m_pEngineEffectChain;

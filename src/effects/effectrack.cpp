@@ -239,7 +239,6 @@ OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager,
     const QString unitGroup = "[OutputEffectRack_[Master]]";
     // Hard code only one EffectChainSlot
     EffectChainSlot* pChainSlot = new EffectChainSlot(this, unitGroup, 0, m_pEffectsManager, unitGroup);
-    pChainSlot->loadEffectChainToSlot();
     pChainSlot->addEffectSlot("[OutputEffectRack_[Master]_Effect1]");
 
     connect(pChainSlot, SIGNAL(nextChain(unsigned int, EffectChainSlotPointer)),
@@ -301,8 +300,6 @@ void PerGroupRack::setupForGroup(const QString& groupName) {
     m_groupToChainSlot[groupName] = pChainSlotPointer;
 
     // TODO(rryan): Set up next/prev signals.
-
-    pChainSlot->loadEffectChainToSlot();
 
     // Set the chain to be fully wet.
     pChainSlot->setMix(1.0);
