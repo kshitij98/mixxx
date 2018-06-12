@@ -441,9 +441,11 @@ void EffectChainSlot::clear() {
             static_cast<double>(EffectChainMixMode::DrySlashWet));
 }
 
-unsigned int EffectChainSlot::numSlots() const {
-    qDebug() << debugString() << "numSlots";
-    return m_slots.size();
+bool EffectChainSlot::hasSlots() const {
+    if (kEffectDebugOutput) {
+        qDebug() << debugString() << "hasSlots";
+    }
+    return m_slots.size() > 0;
 }
 
 EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
@@ -451,9 +453,6 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
 
     EffectSlot* pEffectSlot = new EffectSlot(group, m_iChainSlotNumber,
                                              m_slots.size());
-    // Rebroadcast effectLoaded signals
-    connect(pEffectSlot, SIGNAL(effectLoaded(EffectPointer, unsigned int)),
-            this, SLOT(slotEffectLoaded(EffectPointer, unsigned int)));
     connect(pEffectSlot, SIGNAL(clearEffect(unsigned int)),
             this, SLOT(slotClearEffect(unsigned int)));
     connect(pEffectSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
@@ -495,12 +494,6 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_g
             &m_channelStatusMapper, SLOT(map()));
 
     slotChannelStatusChanged(handle_group.name());
-}
-
-void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber) {
-    // const int is a safe read... don't bother locking
-    qDebug() << debugString()  << slotNumber;
-    emit(effectLoaded(pEffect, m_iChainSlotNumber, slotNumber));
 }
 
 void EffectChainSlot::slotClearEffect(unsigned int iEffectSlotNumber) {

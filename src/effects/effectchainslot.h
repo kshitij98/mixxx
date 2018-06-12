@@ -36,7 +36,7 @@ class EffectChainSlot : public QObject {
     // Get the ID of the loaded EffectChain
     QString id() const;
 
-    unsigned int numSlots() const;
+    bool hasSlots() const;
     EffectSlotPointer addEffectSlot(const QString& group);
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
 
@@ -115,12 +115,6 @@ class EffectChainSlot : public QObject {
                                                 const QDomElement& element);
 
   signals:
-    // Indicates that the effect pEffect has been loaded into slotNumber of
-    // EffectChainSlot chainNumber. pEffect may be an invalid pointer, which
-    // indicates that a previously loaded effect was removed from the slot.
-    void effectLoaded(EffectPointer pEffect, unsigned int chainNumber,
-                      unsigned int slotNumber);
-
     // Indicates that the given EffectChain was loaded into this
     // EffectChainSlot
     void effectChainLoaded(EffectChainSlotPointer pEffectChain);
@@ -158,7 +152,6 @@ class EffectChainSlot : public QObject {
   private slots:
     void sendParameterUpdate();
     void slotChainEffectChanged(unsigned int effectSlotNumber);
-    void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);
     // Clears the effect in the given position in the loaded EffectChain.
     void slotClearEffect(unsigned int iEffectSlotNumber);
 

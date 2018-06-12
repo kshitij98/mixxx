@@ -458,7 +458,7 @@ void DlgPrefEQ::applySelections() {
             // group name instead.
             EffectChainSlotPointer chainslot =
                     m_pEQEffectRack->getGroupEffectChainSlot(group);
-            if (chainslot && chainslot->numSlots()) {
+            if (chainslot && chainslot->hasSlots()) {
                 EffectPointer effectpointer =
                         chainslot->getEffectSlot(0)->getEffect();
                 if (effectpointer &&
@@ -502,7 +502,7 @@ void DlgPrefEQ::applySelections() {
             // group name instead.
             EffectChainSlotPointer chainslot =
                     m_pQuickEffectRack->getGroupEffectChainSlot(group);
-            if (chainslot && chainslot->numSlots()) {
+            if (chainslot && chainslot->hasSlots()) {
                 EffectPointer effectpointer =
                         chainslot->getEffectSlot(0)->getEffect();
                 if (effectpointer &&
