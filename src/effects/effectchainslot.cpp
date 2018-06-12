@@ -158,6 +158,7 @@ void EffectChainSlot::addToEngine(EngineEffectRack* pRack, int iIndex) {
             pEffect->addToEngine(m_pEngineEffectChain, i, m_enabledInputChannels);
         }
     }
+    sendParameterUpdate();
 }
 
 void EffectChainSlot::removeFromEngine(EngineEffectRack* pRack, int iIndex) {
@@ -210,6 +211,7 @@ void EffectChainSlot::setDescription(const QString& description) {
 
 void EffectChainSlot::setMix(const double& dMix) {
     m_pControlChainMix->set(dMix);
+    sendParameterUpdate();
 }
 
 void EffectChainSlot::addEffect(EffectPointer pEffect) {
