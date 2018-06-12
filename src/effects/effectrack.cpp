@@ -300,7 +300,6 @@ void PerGroupRack::setupForGroup(const QString& groupName) {
 
     // Register this channel alone with the chain slot.
     pChainSlot->registerInputChannel(*handleAndGroup);
-    // pChainSlot->updateRoutingSwitches();
 
     // Add a single effect slot
     pChainSlot->addEffectSlot(formatEffectSlotGroupString(0, groupName));
@@ -316,8 +315,6 @@ bool PerGroupRack::loadEffectToGroup(const QString& groupName, EffectPointer pEf
     }
 
     pChainSlot->replaceEffect(0, pEffect);
-    // pChainSlot->updateRoutingSwitches();
-
     if (pEffect != nullptr) {
         pEffect->setEnabled(true);
     }

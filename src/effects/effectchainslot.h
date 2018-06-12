@@ -40,8 +40,6 @@ class EffectChainSlot : public QObject {
     EffectSlotPointer addEffectSlot(const QString& group);
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
 
-    void updateRoutingSwitches();
-
     void registerInputChannel(const ChannelHandleAndGroup& handle_group);
 
     double getSuperParameter() const;

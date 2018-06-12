@@ -226,7 +226,6 @@ void EffectChainManager::refeshAllRacks() {
 //                     pChainSlot->loadChainSlotFromXml(chainElement);
 //                     pChain->addToEngine(getStandardEffectRack(0)->getEngineEffectRack(), i);
 //                     pChain->updateEngineState();
-//                     pChainSlot->updateRoutingSwitches();
 //                 }
 //             }
 //         }
