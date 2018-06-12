@@ -91,14 +91,6 @@ EffectChainSlotPointer EffectRack::getEffectChainSlot(int i) {
     return m_effectChainSlots[i];
 }
 
-void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,
-                               EffectChainSlotPointer pLoadedChain) {
-}
-
-void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
-                               EffectChainSlotPointer pLoadedChain) {
-}
-
 void EffectRack::maybeLoadEffect(const unsigned int iChainSlotNumber,
                                  const unsigned int iEffectSlotNumber,
                                  const QString& id) {
@@ -208,11 +200,6 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
                         getRackNumber(), iChainSlotNumber, i));
     }
 
-    connect(pChainSlot, SIGNAL(nextChain(unsigned int, EffectChainSlotPointer)),
-            this, SLOT(loadNextChain(unsigned int, EffectChainSlotPointer)));
-    connect(pChainSlot, SIGNAL(prevChain(unsigned int, EffectChainSlotPointer)),
-            this, SLOT(loadPrevChain(unsigned int, EffectChainSlotPointer)));
-
     connect(pChainSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
             this, SLOT(loadNextEffect(unsigned int, unsigned int, EffectPointer)));
     connect(pChainSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
@@ -240,11 +227,6 @@ OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager,
     // Hard code only one EffectChainSlot
     EffectChainSlot* pChainSlot = new EffectChainSlot(this, unitGroup, 0, m_pEffectsManager, unitGroup);
     pChainSlot->addEffectSlot("[OutputEffectRack_[Master]_Effect1]");
-
-    connect(pChainSlot, SIGNAL(nextChain(unsigned int, EffectChainSlotPointer)),
-            this, SLOT(loadNextChain(unsigned int, EffectChainSlotPointer)));
-    connect(pChainSlot, SIGNAL(prevChain(unsigned int, EffectChainSlotPointer)),
-            this, SLOT(loadPrevChain(unsigned int, EffectChainSlotPointer)));
 
     connect(pChainSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
             this, SLOT(loadNextEffect(unsigned int, unsigned int, EffectPointer)));
