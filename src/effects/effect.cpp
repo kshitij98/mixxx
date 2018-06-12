@@ -56,8 +56,6 @@ void Effect::addToEngine(EngineEffectChain* pChain, int iIndex,
         return;
     }
 
-    qDebug() << "Adding to pChain at " << iIndex;
-
     m_pEngineEffect = new EngineEffect(m_pManifest,
             activeInputChannels,
             m_pEffectsManager,

@@ -249,6 +249,8 @@ OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager,
 
     pChainSlot->registerInputChannel(*masterHandleAndGroup);
 
+    // TODO(Kshitij) : Make the following function private after EffectRack 
+    // layer is removed.
     pChainSlot->enableForInputChannel(*masterHandleAndGroup);
     pChainSlot->setMix(1.0);
 

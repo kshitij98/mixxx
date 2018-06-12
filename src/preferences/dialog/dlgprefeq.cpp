@@ -722,18 +722,6 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
     EffectChainSlotPointer pChainSlot = m_pOutputEffectRack->getEffectChainSlot(0);
 
     if (pChainSlot) {
-        // NOTE(Kshitij) : Using chainslot instead of effect chain
-        // EffectChainPointer pChain = pChainSlot->getEffectChain();
-        // VERIFY_OR_DEBUG_ASSERT(pChain) {
-        //     pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
-        // }
-        // EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-        // pChain->replaceEffect(0, pEffect);
-
-        // EffectChainPointer pChain = pChainSlot->getEffectChain();
-        // VERIFY_OR_DEBUG_ASSERT(pChain) {
-            // pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
-        // }
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
         pChainSlot->replaceEffect(0, pEffect);
 
@@ -772,7 +760,6 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
                     QString valueText = QString::number((double)slider->value() / 100);
                     valueLabel->setText(valueText);
                     slidersGridLayout->addWidget(valueLabel, 2, i + 1, Qt::AlignCenter);
-
                 }
             }
         }

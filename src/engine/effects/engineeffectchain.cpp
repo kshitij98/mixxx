@@ -241,10 +241,6 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
     // appropriately, for example the Echo effect clears its internal buffer for the channel
     // when it gets the intermediate disabling signal.
 
-    // REMOVE(Kshitij) : Debug line
-    // qDebug() << "### processing " << inputHandle << ' ' << outputHandle;
-
-
     ChannelStatus& channelStatus = m_chainStatusForChannelMatrix[inputHandle][outputHandle];
     EffectEnableState effectiveChainEnableState = channelStatus.enable_state;
 
