@@ -189,7 +189,7 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
 
     QString group = formatEffectChainSlotGroupString(getRackNumber(),
                                                      iChainSlotNumber);
-    
+
 
     EffectChainSlot* pChainSlot =
             new EffectChainSlot(this, group, iChainSlotNumber, m_pEffectsManager);
@@ -249,7 +249,7 @@ OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager,
 
     pChainSlot->registerInputChannel(*masterHandleAndGroup);
 
-    // TODO(Kshitij) : Make the following function private after EffectRack 
+    // TODO(Kshitij) : Make the following function private after EffectRack
     // layer is removed.
     pChainSlot->enableForInputChannel(*masterHandleAndGroup);
     pChainSlot->setMix(1.0);

@@ -103,7 +103,7 @@ class EffectChainSlot : public QObject {
     void replaceEffect(unsigned int effectSlotNumber, EffectPointer pEffect);
     void removeEffect(unsigned int effectSlotNumber);
     void refreshAllEffects();
-    
+
     const QList<EffectPointer>& effects() const;
     EngineEffectChain* getEngineEffectChain();
     unsigned int numEffects() const;

@@ -259,7 +259,7 @@ void EffectChainSlot::removeEffect(unsigned int effectSlotNumber) {
 
 void EffectChainSlot::refreshAllEffects() {
     for (int i = 0; i < m_effects.size(); ++i) {
-        slotChainEffectChanged(i);        
+        slotChainEffectChanged(i);
     }
 }
 
@@ -347,7 +347,7 @@ void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber) {
     qDebug() << debugString() << "slotChainEffectChanged" << effectSlotNumber;
     EffectSlotPointer pSlot;
     EffectPointer pEffect;
-    
+
     if (m_effects.size() > m_slots.size()) {
         qWarning() << debugString() << "has too few slots for effect";
     }
@@ -360,7 +360,7 @@ void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber) {
     if (pSlot != nullptr) {
         pSlot->loadEffect(pEffect, m_pEffectRack->isAdoptMetaknobValueEnabled());
     }
-    
+
     m_pControlNumEffects->forceSet(math_min(
             static_cast<unsigned int>(m_slots.size()),
             numEffects()));
