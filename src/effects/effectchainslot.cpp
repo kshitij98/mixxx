@@ -415,6 +415,9 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_g
             ConfigKey(m_group, QString("group_%1_enable").arg(handle_group.name())),
             true, initialValue);
     pEnableControl->setButtonMode(ControlPushButton::POWERWINDOW);
+    if (pEnableControl->toBool()) {
+        enableForInputChannel(handle_group);
+    }
 
     ChannelInfo* pInfo = new ChannelInfo(handle_group, pEnableControl);
     m_channelInfoByName[handle_group.name()] = pInfo;
@@ -424,8 +427,6 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_g
     m_channelStatusMapper.setMapping(pEnableControl, handle_group.name());
     connect(pEnableControl, SIGNAL(valueChanged(double)),
             &m_channelStatusMapper, SLOT(map()));
-
-    slotChannelStatusChanged(handle_group.name());
 }
 
 void EffectChainSlot::slotClearEffect(unsigned int iEffectSlotNumber) {

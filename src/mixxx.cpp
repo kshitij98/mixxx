@@ -208,7 +208,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 #endif
 
     // Sets up the EffectChains and EffectRacks (long)
-    m_pEffectsManager->setup();
+    m_pEffectsManager->setupPerGroupRacks();
 
     launchProgress(8);
 
@@ -263,7 +263,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(30);
 
-    // m_pEffectsManager->loadEffectChains();
+    m_pEffectsManager->setup();
 
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
