@@ -95,8 +95,6 @@ class EffectChainSlot : public QObject {
     void refreshAllEffects();
 
     const QList<EffectPointer>& effects() const;
-    EngineEffectChain* getEngineEffectChain();
-    unsigned int numEffects() const;
 
   signals:
     // Indicates that the given EffectChain was loaded into this

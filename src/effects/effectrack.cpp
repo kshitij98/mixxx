@@ -274,7 +274,7 @@ void PerGroupRack::setupForGroup(const QString& groupName) {
     int iChainSlotNumber = m_groupToChainSlot.size();
     QString chainSlotGroup = formatEffectChainSlotGroupForGroup(
         getRackNumber(), iChainSlotNumber, groupName);
-    qDebug() << "Chain slot group = " << chainSlotGroup;
+    // qDebug() << "Chain slot group = " << chainSlotGroup;
     EffectChainSlot* pChainSlot = new EffectChainSlot(this, chainSlotGroup,
                                                       iChainSlotNumber,
                                                       m_pEffectsManager,
