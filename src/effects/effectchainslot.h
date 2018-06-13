@@ -7,11 +7,10 @@
 #include <QSignalMapper>
 #include <QDomDocument>
 
+#include "effects/defs.h"
+#include "effects/effect.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
-#include "effects/defs.h"
-#include "engine/channelhandle.h"
-#include "effects/effect.h"
 
 
 class ControlObject;
