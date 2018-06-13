@@ -80,7 +80,8 @@ void EffectRack::addEffectChainSlotInternal(EffectChainSlotPointer pChainSlot) {
     m_effectChainSlots.append(pChainSlot);
     m_controlNumEffectChainSlots.forceSet(
         m_controlNumEffectChainSlots.get() + 1);
-    qDebug() << "Total effect chain slots = " << m_controlNumEffectChainSlots.get();
+
+    // qDebug() << "Total effect chain slots = " << m_controlNumEffectChainSlots.get();
 }
 
 EffectChainSlotPointer EffectRack::getEffectChainSlot(int i) {

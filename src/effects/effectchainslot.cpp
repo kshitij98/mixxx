@@ -1,22 +1,22 @@
 #include "effects/effectchainslot.h"
 
-#include "effects/effectrack.h"
-#include "effects/effectxmlelements.h"
-#include "effects/effectslot.h"
-#include "effects/effectsmanager.h"
-#include "effects/effectprocessor.h"
-#include "engine/effects/engineeffectchain.h"
-#include "engine/engine.h"
-#include "engine/effects/engineeffectrack.h"
-#include "engine/effects/message.h"
+#include "control/controlencoder.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
-#include "control/controlencoder.h"
+#include "effects/effectprocessor.h"
+#include "effects/effectrack.h"
+#include "effects/effectslot.h"
+#include "effects/effectsmanager.h"
+#include "effects/effectxmlelements.h"
+#include "engine/effects/engineeffectchain.h"
+#include "engine/effects/engineeffectrack.h"
+#include "engine/effects/message.h"
+#include "engine/engine.h"
 #include "mixer/playermanager.h"
-#include "util/math.h"
-#include "util/xml.h"
 #include "util/defs.h"
+#include "util/math.h"
 #include "util/sample.h"
+#include "util/xml.h"
 
 
 EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
@@ -288,46 +288,6 @@ void EffectChainSlot::sendParameterUpdate() {
     m_pEffectsManager->writeRequest(pRequest);
 }
 
-// static
-EffectChainSlotPointer EffectChainSlot::createFromXml(EffectsManager* pEffectsManager,
-                                        const QDomElement& element) {
-    // if (!element.hasChildNodes()) {
-    //     // An empty element <EffectChain/> is treated as an ejected Chain (null)
-    //     return EffectChainPointer();
-    // }
-
-    // QString id = XmlParse::selectNodeQString(element,
-    //                                          EffectXml::ChainId);
-    // QString name = XmlParse::selectNodeQString(element,
-    //                                            EffectXml::ChainName);
-    // QString description = XmlParse::selectNodeQString(element,
-    //                                                   EffectXml::ChainDescription);
-    // QString mixModeStr = XmlParse::selectNodeQString(element,
-    //                                                        EffectXml::ChainMixMode);
-
-    // EffectChainPointer pChain(new EffectChain(pEffectsManager, id));
-    // pChain->setName(name);
-    // pChain->setDescription(description);
-    // EffectChainMixMode mixMode = mixModeFromString(mixModeStr);
-    // if (mixMode != EffectChainMixMode::NumMixModes) {
-    //     pChain->setMixMode(mixMode);
-    // }
-
-    // QDomElement effects = XmlParse::selectElement(element, EffectXml::EffectsRoot);
-    // QDomNodeList effectChildren = effects.childNodes();
-
-    // for (int i = 0; i < effectChildren.count(); ++i) {
-    //     QDomNode effect = effectChildren.at(i);
-    //     if (effect.isElement()) {
-    //         EffectPointer pEffect = Effect::createFromXml(
-    //             pEffectsManager, effect.toElement());
-    //         pChain->addEffect(pEffect);
-    //     }
-    // }
-
-    // return pChain;
-}
-
 QString EffectChainSlot::id() const {
     return m_id;
 }
@@ -454,14 +414,9 @@ void EffectChainSlot::slotControlClear(double v) {
 }
 
 void EffectChainSlot::slotControlChainSuperParameter(double v, bool force) {
-    qDebug() << debugString() << "slotControlChainSuperParameter" << v;
+    // qDebug() << debugString() << "slotControlChainSuperParameter" << v;
 
-    // Clamp to [0.0, 1.0]
-    if (v < 0.0 || v > 1.0) {
-        qWarning() << debugString() << "value out of limits";
-        v = math_clamp(v, 0.0, 1.0);
-        m_pControlChainSuperParameter->set(v);
-    }
+    m_pControlChainSuperParameter->set(v);
     for (const auto& pSlot : m_slots) {
         pSlot->setMetaParameter(v, force);
     }
@@ -477,7 +432,7 @@ void EffectChainSlot::slotControlChainSelector(double v) {
 }
 
 void EffectChainSlot::slotControlChainNextPreset(double v) {
-    qDebug() << debugString() << "slotControlChainNextPreset" << v;
+    // qDebug() << debugString() << "slotControlChainNextPreset" << v;
     if (v > 0) {
         slotControlChainSelector(1);
     }

@@ -19,10 +19,6 @@ class ControlPushButton;
 class ControlEncoder;
 class EffectChainSlot;
 
-class EffectsManager;
-class EngineEffectRack;
-class EngineEffectChain;
-
 class EffectChainSlot : public QObject {
     Q_OBJECT
   public:
@@ -62,7 +58,6 @@ class EffectChainSlot : public QObject {
     // Activates EffectChain processing for the provided channel.
     // TODO(Kshitij) : Make this function private once EffectRack layer is removed
     void enableForInputChannel(const ChannelHandleAndGroup& handle_group);
-    const QSet<ChannelHandleAndGroup>& enabledChannels() const;
     void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
 
     // TODO(Kshitij) : Make this function private once EffectRack layer is removed
@@ -76,7 +71,7 @@ class EffectChainSlot : public QObject {
     QString description() const;
     void setDescription(const QString& description);
 
-    // TODO(Kshitij) : Make this function private once EffectRack layer is removed
+    // TODO(Kshitij) : Remove this setter function once the EffectRack layer is removed
     void setMix(const double& dMix);
 
     static QString mixModeToString(EffectChainMixMode type) {
@@ -107,9 +102,6 @@ class EffectChainSlot : public QObject {
     const QList<EffectPointer>& effects() const;
     EngineEffectChain* getEngineEffectChain();
     unsigned int numEffects() const;
-
-    static EffectChainSlotPointer createFromXml(EffectsManager* pEffectsManager,
-                                                const QDomElement& element);
 
   signals:
     // Indicates that the given EffectChain was loaded into this
