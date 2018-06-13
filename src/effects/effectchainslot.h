@@ -60,9 +60,6 @@ class EffectChainSlot : public QObject {
     void enableForInputChannel(const ChannelHandleAndGroup& handle_group);
     void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
 
-    // TODO(Kshitij) : Make this function private once EffectRack layer is removed
-    void updateEngineState();
-
     // Get the human-readable name of the EffectChain
     const QString& name() const;
     void setName(const QString& name);

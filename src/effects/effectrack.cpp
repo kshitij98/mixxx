@@ -45,7 +45,6 @@ void EffectRack::addToEngine() {
 
     for (int i = 0; i < m_effectChainSlots.size(); ++i) {
         EffectChainSlotPointer pSlot = m_effectChainSlots[i];
-        pSlot->updateEngineState();
     }
 }
 
@@ -288,7 +287,6 @@ void PerGroupRack::setupForGroup(const QString& groupName) {
 
     // Set the chain to be fully wet.
     pChainSlot->setMix(1.0);
-    pChainSlot->updateEngineState();
 
     // TODO(rryan): remove.
     const ChannelHandleAndGroup* handleAndGroup = nullptr;

@@ -180,17 +180,6 @@ void EffectChainSlot::removeFromEngine(EngineEffectRack* pRack, int iIndex) {
     m_pEngineEffectChain = nullptr;
 }
 
-void EffectChainSlot::updateEngineState() {
-    // Update chain parameters in the engine.
-    for (int i = 0; i < m_effects.size(); ++i) {
-        EffectPointer pEffect = m_effects[i];
-        if (pEffect) {
-            // Update effect parameters in the engine.
-            pEffect->updateEngineState();
-        }
-    }
-}
-
 const QString& EffectChainSlot::name() const {
     return m_name;
 }
