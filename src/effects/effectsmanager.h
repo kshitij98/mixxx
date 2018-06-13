@@ -95,7 +95,7 @@ class EffectsManager : public QObject {
     void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
     bool getEffectVisibility(EffectManifestPointer pManifest); 
 
-    // Temporary, but for setting up all the default EffectChains and EffectRacks
+    void setupPerGroupRacks();
     void setup();
 
     // Reloads all effect to the slots to update parameter assignements
