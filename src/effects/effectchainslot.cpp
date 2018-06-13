@@ -324,13 +324,6 @@ void EffectChainSlot::clear() {
             static_cast<double>(EffectChainMixMode::DrySlashWet));
 }
 
-bool EffectChainSlot::hasSlots() const {
-    if (kEffectDebugOutput) {
-        qDebug() << debugString() << "hasSlots";
-    }
-    return m_slots.size() > 0;
-}
-
 EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
     qDebug() << debugString() << "addEffectSlot" << group;
 
