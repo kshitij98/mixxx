@@ -1,4 +1,3 @@
-
 #ifndef EFFECTPROCESSOR_H
 #define EFFECTPROCESSOR_H
 
