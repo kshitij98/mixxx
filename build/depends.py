@@ -790,7 +790,6 @@ class MixxxCore(Feature):
                    "effects/builtin/tremoloeffect.cpp",
 
                    "engine/effects/engineeffectsmanager.cpp",
-                   "engine/effects/engineeffectrack.cpp",
                    "engine/effects/engineeffectchain.cpp",
                    "engine/effects/engineeffect.cpp",
 
