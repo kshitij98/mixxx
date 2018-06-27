@@ -207,9 +207,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     LV2Backend* pLV2Backend = nullptr;
 #endif
 
-    // Sets up the EffectChains and EffectRacks (long)
-    m_pEffectsManager->setupPerGroupRacks();
-
     launchProgress(8);
 
     // Although m_pSoundManager is created here, m_pSoundManager->setupDevices()
