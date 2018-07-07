@@ -78,7 +78,6 @@ class EffectsManager : public QObject {
     EqualizerEffectChainSlotPointer getEqualizerEffectChainSlot(const QString& group) {
         return m_equalizerEffectChainSlots.value(group);
     }
-    bool loadEqualizerEffectToGroup(const QString& group, EffectPointer pEffect);
     int numEqualizerEffectChainSlots() {
         return m_equalizerEffectChainSlots.size();
     }
@@ -87,7 +86,6 @@ class EffectsManager : public QObject {
     QuickEffectChainSlotPointer getQuickEffectChainSlot(const QString& group) {
         return m_quickEffectChainSlots.value(group);
     }
-    bool loadQuickEffectToGroup(const QString& group, EffectPointer pEffect);
     int numQuickEffectChainSlots() {
         return m_quickEffectChainSlots.size();
     }
@@ -119,7 +117,9 @@ class EffectsManager : public QObject {
             const QString& effectId,
             EffectManifestPointer* ppManifest, EffectsBackend** ppBackend) const;
     EffectManifestPointer getEffectManifest(const QString& effectId) const;
-    EffectPointer instantiateEffect(const QString& effectId);
+    void instantiateEffect(const QString& effectId
+            const EffectSlotPointer pEffectSlot,
+            const QSet<ChannelHandleAndGroup>& activeChannels);
 
     void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
     bool getEffectVisibility(EffectManifestPointer pManifest);

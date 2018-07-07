@@ -53,12 +53,12 @@ EffectParameterSlot::~EffectParameterSlot() {
     delete m_pSoftTakeover;
 }
 
-void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
-    //qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
+void EffectParameterSlot::loadEffect(EffectSlotPointer pEffectSlot) {
+    //qDebug() << debugString() << "loadEffect" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
     clear();
-    if (pEffect) {
+    if (pEffectSlot) {
         // Returns null if it doesn't have a parameter for that number
-        m_pEffectParameter = pEffect->getKnobParameterForSlot(m_iParameterSlotNumber);
+        m_pEffectParameter = pEffectSlot->getKnobParameterForSlot(m_iParameterSlotNumber);
 
         if (m_pEffectParameter) {
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();

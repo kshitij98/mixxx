@@ -37,16 +37,16 @@ EffectButtonParameterSlot::~EffectButtonParameterSlot() {
     delete m_pControlValue;
 }
 
-void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
-    //qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
+void EffectButtonParameterSlot::loadEffect(EffectSlotPointer pEffectSlot) {
+    //qDebug() << debugString() << "loadEffect" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
     if (m_pEffectParameter) {
         clear();
     }
 
-    if (pEffect) {
-        m_pEffect = pEffect;
+    if (pEffectSlot) {
+        m_pEffectSlot = pEffectSlot;
         // Returns null if it doesn't have a parameter for that number
-        m_pEffectParameter = pEffect->getButtonParameterForSlot(m_iParameterSlotNumber);
+        m_pEffectParameter = pEffectSlot->getButtonParameterForSlot(m_iParameterSlotNumber);
 
         if (m_pEffectParameter) {
             // Set the number of states
@@ -92,7 +92,7 @@ void EffectButtonParameterSlot::clear() {
         m_pEffectParameter = NULL;
     }
 
-    m_pEffect.clear();
+    m_pEffectSlot.clear();
     m_pControlLoaded->forceSet(0.0);
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);

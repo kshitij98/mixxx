@@ -210,16 +210,18 @@ EffectManifestPointer EffectsManager::getEffectManifest(const QString& effectId)
     return pMainifest;
 }
 
-EffectPointer EffectsManager::instantiateEffect(const QString& effectId) {
+bool EffectsManager::instantiateEffect(const QString& effectId,
+        const EffectSlotPointer pEffectSlot,
+        const QSet<ChannelHandleAndGroup>& activeChannels) {
     if (effectId.isEmpty()) {
-        return EffectPointer();
+        return false;
     }
     for (const auto& pBackend: m_effectsBackends) {
         if (pBackend->canInstantiateEffect(effectId)) {
-            return pBackend->instantiateEffect(this, effectId);
+            return pBackend->instantiateEffect(this, effectId, pEffectSlot, activeChannels);
         }
     }
-    return EffectPointer();
+    return false;
 }
 
 void EffectsManager::addStandardEffectChainSlots() {
@@ -265,21 +267,6 @@ void EffectsManager::addEqualizerEffectChainSlot(const QString& groupName) {
     m_equalizerEffectChainSlots.insert(pChainSlot->group(), pChainSlot);
 }
 
-bool EffectsManager::loadEqualizerEffectToGroup(const QString& group,
-                                                EffectPointer pEffect) {
-    auto chainSlotGroup = EqualizerEffectChainSlot::formatEffectChainSlotGroup(group);
-    auto pChainSlot = m_equalizerEffectChainSlots.value(chainSlotGroup);
-    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
-        return false;
-    }
-
-    pChainSlot->replaceEffect(0, pEffect);
-    if (pEffect != nullptr) {
-        pEffect->setEnabled(true);
-    }
-    return true;
-}
-
 void EffectsManager::addQuickEffectChainSlot(const QString& groupName) {
     VERIFY_OR_DEBUG_ASSERT(!m_quickEffectChainSlots.contains(
             QuickEffectChainSlot::formatEffectChainSlotGroup(groupName))) {
@@ -290,25 +277,6 @@ void EffectsManager::addQuickEffectChainSlot(const QString& groupName) {
         new QuickEffectChainSlot(groupName, this));
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
     m_quickEffectChainSlots.insert(pChainSlot->group(), pChainSlot);
-}
-
-bool EffectsManager::loadQuickEffectToGroup(const QString& group,
-                                            EffectPointer pEffect) {
-    auto chainSlotGroup = QuickEffectChainSlot::formatEffectChainSlotGroup(group);
-    EffectChainSlotPointer pChainSlot = m_quickEffectChainSlots.value(chainSlotGroup);
-    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
-        return false;
-    }
-
-    pChainSlot->replaceEffect(0, pEffect);
-    if (pEffect != nullptr) {
-        pEffect->setEnabled(true);
-    }
-
-    // Force update metaknobs and parameters to match state of superknob
-    pChainSlot->setSuperParameter(pChainSlot->getSuperParameter(), true);
-
-    return true;
 }
 
 EffectChainSlotPointer EffectsManager::getEffectChainSlot(const QString& group) const {

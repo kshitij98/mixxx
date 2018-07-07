@@ -18,7 +18,7 @@ class EffectsManager;
 class EffectParameter : public QObject {
     Q_OBJECT
   public:
-    EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,
+    EffectParameter(EffectSlot* pEffectSlot, EffectsManager* pEffectsManager,
                     int iParameterNumber, EffectManifestParameterPointer pParameter);
     virtual ~EffectParameter();
 
@@ -74,7 +74,7 @@ class EffectParameter : public QObject {
     bool clampDefault();
     bool clampRanges();
 
-    Effect* m_pEffect;
+    EffectSlot* m_pEffectSlot;
     EffectsManager* m_pEffectsManager;
     int m_iParameterNumber;
     EffectManifestParameterPointer m_pParameter;

@@ -18,7 +18,7 @@ EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
 
 EffectParameterSlotBase::~EffectParameterSlotBase() {
     m_pEffectParameter = NULL;
-    m_pEffect.clear();
+    m_pEffectSlot.clear();
     delete m_pControlLoaded;
     delete m_pControlType;
 }

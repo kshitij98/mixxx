@@ -6,7 +6,6 @@
 #include <QString>
 
 #include "control/controlobject.h"
-#include "effects/effect.h"
 #include "effects/effectparameterslotbase.h"
 #include "util/class.h"
 
@@ -26,7 +25,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     }
 
     // Load the parameter of the given effect into this EffectParameterSlot
-    void loadEffect(EffectPointer pEffect);
+    void loadEffect(EffectSlotPointer pEffectSlot);
 
     double getValueParameter() const;
 

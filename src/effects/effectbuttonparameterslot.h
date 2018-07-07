@@ -6,7 +6,6 @@
 #include <QString>
 
 #include "control/controlobject.h"
-#include "effects/effect.h"
 #include "effects/effectparameterslotbase.h"
 #include "util/class.h"
 
@@ -24,7 +23,8 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
     }
 
     // Load the parameter of the given effect into this EffectButtonParameterSlot
-    void loadEffect(EffectPointer pEffect);
+    // kshitij : change all calls
+    void loadEffect(EffectSlotPointer pEffectSlot);
 
     // Clear the currently loaded effect
     void clear();

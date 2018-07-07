@@ -77,21 +77,21 @@ LV2Manifest* LV2Backend::getLV2Manifest(const QString& effectId) const {
     return m_registeredEffects[effectId];
 }
 
-EffectPointer LV2Backend::instantiateEffect(EffectsManager* pEffectsManager,
-                                            const QString& effectId) {
+bool LV2Backend::instantiateEffect(EffectsManager* pEffectsManager,
+        const QString& effectId, const EffectSlotPointer pEffectSlot,
+        const QSet<ChannelHandleAndGroup>& activeChannels) {
     if (!canInstantiateEffect(effectId)) {
         qWarning() << "WARNING: Effect" << effectId << "is not registered.";
-        return EffectPointer();
+        return false;
     }
     LV2Manifest* lv2manifest = m_registeredEffects[effectId];
 
-    return EffectPointer(
-        new Effect(
-                pEffectsManager,
-                lv2manifest->getEffectManifest(),
-                EffectInstantiatorPointer(
-                        new LV2EffectProcessorInstantiator(
-                                lv2manifest->getPlugin(),
-                                lv2manifest->getAudioPortIndices(),
-                                lv2manifest->getControlPortIndices()))));
+    return pEffectSlot->loadEffectToSlot(pEffectsManager,
+            lv2manifest->getEffectManifest(),
+            EffectInstantiatorPointer(
+                    new LV2EffectProcessorInstantiator(
+                            lv2manifest->getPlugin(),
+                            lv2manifest->getAudioPortIndices(),
+                            lv2manifest->getControlPortIndices())),
+            activeChannels);
 }

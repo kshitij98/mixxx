@@ -448,24 +448,29 @@ void DlgPrefEQ::applySelections() {
 
         // Only apply the effect if it changed -- so first interrogate the
         // loaded effect if any.
-        bool need_load = true;
+        bool needLoad = true;
         if (m_pEffectsManager->numEqualizerEffectChainSlots() > deck) {
-            // It's not correct to get a chainslot by index number -- get by
+            // It's not correct to get a pChainSlot by index number -- get by
             // group name instead.
-            EffectChainSlotPointer chainslot =
+            EffectChainSlotPointer pChainSlot =
                     m_pEffectsManager->getEqualizerEffectChainSlot(group);
-            if (chainslot) {
-                EffectPointer effectpointer =
-                        chainslot->getEffectSlot(0)->getEffect();
-                if (effectpointer &&
-                        effectpointer->getManifest()->id() == effectId) {
-                    need_load = false;
+            if (pChainSlot) {
+                EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
+                if (pEffectSlot && pEffectSlot->getManifest()->id() == effectId) {
+                    needLoad = false;
                 }
             }
         }
-        if (need_load) {
-            EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-            m_pEffectsManager->loadEqualizerEffectToGroup(group, pEffect);
+        if (needLoad) {
+            QString chainSlotGroup = EqualizerEffectChainSlot::formatEffectChainSlotGroup(group);
+            EffectChainSlotPointer pChainSlot =
+                    m_pEffectsManager->getEqualizerEffectChainSlot(chainSlotGroup);
+
+            VERIFY_OR_DEBUG_ASSERT(pChainSlot != nullptr);
+
+            pChainSlot->loadEffect(0, effectId);
+            pChainSlot->getEffectSlot(0)->setEnabled(true);
+
             m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
                     ConfigValue(effectId));
             m_filterWaveformEnableCOs[deck]->set(m_pEffectsManager->isEQ(effectId));
@@ -492,24 +497,31 @@ void DlgPrefEQ::applySelections() {
 
         // Only apply the effect if it changed -- so first interrogate the
         // loaded effect if any.
-        bool need_load = true;
+        bool needLoad = true;
         if (m_pEffectsManager->numQuickEffectChainSlots() > deck) {
-            // It's not correct to get a chainslot by index number -- get by
+            // It's not correct to get a pChainSlot by index number -- get by
             // group name instead.
-            EffectChainSlotPointer chainslot =
+            EffectChainSlotPointer pChainSlot =
                     m_pEffectsManager->getQuickEffectChainSlot(group);
-            if (chainslot) {
-                EffectPointer effectpointer =
-                        chainslot->getEffectSlot(0)->getEffect();
-                if (effectpointer &&
-                        effectpointer->getManifest()->id() == effectId) {
-                    need_load = false;
+            if (pChainSlot) {
+                auto pEffectSlot = pChainSlot->getEffectSlot(0);
+                if (pEffectSlot && pEffectSlot->getManifest()->id() == effectId) {
+                    needLoad = false;
                 }
             }
         }
-        if (need_load) {
-            EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-            m_pEffectsManager->loadQuickEffectToGroup(group, pEffect);
+        if (needLoad) {
+            QString chainSlotGroup = QuickEffectChainSlot::formatEffectChainSlotGroup(group);
+            EffectChainSlotPointer pChainSlot =
+                    m_pEffectsManager->getQuickEffectChainSlot(chainSlotGroup);
+
+            VERIFY_OR_DEBUG_ASSERT(pChainSlot != nullptr);
+
+            pChainSlot->loadEffect(0, effectId);
+            pChainSlot->getEffectSlot(0)->setEnabled(true);
+
+            // Force update metaknobs and parameters to match state of superknob
+            pChainSlot->setSuperParameter(pChainSlot->getSuperParameter(), true);
 
             m_pConfig->set(ConfigKey(kConfigKey, "QuickEffectForGroup_" + group),
                     ConfigValue(effectId));
@@ -567,11 +579,11 @@ void DlgPrefEQ::slotUpdateLoEQ() {
 }
 
 void DlgPrefEQ::slotUpdateMasterEQParameter(int value) {
-    EffectPointer effect(m_pEffectMasterEQ);
-    if (!effect.isNull()) {
+    EffectSlotPointer pEffectSlot(m_pEffectMasterEQ);
+    if (!pEffectSlot.isNull()) {
         QSlider* slider = qobject_cast<QSlider*>(sender());
         int index = slider->property("index").toInt();
-        EffectParameter* param = effect->getKnobParameterForSlot(index);
+        EffectParameter* param = pEffectSlot->getKnobParameterForSlot(index);
         if (param) {
             double dValue = value / 100.0;
             param->setValue(dValue);
@@ -680,11 +692,11 @@ void DlgPrefEQ::setUpMasterEQ() {
     comboBoxMasterEq->setCurrentIndex(masterEqIndex);
 
     // Load parameters from preferences:
-    EffectPointer effect(m_pEffectMasterEQ);
-    if (!effect.isNull()) {
-        int knobNum = effect->numKnobParameters();
+    EffectSlotPointer pEffectSlot(m_pEffectMasterEQ);
+    if (!pEffectSlot.isNull()) {
+        int knobNum = pEffectSlot->numKnobParameters();
         for (int i = 0; i < knobNum; i++) {
-            EffectParameter* param = effect->getKnobParameterForSlot(i);
+            EffectParameter* param = pEffectSlot->getKnobParameterForSlot(i);
             if (param) {
                 QString strValue = m_pConfig->getValueString(ConfigKey(kConfigKey,
                         QString("EffectForGroup_[Master]_parameter%1").arg(i + 1)));
@@ -716,21 +728,22 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
     }
 
     auto pChainSlot = m_pEffectsManager->getOutputEffectChainSlot();
+    auto pEffectSlot = pChainSlot->getEffectSlot(0);
 
     if (pChainSlot) {
-        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-        pChainSlot->replaceEffect(0, pEffect);
+        pChainSlot->loadEffect(0, effectId);
+        pEffectSlot->setEnabled(true);
 
-        if (pEffect) {
-            pEffect->setEnabled(true);
-            m_pEffectMasterEQ = pEffect;
+        if (pEffectSlot) {
+            pEffectSlot->setEnabled(true);
+            m_pEffectMasterEQ = pEffectSlot;
 
-            int knobNum = pEffect->numKnobParameters();
+            int knobNum = pEffectSlot->numKnobParameters();
 
             // Create and set up Master EQ's sliders
             int i;
             for (i = 0; i < knobNum; i++) {
-                EffectParameter* param = pEffect->getKnobParameterForSlot(i);
+                EffectParameter* param = pEffectSlot->getKnobParameterForSlot(i);
                 if (param) {
                     // Setup Label
                     QLabel* centerFreqLabel = new QLabel(this);
@@ -807,11 +820,11 @@ QString DlgPrefEQ::getQuickEffectGroupForDeck(int deck) const {
 }
 
 void DlgPrefEQ::slotMasterEQToDefault() {
-    EffectPointer effect(m_pEffectMasterEQ);
-    if (!effect.isNull()) {
-        int knobNum = effect->numKnobParameters();
+    EffectSlotPointer pEffectSlot(m_pEffectMasterEQ);
+    if (!pEffectSlot.isNull()) {
+        int knobNum = pEffectSlot->numKnobParameters();
         for (int i = 0; i < knobNum; i++) {
-            EffectParameter* param = effect->getKnobParameterForSlot(i);
+            EffectParameter* param = pEffectSlot->getKnobParameterForSlot(i);
             if (param) {
                 double defaultValue = param->getDefault();
                 setMasterEQParameter(i, defaultValue);
@@ -821,9 +834,9 @@ void DlgPrefEQ::slotMasterEQToDefault() {
 }
 
 void DlgPrefEQ::setMasterEQParameter(int i, double value) {
-    EffectPointer effect(m_pEffectMasterEQ);
-    if (!effect.isNull()) {
-        EffectParameter* param = effect->getKnobParameterForSlot(i);
+    EffectSlotPointer pEffectSlot(m_pEffectMasterEQ);
+    if (!pEffectSlot.isNull()) {
+        EffectParameter* param = pEffectSlot->getKnobParameterForSlot(i);
         if (param) {
             param->setValue(value);
             m_masterEQSliders[i]->setValue(value * 100);

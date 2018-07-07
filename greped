@@ -1,0 +1,119 @@
+src/effects/effectslot.h:    // Indicates that the effect pEffect has been loaded into this
+src/effects/effectslot.h:    // listeners.  pEffect may be an invalid pointer, which indicates that a
+src/effects/effectslot.h:    void effectLoaded(EffectPointer pEffect, unsigned int effectSlotNumber);
+src/effects/effectslot.cpp:    request->AddEffectToChain.pEffect = m_pEngineEffect;
+src/effects/effectslot.cpp:    request->RemoveEffectFromChain.pEffect = m_pEngineEffect;
+src/effects/effectslot.cpp://     if (m_pEffect) {
+src/effects/effectslot.cpp://         m_pEffect->setEnabled(v > 0);
+src/effects/effectslot.cpp:        m_pControlMetaParameter->set(pEffect->getMetaknobDefault());
+src/effects/effectslot.cpp:        slotEffectMetaParameter(pEffect->getMetaknobDefault(), true);
+src/effects/effectslot.cpp:    //     emit(nextEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
+src/effects/effectslot.cpp:    //     emit(prevEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
+src/effects/effectslot.cpp:    if (!m_pEffect) {
+src/effects/effectslot.cpp:    EffectManifestPointer pManifest = m_pEffect->getManifest();
+src/effects/effectslot.cpp:    if (!m_pEffect) {
+src/effects/effectslot.cpp:    if (m_pEffect->getManifest()->id() != effectIdElement.text()) {
+src/effects/effectsmanager.cpp:            qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
+src/effects/effectsmanager.cpp:        delete pRequest->RemoveEffectFromChain.pEffect;
+src/effects/effectsmanager.cpp:            qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
+src/effects/effectchainslot.cpp://     EffectPointer pEffect;
+src/effects/effectchainslot.cpp://         pEffect = m_effects.at(effectSlotNumber);
+src/effects/effectchainslot.cpp://         pSlot->loadEffect(pEffect, m_bHasMetaknob && m_pEffectsManager->isAdoptMetaknobValueEnabled());
+src/effects/effectchainslot.cpp://         emit(nextChain(m_iChainSlotNumber, m_pEffectChain));
+src/effects/effectchainslot.cpp://         emit(prevChain(m_iChainSlotNumber, m_pEffectChain));
+src/effects/effectchainslot.cpp:    auto pEffectStatesMapArray = new EffectStatesMapArray;
+src/effects/effectchainslot.cpp:        auto& statesMap = (*pEffectStatesMapArray)[i];
+src/effects/effectchainslot.cpp:    request->EnableInputChannelForChain.pEffectStatesMapArray = pEffectStatesMapArray;
+src/effects/effectchainslot.cpp:    //         m_pEffectChain->id());
+src/effects/effectchainslot.cpp:    //         m_pEffectChain->name());
+src/effects/effectchainslot.cpp:    //         m_pEffectChain->description());
+src/effects/effectchainslot.h:                   EffectChainSlotPointer pEffectChain);
+src/effects/effectchainslot.h:                   EffectChainSlotPointer pEffectChain);
+src/effects/effectchainslot.h:    void clearChain(unsigned int iChainNumber, EffectChainSlotPointer pEffectChain);
+src/effects/effectsmanager.h:    // EffectChainSlotPointer getNextEffectChain(EffectChainSlotPointer pEffectChainSlot);
+src/effects/effectsmanager.h:    // EffectChainSlotPointer getPrevEffectChain(EffectChainSlotPointer pEffectChainSlot);
+src/effects/lv2/lv2manifest.h:    EffectManifestPointer m_pEffectManifest;
+src/effects/lv2/lv2manifest.cpp:        : m_pEffectManifest(new EffectManifest()),
+src/effects/lv2/lv2manifest.cpp:    m_pEffectManifest->setId(lilv_node_as_string(id));
+src/effects/lv2/lv2manifest.cpp:    m_pEffectManifest->setName(lilv_node_as_string(info));
+src/effects/lv2/lv2manifest.cpp:    m_pEffectManifest->setAuthor(lilv_node_as_string(info));
+src/effects/lv2/lv2manifest.cpp:            EffectManifestParameterPointer param = m_pEffectManifest->addParameter();
+src/effects/lv2/lv2manifest.cpp:            EffectManifestParameterPointer param = m_pEffectManifest->addParameter();
+src/effects/lv2/lv2manifest.cpp:    return m_pEffectManifest;
+src/widget/weffectparameterknob.cpp:void WEffectParameterKnob::setupEffectParameterSlot(const ConfigKey& configKey) {
+src/widget/weffectparameterknob.cpp:    m_pEffectParameterSlot = pParameterSlot;
+src/widget/weffectparameterknob.cpp:    if (m_pEffectParameterSlot) {
+src/widget/weffectparameterknob.cpp:        connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),
+src/widget/weffectparameterknob.cpp:    if (m_pEffectParameterSlot) {
+src/widget/weffectparameterknob.cpp:                       m_pEffectParameterSlot->name(),
+src/widget/weffectparameterknob.cpp:                       m_pEffectParameterSlot->description()));
+src/widget/weffectselector.cpp:        if (pEffect->getManifest() != nullptr) {
+src/widget/weffectselector.cpp:            EffectManifestPointer pManifest = pEffect->getManifest();
+src/widget/weffectparameterknobcomposed.cpp:void WEffectParameterKnobComposed::setupEffectParameterSlot(const ConfigKey& configKey) {
+src/widget/weffectparameterknobcomposed.cpp:    m_pEffectParameterSlot = pParameterSlot;
+src/widget/weffectparameterknobcomposed.cpp:    if (m_pEffectParameterSlot) {
+src/widget/weffectparameterknobcomposed.cpp:        connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),
+src/widget/weffectparameterknobcomposed.cpp:    if (m_pEffectParameterSlot) {
+src/widget/weffectparameterknobcomposed.cpp:                       m_pEffectParameterSlot->name(),
+src/widget/weffectparameterknobcomposed.cpp:                       m_pEffectParameterSlot->description()));
+src/widget/weffectpushbutton.h:    void setupEffectParameterSlot(const ConfigKey& configKey);
+src/widget/weffectpushbutton.h:    EffectParameterSlotBasePointer m_pEffectParameterSlot;
+src/widget/weffectparameterbase.cpp:        EffectParameterSlotBasePointer pEffectParameterSlot) {
+src/widget/weffectparameterbase.cpp:    m_pEffectParameterSlot = pEffectParameterSlot;
+src/widget/weffectparameterbase.cpp:    if (m_pEffectParameterSlot) {
+src/widget/weffectparameterbase.cpp:        connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),
+src/widget/weffectparameterbase.cpp:    if (m_pEffectParameterSlot) {
+src/widget/weffectparameterbase.cpp:        if (!m_pEffectParameterSlot->shortName().isEmpty()) {
+src/widget/weffectparameterbase.cpp:            setText(m_pEffectParameterSlot->shortName());
+src/widget/weffectparameterbase.cpp:            setText(m_pEffectParameterSlot->name());
+src/widget/weffectparameterbase.cpp:                       m_pEffectParameterSlot->name(),
+src/widget/weffectparameterbase.cpp:                       m_pEffectParameterSlot->description()));
+src/widget/weffectparameterknob.h:    void setupEffectParameterSlot(const ConfigKey& configKey);
+src/widget/weffectparameterknob.h:    EffectParameterSlotBasePointer m_pEffectParameterSlot;
+src/widget/weffectpushbutton.cpp:void WEffectPushButton::setupEffectParameterSlot(const ConfigKey& configKey) {
+src/widget/weffectpushbutton.cpp:    m_pEffectParameterSlot = pParameterSlot;
+src/widget/weffectpushbutton.cpp:    if (m_pEffectParameterSlot) {
+src/widget/weffectpushbutton.cpp:        connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),
+src/widget/weffectpushbutton.cpp:    if (m_pEffectParameterSlot) {
+src/widget/weffectpushbutton.cpp:                       m_pEffectParameterSlot->name(),
+src/widget/weffectpushbutton.cpp:                       m_pEffectParameterSlot->description()));
+src/widget/weffectpushbutton.cpp:    EffectManifestParameterPointer pManifest = m_pEffectParameterSlot->getManifest();
+src/widget/weffectpushbutton.cpp:    // qDebug() << " HERE IS THE OPTIONS SIZE: " << options.size() << m_pEffectParameterSlot->getManifest().name();
+src/widget/weffectparameterknobcomposed.h:    void setupEffectParameterSlot(const ConfigKey& configKey);
+src/widget/weffectparameterknobcomposed.h:    EffectParameterSlotBasePointer m_pEffectParameterSlot;
+src/widget/weffectchain.h:    void setEffectChainSlot(EffectChainSlotPointer pEffectChainSlot);
+src/widget/weffectchain.h:    EffectChainSlotPointer m_pEffectChainSlot;
+src/widget/weffectchain.cpp:void WEffectChain::setEffectChainSlot(EffectChainSlotPointer pEffectChainSlot) {
+src/widget/weffectchain.cpp:    if (pEffectChainSlot) {
+src/widget/weffectchain.cpp:        m_pEffectChainSlot = pEffectChainSlot;
+src/widget/weffectchain.cpp:        connect(pEffectChainSlot.data(), SIGNAL(updated()),
+src/widget/weffectchain.cpp:    if (m_pEffectChainSlot) {
+src/widget/weffectchain.cpp:        name = m_pEffectChainSlot->name();
+src/widget/weffectchain.cpp:        description = m_pEffectChainSlot->description();
+src/widget/weffectparameterbase.h:    void setEffectParameterSlot(EffectParameterSlotBasePointer pEffectParameterSlot);
+src/widget/weffectparameterbase.h:    EffectParameterSlotBasePointer m_pEffectParameterSlot;
+src/skin/legacyskinparser.cpp:    WEffectChain* pEffectChain = new WEffectChain(m_pParent, m_pEffectsManager);
+src/skin/legacyskinparser.cpp:    setupLabelWidget(node, pEffectChain);
+src/skin/legacyskinparser.cpp:    return pEffectChain;
+src/skin/legacyskinparser.cpp:    WEffect* pEffect = new WEffect(m_pParent, m_pEffectsManager);
+src/skin/legacyskinparser.cpp:    setupLabelWidget(node, pEffect);
+src/skin/legacyskinparser.cpp:    return pEffect;
+src/skin/legacyskinparser.cpp:        pParameterKnob->setupEffectParameterSlot(connections.at(0)->getKey());
+src/skin/legacyskinparser.cpp:        pParameterKnob->setupEffectParameterSlot(connections.at(0)->getKey());
+src/skin/legacyskinparser.cpp:        pWidget->setupEffectParameterSlot(connections.at(0)->getKey());
+src/skin/legacyskinparser.cpp:    WEffectParameterBase* pEffectParameter = new WEffectParameter(m_pParent, m_pEffectsManager);
+src/skin/legacyskinparser.cpp:    setupLabelWidget(node, pEffectParameter);
+src/skin/legacyskinparser.cpp:    return pEffectParameter;
+src/skin/legacyskinparser.cpp:    WEffectParameterBase* pEffectButtonParameter = new WEffectButtonParameter(m_pParent, m_pEffectsManager);
+src/skin/legacyskinparser.cpp:    setupLabelWidget(node, pEffectButtonParameter);
+src/skin/legacyskinparser.cpp:    return pEffectButtonParameter;
+src/preferences/dialog/dlgprefinterfacedlg.ui:           <string notr="true">buttonGroupEffectLoadBehavior</string>
+src/preferences/dialog/dlgprefinterfacedlg.ui:           <string notr="true">buttonGroupEffectLoadBehavior</string>
+src/preferences/dialog/dlgprefinterfacedlg.ui:  <buttongroup name="buttonGroupEffectLoadBehavior"/>
+src/preferences/dialog/dlgprefeq.h:    QWeakPointer<EffectSlot> m_pEffectMasterEQ;
+src/preferences/dialog/dlgpreflv2.cpp:        EffectManifestPointer pEffectManifest = lv2Manifest->getEffectManifest();
+src/preferences/dialog/dlgpreflv2.cpp:        button->setText(pEffectManifest->name());
+src/preferences/dialog/dlgpreflv2.cpp:        button->setProperty("id", QVariant(pEffectManifest->id()));
+src/engine/effects/message.h:            VERIFY_OR_DEBUG_ASSERT(EnableInputChannelForChain.pEffectStatesMapArray != nullptr) {
+src/engine/effects/message.h:            delete EnableInputChannelForChain.pEffectStatesMapArray;
+src/engine/effects/message.h:            EffectStatesMapArray* pEffectStatesMapArray;

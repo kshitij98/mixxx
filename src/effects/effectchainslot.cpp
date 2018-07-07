@@ -149,23 +149,18 @@ void EffectChainSlot::addToEngine() {
     pRequest->AddEffectChain.pChain = m_pEngineEffectChain;
     m_pEffectsManager->writeRequest(pRequest);
 
-    // Add all effects.
-    for (int i = 0; i < m_effects.size(); ++i) {
-        // Add the effect to the engine.
-        EffectPointer pEffect = m_effects[i];
-        if (pEffect) {
-            pEffect->addToEngine(m_pEngineEffectChain, i, m_enabledInputChannels);
-        }
-    }
+    // TODO(Kshitij) : remove
+    VERIFY_OR_DEBUG_ASSERT(!m_enabledInputChannels.size());
+
     sendParameterUpdate();
 }
 
 void EffectChainSlot::removeFromEngine() {
     // Order doesn't matter when removing.
     for (int i = 0; i < m_effects.size(); ++i) {
-        EffectPointer pEffect = m_effects[i];
-        if (pEffect) {
-            pEffect->removeFromEngine(m_pEngineEffectChain, i);
+        EffectSlotPointer pEffectSlot = m_effectSlots[i];
+        if (pEffectSlot) {
+            pEffectSlot->removeFromEngine();
         }
     }
 
@@ -196,76 +191,36 @@ void EffectChainSlot::setDescription(const QString& description) {
     emit(updated());
 }
 
-void EffectChainSlot::addEffect(EffectPointer pEffect) {
-    // qDebug() << debugString() << "addEffect" << pEffect;
-    if (!pEffect) {
-        // Insert empty effects to preserve chain order
-        // when loading chains with empty effects
-        m_effects.append(pEffect);
-        return;
-    }
-
-    VERIFY_OR_DEBUG_ASSERT(!m_effects.contains(pEffect)) {
-        return;
-    }
-
-    m_effects.append(pEffect);
-    pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1, m_enabledInputChannels);
-    slotChainEffectChanged(m_effects.size() - 1);
-}
-
-void EffectChainSlot::maybeLoadEffect(const unsigned int iEffectSlotNumber,
-                                      const QString& id) {
+void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
+                                 const QString& id) {
     EffectSlotPointer pEffectSlot = getEffectSlot(iEffectSlotNumber);
 
     bool loadNew = false;
-    if (pEffectSlot == nullptr || pEffectSlot->getEffect() == nullptr) {
+    if (pEffectSlot == nullptr || pEffectSlot->getManifest() == nullptr) {
         loadNew = true;
-    } else if (id != pEffectSlot->getEffect()->getManifest()->id()) {
+    } else if (id != pEffectSlot->getManifest()->id()) {
         loadNew = true;
     }
 
     if (loadNew) {
-        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(id);
-        replaceEffect(iEffectSlotNumber, pEffect);
-    }
-}
-
-void EffectChainSlot::replaceEffect(unsigned int effectSlotNumber,
-                                EffectPointer pEffect) {
-    // qDebug() << debugString() << "replaceEffect" << effectSlotNumber << pEffect;
-    while (effectSlotNumber >= static_cast<unsigned int>(m_effects.size())) {
-        if (pEffect.isNull()) {
-            return;
+        VERIFY_OR_DEBUG_ASSERT(m_pEffectsManager->instantiateEffect(id, pEffectSlot, m_enabledInputChannels)) {
+            qWarning() << "Unable to load effect.";
         }
-        m_effects.append(EffectPointer());
     }
-
-    EffectPointer pOldEffect = m_effects[effectSlotNumber];
-    if (!pOldEffect.isNull()) {
-        pOldEffect->removeFromEngine(m_pEngineEffectChain, effectSlotNumber);
-    }
-
-    m_effects.replace(effectSlotNumber, pEffect);
-    if (!pEffect.isNull()) {
-        pEffect->addToEngine(m_pEngineEffectChain, effectSlotNumber, m_enabledInputChannels);
-    }
-
-    slotChainEffectChanged(effectSlotNumber);
 }
+
 
 void EffectChainSlot::removeEffect(unsigned int effectSlotNumber) {
-    replaceEffect(effectSlotNumber, EffectPointer());
-}
+    EffectSlotPointer pEffectSlot = getEffectSlot(effectSlotNumber);
 
-void EffectChainSlot::refreshAllEffects() {
-    for (int i = 0; i < m_effects.size(); ++i) {
-        slotChainEffectChanged(i);
+    if (pEffectSlot != nullptr) {
+        pEffectSlot->loadEffectToSlot(m_pEffectsManager);
     }
 }
 
-const QList<EffectPointer>& EffectChainSlot::effects() const {
-    return m_effects;
+// kshitij : check effects()
+const QList<EffectSlotPointer>& EffectChainSlot::effectSlots() const {
+    return m_effectSlots;
 }
 
 void EffectChainSlot::sendParameterUpdate() {
@@ -300,28 +255,29 @@ void EffectChainSlot::setSuperParameterDefaultValue(double value) {
     m_pControlChainSuperParameter->setDefaultValue(value);
 }
 
-void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber) {
-    qDebug() << debugString() << "slotChainEffectChanged" << effectSlotNumber;
-    EffectSlotPointer pSlot;
-    EffectPointer pEffect;
+// void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber) {
+//     qDebug() << debugString() << "slotChainEffectChanged" << effectSlotNumber;
+//     EffectSlotPointer pSlot;
+//     EffectPointer pEffect;
 
-    if (m_effects.size() > m_slots.size()) {
-        qWarning() << debugString() << "has too few slots for effect";
-    }
-    if (effectSlotNumber < (unsigned) m_slots.size()) {
-        pSlot = m_slots.at(effectSlotNumber);
-    }
-    if (effectSlotNumber < (unsigned) m_effects.size()) {
-        pEffect = m_effects.at(effectSlotNumber);
-    }
-    if (pSlot != nullptr) {
-        pSlot->loadEffect(pEffect, m_bHasMetaknob && m_pEffectsManager->isAdoptMetaknobValueEnabled());
-    }
+//     if (m_effects.size() > m_slots.size()) {
+//         qWarning() << debugString() << "has too few slots for effect";
+//     }
+//     if (effectSlotNumber < (unsigned) m_slots.size()) {
+//         pSlot = m_slots.at(effectSlotNumber);
+//     }
+//     if (effectSlotNumber < (unsigned) m_effects.size()) {
+//         pEffect = m_effects.at(effectSlotNumber);
+//     }
+//     if (pSlot != nullptr) {
+//         // kshitij : this has not been implemented
+//         pSlot->loadEffect(pEffect, m_bHasMetaknob && m_pEffectsManager->isAdoptMetaknobValueEnabled());
+//     }
 
-    m_pControlNumEffects->forceSet(math_min(
-            static_cast<unsigned int>(m_slots.size()),
-            static_cast<unsigned int>(m_effects.size())));
-}
+//     m_pControlNumEffects->forceSet(math_min(
+//             static_cast<unsigned int>(m_slots.size()),
+//             static_cast<unsigned int>(m_effects.size())));
+// }
 
 void EffectChainSlot::clear() {
     m_pControlNumEffects->forceSet(0.0);
@@ -332,7 +288,7 @@ void EffectChainSlot::clear() {
 
 EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
     // qDebug() << debugString() << "addEffectSlot" << group;
-    EffectSlot* pEffectSlot = new EffectSlot(group, m_slots.size());
+    EffectSlot* pEffectSlot = new EffectSlot(group, m_slots.size(), m_pEngineEffectChain);
     connect(pEffectSlot, SIGNAL(clearEffect(unsigned int)),
             this, SLOT(slotClearEffect(unsigned int)));
 

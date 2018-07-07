@@ -19,8 +19,9 @@ class LV2Backend : public EffectsBackend {
     EffectManifestPointer getManifest(const QString& effectId) const;
     LV2Manifest* getLV2Manifest(const QString& effectId) const;
     bool canInstantiateEffect(const QString& effectId) const;
-    EffectPointer instantiateEffect(EffectsManager* pEffectsManager,
-                                    const QString& effectId);
+    bool instantiateEffect(EffectsManager* pEffectsManager,
+            const QString& effectId, const EffectSlotPointer pEffectSlot,
+            const QSet<ChannelHandleAndGroup>& activeChannels);
 
   private:
     void initializeProperties();

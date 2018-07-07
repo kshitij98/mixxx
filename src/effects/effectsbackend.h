@@ -7,7 +7,6 @@
 #include <QString>
 
 #include "effects/defs.h"
-#include "effects/effect.h"
 #include "effects/effectinstantiator.h"
 #include "preferences/usersettings.h"
 
@@ -24,12 +23,14 @@ class EffectsBackend : public QObject {
     EffectsBackend(QObject* pParent, EffectBackendType type);
     virtual ~EffectsBackend();
 
-    // returns a list sorted like it should be displayed in the GUI 
+    // returns a list sorted like it should be displayed in the GUI
     virtual const QList<QString> getEffectIds() const;
     virtual EffectManifestPointer getManifest(const QString& effectId) const;
     virtual bool canInstantiateEffect(const QString& effectId) const;
-    virtual EffectPointer instantiateEffect(
-            EffectsManager* pEffectsManager, const QString& effectId);
+    virtual bool instantiateEffect(
+            EffectsManager* pEffectsManager, const QString& effectId,
+            const EffectSlotPointer pEffectSlot,
+            const QSet<ChannelHandleAndGroup>& activeChannels);
 
   signals:
     void effectRegistered(EffectManifestPointer);

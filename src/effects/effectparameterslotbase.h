@@ -6,7 +6,6 @@
 #include <QString>
 
 #include "control/controlobject.h"
-#include "effects/effect.h"
 #include "util/class.h"
 
 class ControlObject;
@@ -33,7 +32,7 @@ class EffectParameterSlotBase : public QObject {
   protected:
     const unsigned int m_iParameterSlotNumber;
     QString m_group;
-    EffectPointer m_pEffect;
+    EffectSlotPointer m_pEffectSlot;
     EffectParameter* m_pEffectParameter;
 
     // Controls exposed to the rest of Mixxx
