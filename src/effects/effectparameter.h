@@ -5,6 +5,7 @@
 #include <QVariant>
 
 #include "effects/effectmanifestparameter.h"
+#include "effects/effectslot.h"
 #include "util/class.h"
 
 class Effect;
@@ -18,7 +19,7 @@ class EffectsManager;
 class EffectParameter : public QObject {
     Q_OBJECT
   public:
-    EffectParameter(EffectSlot* pEffectSlot, EffectsManager* pEffectsManager,
+    EffectParameter(EffectSlotPointer pEffectSlot, EffectsManager* pEffectsManager,
                     int iParameterNumber, EffectManifestParameterPointer pParameter);
     virtual ~EffectParameter();
 
@@ -74,7 +75,7 @@ class EffectParameter : public QObject {
     bool clampDefault();
     bool clampRanges();
 
-    EffectSlot* m_pEffectSlot;
+    EffectSlotPointer m_pEffectSlot;
     EffectsManager* m_pEffectsManager;
     int m_iParameterNumber;
     EffectManifestParameterPointer m_pParameter;

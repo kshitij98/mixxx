@@ -4,9 +4,8 @@
 #include "effects/effectsmanager.h"
 #include "util/assert.h"
 
-EffectParameter::EffectParameter(EffectSlot* pEffectSlot, EffectsManager* pEffectsManager,
-                                 int iParameterNumber,
-                                 EffectManifestParameterPointer pParameter)
+EffectParameter::EffectParameter(EffectSlotPointer pEffectSlot, EffectsManager* pEffectsManager,
+                                 int iParameterNumber, EffectManifestParameterPointer pParameter)
         : QObject(), // no parent
           m_pEffectSlot(pEffectSlot),
           m_pEffectsManager(pEffectsManager),

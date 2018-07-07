@@ -7,6 +7,7 @@
 
 #include "control/controlobject.h"
 #include "effects/effectparameterslotbase.h"
+#include "effects/effectslot.h"
 #include "util/class.h"
 
 class ControlObject;

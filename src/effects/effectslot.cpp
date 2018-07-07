@@ -14,7 +14,7 @@ const unsigned int kDefaultMaxParameters = 16;
 
 EffectSlot::EffectSlot(const QString& group,
                        const unsigned int iEffectnumber,
-                       const EngineEffectChain* pEngineEffectChain)
+                       EngineEffectChain* pEngineEffectChain)
         : m_iEffectNumber(iEffectnumber),
           m_group(group),
           m_pEngineEffectChain(pEngineEffectChain) {

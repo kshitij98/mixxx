@@ -157,7 +157,7 @@ void EffectChainSlot::addToEngine() {
 
 void EffectChainSlot::removeFromEngine() {
     // Order doesn't matter when removing.
-    for (int i = 0; i < m_effects.size(); ++i) {
+    for (int i = 0; i < m_effectSlots.size(); ++i) {
         EffectSlotPointer pEffectSlot = m_effectSlots[i];
         if (pEffectSlot) {
             pEffectSlot->removeFromEngine();
@@ -260,14 +260,14 @@ void EffectChainSlot::setSuperParameterDefaultValue(double value) {
 //     EffectSlotPointer pSlot;
 //     EffectPointer pEffect;
 
-//     if (m_effects.size() > m_slots.size()) {
+//     if (m_effectSlots.size() > m_slots.size()) {
 //         qWarning() << debugString() << "has too few slots for effect";
 //     }
 //     if (effectSlotNumber < (unsigned) m_slots.size()) {
 //         pSlot = m_slots.at(effectSlotNumber);
 //     }
-//     if (effectSlotNumber < (unsigned) m_effects.size()) {
-//         pEffect = m_effects.at(effectSlotNumber);
+//     if (effectSlotNumber < (unsigned) m_effectSlots.size()) {
+//         pEffect = m_effectSlots.at(effectSlotNumber);
 //     }
 //     if (pSlot != nullptr) {
 //         // kshitij : this has not been implemented
@@ -276,7 +276,7 @@ void EffectChainSlot::setSuperParameterDefaultValue(double value) {
 
 //     m_pControlNumEffects->forceSet(math_min(
 //             static_cast<unsigned int>(m_slots.size()),
-//             static_cast<unsigned int>(m_effects.size())));
+//             static_cast<unsigned int>(m_effectSlots.size())));
 // }
 
 void EffectChainSlot::clear() {
@@ -413,15 +413,15 @@ void EffectChainSlot::enableForInputChannel(const ChannelHandleAndGroup& handle_
           MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
 
     // TODO: Simplify by defining a method to create an EffectState for the input channel
-    for (int i = 0; i < m_effects.size(); ++i) {
+    for (int i = 0; i < m_effectSlots.size(); ++i) {
         auto& statesMap = (*pEffectStatesMapArray)[i];
-        if (m_effects[i] != nullptr) {
+        if (m_effectSlots[i] != nullptr) {
             for (const auto& outputChannel : m_pEffectsManager->registeredOutputChannels()) {
                 if (kEffectDebugOutput) {
                     qDebug() << debugString() << "EffectChain::enableForInputChannel creating EffectState for input" << handle_group << "output" << outputChannel;
                 }
                 statesMap.insert(outputChannel.handle(),
-                        m_effects[i]->createState(bufferParameters));
+                        m_effectSlots[i]->createState(bufferParameters));
             }
         } else {
             for (EffectState* pState : statesMap) {

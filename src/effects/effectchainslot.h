@@ -9,7 +9,6 @@
 
 #include "control/controlobject.h"
 #include "effects/defs.h"
-#include "effects/effectsmanager.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/engineeffectchain.h"
 #include "util/class.h"

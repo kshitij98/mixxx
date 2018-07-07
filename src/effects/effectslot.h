@@ -34,7 +34,8 @@ class EffectSlot : public QObject {
     typedef bool (*ParameterFilterFnc)(EffectParameter*);
 
     EffectSlot(const QString& group,
-               const unsigned int iEffectNumber);
+               const unsigned int iEffectNumber,
+               const EngineEffectChain* pEngineEffectChain);
     virtual ~EffectSlot();
 
     inline int getEffectSlotNumber() const {
