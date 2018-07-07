@@ -10,17 +10,29 @@
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "controllers/softtakeover.h"
-#include "effects/effectparameterslot.h"
+#include "engine/channelhandle.h"
+#include "engine/engine.h"
 #include "effects/effectbuttonparameterslot.h"
+#include "effects/effectinstantiator.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectparameter.h"
+#include "effects/effectparameterslot.h"
 #include "util/class.h"
 
+class EffectProcessor;
 class EffectSlot;
+class EffectState;
+class EffectsManager;
+class EngineEffect;
+class EngineEffectChain;
 class ControlProxy;
 
 
 class EffectSlot : public QObject {
     Q_OBJECT
   public:
+    typedef bool (*ParameterFilterFnc)(EffectParameter*);
+
     EffectSlot(const QString& group,
                const unsigned int iEffectNumber);
     virtual ~EffectSlot();
@@ -38,7 +50,7 @@ class EffectSlot : public QObject {
     EffectParameterSlotPointer getEffectParameterSlot(unsigned int slotNumber);
     EffectParameterSlotPointer getEffectParameterSlotForConfigKey(unsigned int slotNumber);
     inline const QList<EffectParameterSlotPointer>& getEffectParameterSlots() const {
-        return m_parameters;
+        return m_parameterSlots;
     };
 
     unsigned int numButtonParameterSlots() const;
@@ -107,9 +119,9 @@ class EffectSlot : public QObject {
     void setMetaParameter(double v, bool force = false);
 
     void loadEffectToSlot(EffectsManager* pEffectsManager = nullptr,
-            EffectManifestPointer pManifest = nullptr,
-            EffectInstantiatorPointer pInstantiator = nullptr,
-            const QSet<ChannelHandleAndGroup>& activeChannels = nullptr);
+            EffectManifestPointer pManifest = EffectManifestPointer(),
+            EffectInstantiatorPointer pInstantiator = EffectInstantiatorPointer(),
+            const QSet<ChannelHandleAndGroup>& activeChannels = QSet<ChannelHandleAndGroup>());
     // kshitij : check if bool adoptMetaknobPosition is needed here
     // kshitij : add a default value for adoptMeta...
 

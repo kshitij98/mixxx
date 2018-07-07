@@ -11,12 +11,13 @@
 #include "effects/defs.h"
 #include "effects/effectsmanager.h"
 #include "engine/channelhandle.h"
-#include "engine/engineeffectchain.h"
+#include "engine/effects/engineeffectchain.h"
 #include "util/class.h"
 
 class ControlPushButton;
 class ControlEncoder;
 class EffectChainSlot;
+class EffectsManager;
 
 class EffectChainSlot : public QObject {
     Q_OBJECT
@@ -37,7 +38,7 @@ class EffectChainSlot : public QObject {
 
     void registerInputChannel(const ChannelHandleAndGroup& handle_group,
                               const double initialValue = 0.0);
-    QSet<ChannelHandleAndGroup>& getActiveChannels() const {
+    QSet<ChannelHandleAndGroup> getActiveChannels() const {
         return m_enabledInputChannels;
     }
 

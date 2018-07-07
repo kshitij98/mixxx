@@ -117,7 +117,7 @@ class EffectsManager : public QObject {
             const QString& effectId,
             EffectManifestPointer* ppManifest, EffectsBackend** ppBackend) const;
     EffectManifestPointer getEffectManifest(const QString& effectId) const;
-    void instantiateEffect(const QString& effectId
+    void instantiateEffect(const QString& effectId,
             const EffectSlotPointer pEffectSlot,
             const QSet<ChannelHandleAndGroup>& activeChannels);
 

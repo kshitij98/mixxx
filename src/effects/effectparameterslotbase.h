@@ -6,6 +6,7 @@
 #include <QString>
 
 #include "control/controlobject.h"
+#include "effects/effectparameter.h"
 #include "util/class.h"
 
 class ControlObject;
@@ -20,7 +21,7 @@ class EffectParameterSlotBase : public QObject {
     QString name() const;
     QString shortName() const;
     QString description() const;
-    EffectManifestParameterPointer getManifest();
+    EffectManifestPointer getManifest();
 
     virtual QDomElement toXml(QDomDocument* doc) const = 0;
     virtual void loadParameterSlotFromXml(const QDomElement& parameterElement) = 0;
