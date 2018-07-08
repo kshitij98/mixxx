@@ -72,19 +72,12 @@ EffectSlot::EffectSlot(const QString& group,
 
     m_pSoftTakeover = new SoftTakeover();
 
-    clear();
+    unloadEffect();
 }
 
 EffectSlot::~EffectSlot() {
     //qDebug() << debugString() << "destroyed";
-    clear();
-
-    m_parametersById.clear();
-    for (int i = 0; i < m_parameters.size(); ++i) {
-        EffectParameter* pParameter = m_parameters.at(i);
-        m_parameters[i] = NULL;
-        delete pParameter;
-    }
+    unloadEffect();
 
     delete m_pControlLoaded;
     delete m_pControlNumParameters;
@@ -100,8 +93,7 @@ EffectSlot::~EffectSlot() {
     delete m_pSoftTakeover;
 }
 
-void EffectSlot::addToEngine(EffectsManager* pEffectsManager,
-        EffectInstantiatorPointer pInstantiator,
+void EffectSlot::addToEngine(EffectInstantiatorPointer pInstantiator,
         const QSet<ChannelHandleAndGroup>& activeInputChannels) {
     VERIFY_OR_DEBUG_ASSERT(m_pManifest != nullptr) {
         return;
@@ -113,7 +105,7 @@ void EffectSlot::addToEngine(EffectsManager* pEffectsManager,
 
     m_pEngineEffect = new EngineEffect(m_pManifest,
             activeInputChannels,
-            pEffectsManager,
+            m_pEffectsManager,
             pInstantiator);
 
     EffectsRequest* request = new EffectsRequest();
@@ -125,9 +117,6 @@ void EffectSlot::addToEngine(EffectsManager* pEffectsManager,
 }
 
 void EffectSlot::removeFromEngine() {
-    VERIFY_OR_DEBUG_ASSERT(pChain) {
-        return;
-    }
     VERIFY_OR_DEBUG_ASSERT(m_pEngineEffect != nullptr) {
         return;
     }
@@ -309,39 +298,29 @@ EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsign
     return m_buttonParameters[slotNumber];
 }
 
-void EffectSlot::loadEffectToSlot(EffectsManager* pEffectsManager,
-           EffectManifestPointer pManifest,
-           EffectInstantiatorPointer pInstantiator,
-           const QSet<ChannelHandleAndGroup>& activeChannels) {
+bool EffectSlot::loadEffect(EffectManifestPointer pManifest, EffectInstantiatorPointer pInstantiator,
+        const QSet<ChannelHandleAndGroup>& activeChannels) {
     // Remove an effect if already loaded in slot
     if (m_pEngineEffect != nullptr) {
-        clear();
-        for (int i = 0; i < m_parameters.size(); ++i) {
-            EffectParameter* pParameter = m_parameters.at(i);
-            m_parameters[i] = NULL;
-            delete pParameter;
-        }
-        removeFromEngine();
+        unloadEffect();
     }
 
     m_pManifest = pManifest;
 
-    // Removing the loaded effect
-    if (m_pManifest == nullptr) {
-        return;
+    VERIFY_OR_DEBUG_ASSERT(m_pManifest != nullptr) {
+        return false;
     }
 
     for (const auto& pManifestParameter: m_pManifest->parameters()) {
         EffectParameter* pParameter = new EffectParameter(
-                this, pEffectsManager, m_parameters.size(), pManifestParameter);
+                this, m_pEffectsManager, m_parameters.size(), pManifestParameter);
         m_parameters.append(pParameter);
         if (m_parametersById.contains(pParameter->id())) {
             qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
         }
         m_parametersById[pParameter->id()] = pParameter;
     }
-
-    addToEngine(pEffectsManager, pInstantiator, activeChannels);
+    addToEngine(pInstantiator, activeChannels);
 
     m_pControlLoaded->forceSet(1.0);
 
@@ -358,25 +337,25 @@ void EffectSlot::loadEffectToSlot(EffectsManager* pEffectsManager,
     }
 
     for (const auto& pParameter : m_parameterSlots) {
-        // kshitij : continue from here
-        pParameter->loadEffect(pEffectSlot);
+        pParameter->loadEffect(this);
     }
     for (const auto& pParameter : m_buttonParameters) {
-        pParameter->loadEffect(pEffectSlot);
+        pParameter->loadEffect(this);
     }
 
     if (m_pEffectsManager->isAdoptMetaknobValueEnabled()) {
         slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
     } else {
-        m_pControlMetaParameter->set(pEffect->getMetaknobDefault());
-        slotEffectMetaParameter(pEffect->getMetaknobDefault(), true);
+        m_pControlMetaParameter->set(getMetaknobDefault());
+        slotEffectMetaParameter(getMetaknobDefault(), true);
     }
 
     emit(updated());
+
+    return true;
 }
 
-
-void EffectSlot::clear() {
+void EffectSlot::unloadEffect() {
     m_pControlLoaded->forceSet(0.0);
     m_pControlNumParameters->forceSet(0.0);
     m_pControlNumButtonParameters->forceSet(0.0);
@@ -386,6 +365,15 @@ void EffectSlot::clear() {
     for (const auto& pParameter : m_buttonParameters) {
         pParameter->clear();
     }
+
+    m_parametersById.clear();
+    for (int i = 0; i < m_parameters.size(); ++i) {
+        EffectParameter* pParameter = m_parameters.at(i);
+        m_parameters[i] = NULL;
+        delete pParameter;
+    }
+
+    removeFromEngine();
     emit(updated());
 }
 
@@ -453,105 +441,105 @@ void EffectSlot::slotEffectMetaParameter(double v, bool force) {
 
 QDomElement EffectSlot::toXml(QDomDocument* doc) const {
     QDomElement effectElement = doc->createElement(EffectXml::Effect);
-    if (!m_pEffect) {
-        return effectElement;
-    }
+    // if (!m_pEffect) {
+        // return effectElement;
+    // }
 
-    QDomElement metaKnobElement = doc->createElement(EffectXml::EffectMetaParameter);
-    XmlParse::addElement(*doc, effectElement,
-                         EffectXml::EffectMetaParameter,
-                         QString::number(m_pControlMetaParameter->get()));
-    EffectManifestPointer pManifest = m_pEffect->getManifest();
-    XmlParse::addElement(*doc, effectElement,
-                         EffectXml::EffectId, pManifest->id());
-    XmlParse::addElement(*doc, effectElement,
-                         EffectXml::EffectVersion, pManifest->version());
+    // QDomElement metaKnobElement = doc->createElement(EffectXml::EffectMetaParameter);
+    // XmlParse::addElement(*doc, effectElement,
+    //                      EffectXml::EffectMetaParameter,
+    //                      QString::number(m_pControlMetaParameter->get()));
+    // EffectManifestPointer pManifest = m_pEffect->getManifest();
+    // XmlParse::addElement(*doc, effectElement,
+    //                      EffectXml::EffectId, pManifest->id());
+    // XmlParse::addElement(*doc, effectElement,
+    //                      EffectXml::EffectVersion, pManifest->version());
 
-    QDomElement parametersElement = doc->createElement(EffectXml::ParametersRoot);
+    // QDomElement parametersElement = doc->createElement(EffectXml::ParametersRoot);
 
-    for (const auto& pParameter : m_parameterSlots) {
-        QDomElement parameterElement = pParameter->toXml(doc);
-        if (!parameterElement.hasChildNodes()) {
-            continue;
-        }
-        EffectManifestParameterPointer manifest = pParameter->getManifest();
-        if (!manifest) {
-            continue;
-        }
-        XmlParse::addElement(*doc, parameterElement,
-                             EffectXml::ParameterId,
-                             manifest->id());
-        parametersElement.appendChild(parameterElement);
-    }
-    for (const auto& pParameter : m_buttonParameters) {
-        QDomElement parameterElement = pParameter->toXml(doc);
-        if (!parameterElement.hasChildNodes()) {
-            continue;
-        }
-        EffectManifestParameterPointer manifest = pParameter->getManifest();
-        if (!manifest) {
-            continue;
-        }
-        XmlParse::addElement(*doc, parameterElement,
-                             EffectXml::ParameterId,
-                             pParameter->getManifest()->id());
-        parametersElement.appendChild(parameterElement);
-    }
+    // for (const auto& pParameter : m_parameterSlots) {
+    //     QDomElement parameterElement = pParameter->toXml(doc);
+    //     if (!parameterElement.hasChildNodes()) {
+    //         continue;
+    //     }
+    //     EffectManifestParameterPointer manifest = pParameter->getManifest();
+    //     if (!manifest) {
+    //         continue;
+    //     }
+    //     XmlParse::addElement(*doc, parameterElement,
+    //                          EffectXml::ParameterId,
+    //                          manifest->id());
+    //     parametersElement.appendChild(parameterElement);
+    // }
+    // for (const auto& pParameter : m_buttonParameters) {
+    //     QDomElement parameterElement = pParameter->toXml(doc);
+    //     if (!parameterElement.hasChildNodes()) {
+    //         continue;
+    //     }
+    //     EffectManifestParameterPointer manifest = pParameter->getManifest();
+    //     if (!manifest) {
+    //         continue;
+    //     }
+    //     XmlParse::addElement(*doc, parameterElement,
+    //                          EffectXml::ParameterId,
+    //                          pParameter->getManifest()->id());
+    //     parametersElement.appendChild(parameterElement);
+    // }
 
-    effectElement.appendChild(parametersElement);
+    // effectElement.appendChild(parametersElement);
 
     return effectElement;
 }
 
 void EffectSlot::loadEffectSlotFromXml(const QDomElement& effectElement) {
-    if (!m_pEffect) {
-        return;
-    }
+    // if (!m_pEffect) {
+    //     return;
+    // }
 
-    if (!effectElement.hasChildNodes()) {
-        return;
-    }
+    // if (!effectElement.hasChildNodes()) {
+    //     return;
+    // }
 
-    QDomElement effectIdElement = XmlParse::selectElement(effectElement,
-                                                          EffectXml::EffectId);
-    if (m_pEffect->getManifest()->id() != effectIdElement.text()) {
-        qWarning() << "EffectSlot::loadEffectSlotFromXml"
-                   << "effect ID in XML does not match presently loaded effect, ignoring.";
-        return;
-    }
+    // QDomElement effectIdElement = XmlParse::selectElement(effectElement,
+    //                                                       EffectXml::EffectId);
+    // if (m_pEffect->getManifest()->id() != effectIdElement.text()) {
+    //     qWarning() << "EffectSlot::loadEffectSlotFromXml"
+    //                << "effect ID in XML does not match presently loaded effect, ignoring.";
+    //     return;
+    // }
 
-    m_pControlMetaParameter->set(XmlParse::selectNodeDouble(
-            effectElement, EffectXml::EffectMetaParameter));
-    QDomElement parametersElement = XmlParse::selectElement(
-            effectElement, EffectXml::ParametersRoot);
-    if (!parametersElement.hasChildNodes()) {
-        return;
-    }
+    // m_pControlMetaParameter->set(XmlParse::selectNodeDouble(
+    //         effectElement, EffectXml::EffectMetaParameter));
+    // QDomElement parametersElement = XmlParse::selectElement(
+    //         effectElement, EffectXml::ParametersRoot);
+    // if (!parametersElement.hasChildNodes()) {
+    //     return;
+    // }
 
-    QMap<QString, EffectParameterSlotBasePointer> parametersById;
-    for (const auto& pParameter : m_parameterSlots) {
-        EffectManifestParameterPointer manifest = pParameter->getManifest();
-        if (manifest) {
-            parametersById.insert(manifest->id(), pParameter);
-        }
-    }
-    for (const auto& pParameter : m_buttonParameters) {
-        EffectManifestParameterPointer manifest = pParameter->getManifest();
-        if (manifest) {
-            parametersById.insert(manifest->id(), pParameter);
-        }
-    }
+    // QMap<QString, EffectParameterSlotBasePointer> parametersById;
+    // for (const auto& pParameter : m_parameterSlots) {
+    //     EffectManifestParameterPointer manifest = pParameter->getManifest();
+    //     if (manifest) {
+    //         parametersById.insert(manifest->id(), pParameter);
+    //     }
+    // }
+    // for (const auto& pParameter : m_buttonParameters) {
+    //     EffectManifestParameterPointer manifest = pParameter->getManifest();
+    //     if (manifest) {
+    //         parametersById.insert(manifest->id(), pParameter);
+    //     }
+    // }
 
-    QDomNodeList parametersNodeList = parametersElement.childNodes();
-    for (int i = 0; i < parametersNodeList.size(); ++i) {
-        QDomNode parameterNode = parametersNodeList.at(i);
-        if (parameterNode.isElement()) {
-            const QString id = XmlParse::selectNodeQString(parameterNode,
-                                                           EffectXml::ParameterId);
-            EffectParameterSlotBasePointer pParameterSlot = parametersById.value(id);
-            if (pParameterSlot != nullptr) {
-                pParameterSlot->loadParameterSlotFromXml(parameterNode.toElement());
-            }
-        }
-    }
+    // QDomNodeList parametersNodeList = parametersElement.childNodes();
+    // for (int i = 0; i < parametersNodeList.size(); ++i) {
+    //     QDomNode parameterNode = parametersNodeList.at(i);
+    //     if (parameterNode.isElement()) {
+    //         const QString id = XmlParse::selectNodeQString(parameterNode,
+    //                                                        EffectXml::ParameterId);
+    //         EffectParameterSlotBasePointer pParameterSlot = parametersById.value(id);
+    //         if (pParameterSlot != nullptr) {
+    //             pParameterSlot->loadParameterSlotFromXml(parameterNode.toElement());
+    //         }
+    //     }
+    // }
 }

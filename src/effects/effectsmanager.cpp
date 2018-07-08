@@ -133,6 +133,55 @@ void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handle_g
     m_registeredOutputChannels.insert(handle_group);
 }
 
+void EffectsManager::loadStandardEffect(const int iChainSlotNumber,
+        const int iEffectSlotNumber, const QString& effectId,
+        EffectBackendType backendType) {
+    auto pChainSlot = getStandardEffectChainSlot(iChainSlotNumber);
+    if (pChainSlot) {
+        loadEffect(pChainSlot, iEffectSlotNumber, effectId, backendType);
+    }
+}
+
+void EffectsManager::loadOutputEffect(const int iEffectSlotNumber,
+    const QString& effectId, EffectBackendType backendType) {
+    if (m_outputEffectChainSlot) {
+        loadEffect(m_outputEffectChainSlot, iEffectSlotNumber, effectId, backendType);
+    }
+}
+
+void EffectsManager::loadQuickEffect(const QString& group,
+        const int iEffectSlotNumber, const QString& effectId,
+        EffectBackendType backendType) {
+    auto pChainSlot = getQuickEffectChainSlot(group);
+    if (pChainSlot) {
+        loadEffect(pChainSlot, iEffectSlotNumber, effectId, backendType);
+    }
+}
+
+void EffectsManager::loadEqualizerEffect(const QString& group,
+        const int iEffectSlotNumber, const QString& effectId,
+        EffectBackendType backendType) {
+    auto pChainSlot = getEqualizerEffectChainSlot(group);
+    if (pChainSlot) {
+        loadEffect(pChainSlot, iEffectSlotNumber, effectId, backendType);
+    }
+}
+
+void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
+        const int iEffectSlotNumber, const QString& effectId,
+        EffectBackendType backendType) {
+    foreach (EffectsBackend* pBackend, m_effectsBackends) {
+        if (pBackend->canInstantiateEffect(effectId) &&
+                (backendType == EffectBackendType::Unknown ||
+                    pBackend->getType() == backendType)) {
+            EffectManifestPointer pManifest = pBackend->getManifest(effectId);
+            EffectInstantiatorPointer pInstantiator = pBackend->getInstantiator(effectId);
+
+            pChainSlot->loadEffect(iEffectSlotNumber, effectId, pManifest, pInstantiator);
+        }
+    }
+}
+
 const QList<EffectManifestPointer> EffectsManager::getAvailableEffectManifestsFiltered(
         EffectManifestFilterFnc filter) const {
     if (filter == nullptr) {
@@ -208,20 +257,6 @@ EffectManifestPointer EffectsManager::getEffectManifest(const QString& effectId)
     EffectsBackend* pEffectBackend;
     getEffectManifestAndBackend(effectId, &pMainifest, &pEffectBackend);
     return pMainifest;
-}
-
-bool EffectsManager::instantiateEffect(const QString& effectId,
-        const EffectSlotPointer pEffectSlot,
-        const QSet<ChannelHandleAndGroup>& activeChannels) {
-    if (effectId.isEmpty()) {
-        return false;
-    }
-    for (const auto& pBackend: m_effectsBackends) {
-        if (pBackend->canInstantiateEffect(effectId)) {
-            return pBackend->instantiateEffect(this, effectId, pEffectSlot, activeChannels);
-        }
-    }
-    return false;
 }
 
 void EffectsManager::addStandardEffectChainSlots() {

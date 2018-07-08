@@ -9,8 +9,8 @@
 
 #include "control/controlobject.h"
 #include "effects/defs.h"
+#include "effects/effectinstantiator.h"
 #include "engine/channelhandle.h"
-#include "engine/effects/engineeffectchain.h"
 #include "util/class.h"
 
 class ControlPushButton;
@@ -84,10 +84,9 @@ class EffectChainSlot : public QObject {
     }
 
     void loadEffect(const unsigned int iEffectSlotNumber,
-                    const QString& id);
+                    const QString& id, EffectManifestPointer pManifest,
+                    EffectInstantiatorPointer pInstantiator);
     void removeEffect(unsigned int effectSlotNumber);
-
-    const QList<EffectSlotPointer>& effectSlots() const;
 
   signals:
     // Signal that whoever is in charge of this EffectChainSlot should load the

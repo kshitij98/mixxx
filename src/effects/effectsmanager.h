@@ -68,6 +68,21 @@ class EffectsManager : public QObject {
         return m_registeredOutputChannels;
     }
 
+    void loadStandardEffect(const int iChainSlotNumber,
+            const int iEffectSlotNumber, const QString& effectId,
+            EffectBackendType backendType = EffectBackendType::Unknown);
+
+    void loadOutputEffect(const int iEffectSlotNumber, const QString& effectId,
+            EffectBackendType backendType = EffectBackendType::Unknown);
+
+    void loadQuickEffect(const QString& group,
+            const int iEffectSlotNumber, const QString& effectId,
+            EffectBackendType backendType = EffectBackendType::Unknown);
+
+    void loadEqualizerEffect(const QString& group,
+            const int iEffectSlotNumber, const QString& effectId,
+            EffectBackendType backendType = EffectBackendType::Unknown);
+
     void addStandardEffectChainSlots();
     EffectChainSlotPointer getStandardEffectChainSlot(int unitNumber) const;
 
@@ -117,9 +132,6 @@ class EffectsManager : public QObject {
             const QString& effectId,
             EffectManifestPointer* ppManifest, EffectsBackend** ppBackend) const;
     EffectManifestPointer getEffectManifest(const QString& effectId) const;
-    bool instantiateEffect(const QString& effectId,
-            const EffectSlotPointer pEffectSlot,
-            const QSet<ChannelHandleAndGroup>& activeChannels);
 
     void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
     bool getEffectVisibility(EffectManifestPointer pManifest);
@@ -145,6 +157,10 @@ class EffectsManager : public QObject {
     QString debugString() const {
         return "EffectsManager";
     }
+
+    void loadEffect(EffectChainSlotPointer pChainSlot,
+            const int iEffectSlotNumber, const QString& effectId,
+            EffectBackendType backendType = EffectBackendType::Unknown);
 
     void processEffectsResponses();
     void collectGarbage(const EffectsRequest* pResponse);

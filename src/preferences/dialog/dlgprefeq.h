@@ -98,8 +98,6 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     QList<QSlider*> m_masterEQSliders;
     QList<QLabel*> m_masterEQValues;
     QList<QLabel*> m_masterEQLabels;
-
-    // kshitij : what is a weak pointer
     QWeakPointer<EffectSlot> m_pEffectMasterEQ;
 
     bool m_bEqAutoReset;

@@ -192,35 +192,19 @@ void EffectChainSlot::setDescription(const QString& description) {
 }
 
 void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
-                                 const QString& id) {
+        const QString& id, EffectManifestPointer pManifest,
+        EffectInstantiatorPointer pInstantiator) {
     EffectSlotPointer pEffectSlot = getEffectSlot(iEffectSlotNumber);
 
-    bool loadNew = false;
-    if (pEffectSlot == nullptr || pEffectSlot->getManifest() == nullptr) {
-        loadNew = true;
-    } else if (id != pEffectSlot->getManifest()->id()) {
-        loadNew = true;
+    if (pEffectSlot == nullptr) {
+        return;
     }
 
-    if (loadNew) {
-        VERIFY_OR_DEBUG_ASSERT(m_pEffectsManager->instantiateEffect(id, pEffectSlot, m_enabledInputChannels)) {
-            qWarning() << "Unable to load effect.";
+    if (pEffectSlot->getManifest() == nullptr || pEffectSlot->getManifest()->id() != id) {
+        VERIFY_OR_DEBUG_ASSERT(pEffectSlot->loadEffect(pManifest, pInstantiator, m_enabledInputChannels)) {
+            qWarning() << "WARNING: Unable to load effect " << id;
         }
     }
-}
-
-
-void EffectChainSlot::removeEffect(unsigned int effectSlotNumber) {
-    EffectSlotPointer pEffectSlot = getEffectSlot(effectSlotNumber);
-
-    if (pEffectSlot != nullptr) {
-        pEffectSlot->loadEffectToSlot(m_pEffectsManager);
-    }
-}
-
-// kshitij : check effects()
-const QList<EffectSlotPointer>& EffectChainSlot::effectSlots() const {
-    return m_effectSlots;
 }
 
 void EffectChainSlot::sendParameterUpdate() {
@@ -340,7 +324,7 @@ EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
 void EffectChainSlot::slotControlClear(double v) {
     if (v > 0) {
         for (EffectSlotPointer pSlot : m_slots) {
-            pSlot->clear();
+            pSlot->unloadEffect();
         }
         clear();
     }

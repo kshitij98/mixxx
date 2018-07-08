@@ -68,7 +68,7 @@ class EffectSlot : public QObject {
     void syncSofttakeover();
 
     // Unload the currently loaded effect
-    void clear();
+    void unloadEffect();
 
     const QString& getGroup() const {
         return m_group;
@@ -102,8 +102,7 @@ class EffectSlot : public QObject {
 
     EngineEffect* getEngineEffect();
 
-    void addToEngine(EffectsManager* pEffectsManager,
-            EffectInstantiatorPointer pInstantiator,
+    void addToEngine(EffectInstantiatorPointer pInstantiator,
             const QSet<ChannelHandleAndGroup>& activeInputChannels);
     void removeFromEngine();
     void updateEngineState();
@@ -119,12 +118,8 @@ class EffectSlot : public QObject {
     // Request that this EffectSlot load the given Effect
     void setMetaParameter(double v, bool force = false);
 
-    void loadEffectToSlot(EffectsManager* pEffectsManager = nullptr,
-            EffectManifestPointer pManifest = EffectManifestPointer(),
-            EffectInstantiatorPointer pInstantiator = EffectInstantiatorPointer(),
-            const QSet<ChannelHandleAndGroup>& activeChannels = QSet<ChannelHandleAndGroup>());
-    // kshitij : check if bool adoptMetaknobPosition is needed here
-    // kshitij : add a default value for adoptMeta...
+    bool loadEffect(EffectManifestPointer pManifest, EffectInstantiatorPointer pInstantiator,
+            const QSet<ChannelHandleAndGroup>& activeChannels);
 
     // NOTE(Kshitij) : remove
     // void slotEnabled(double v);

@@ -7,6 +7,8 @@
 #include <QString>
 
 #include "effects/defs.h"
+// kshitij :: removed
+#include "effects/effectslot.h"
 #include "effects/effectinstantiator.h"
 #include "preferences/usersettings.h"
 
@@ -23,14 +25,15 @@ class EffectsBackend : public QObject {
     EffectsBackend(QObject* pParent, EffectBackendType type);
     virtual ~EffectsBackend();
 
+    EffectBackendType getType() const {
+        return m_type;
+    }
+
     // returns a list sorted like it should be displayed in the GUI
     virtual const QList<QString> getEffectIds() const;
     virtual EffectManifestPointer getManifest(const QString& effectId) const;
+    virtual EffectInstantiatorPointer getInstantiator(const QString& effectId) const;
     virtual bool canInstantiateEffect(const QString& effectId) const;
-    virtual bool instantiateEffect(
-            EffectsManager* pEffectsManager, const QString& effectId,
-            const EffectSlotPointer pEffectSlot,
-            const QSet<ChannelHandleAndGroup>& activeChannels);
 
   signals:
     void effectRegistered(EffectManifestPointer);

@@ -3,7 +3,8 @@
 #include "control/controleffectknob.h"
 #include "effects/effectparameterslot.h"
 #include "effects/effectxmlelements.h"
-#include "effects/effectslot.h"
+// kshitij : Check this file
+// #include "effects/effectslot.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "controllers/softtakeover.h"

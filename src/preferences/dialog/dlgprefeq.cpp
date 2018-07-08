@@ -463,12 +463,13 @@ void DlgPrefEQ::applySelections() {
         }
         if (needLoad) {
             QString chainSlotGroup = EqualizerEffectChainSlot::formatEffectChainSlotGroup(group);
+
             EffectChainSlotPointer pChainSlot =
                     m_pEffectsManager->getEqualizerEffectChainSlot(chainSlotGroup);
 
             VERIFY_OR_DEBUG_ASSERT(pChainSlot != nullptr);
 
-            pChainSlot->loadEffect(0, effectId);
+            m_pEffectsManager->loadEqualizerEffect(chainSlotGroup, 0, effectId, EffectBackendType::Unknown);
             pChainSlot->getEffectSlot(0)->setEnabled(true);
 
             m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
@@ -517,7 +518,7 @@ void DlgPrefEQ::applySelections() {
 
             VERIFY_OR_DEBUG_ASSERT(pChainSlot != nullptr);
 
-            pChainSlot->loadEffect(0, effectId);
+            m_pEffectsManager->loadQuickEffect(chainSlotGroup, 0, effectId, EffectBackendType::Unknown);
             pChainSlot->getEffectSlot(0)->setEnabled(true);
 
             // Force update metaknobs and parameters to match state of superknob
@@ -728,10 +729,10 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
     }
 
     auto pChainSlot = m_pEffectsManager->getOutputEffectChainSlot();
-    auto pEffectSlot = pChainSlot->getEffectSlot(0);
-
     if (pChainSlot) {
-        pChainSlot->loadEffect(0, effectId);
+        m_pEffectsManager->loadOutputEffect(0, effectId, EffectBackendType::Unknown);
+
+        auto pEffectSlot = pChainSlot->getEffectSlot(0);
         pEffectSlot->setEnabled(true);
 
         if (pEffectSlot) {

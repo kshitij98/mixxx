@@ -77,7 +77,7 @@ void WEffectSelector::populate() {
 
 void WEffectSelector::slotEffectSelected(int newIndex) {
     const QString id = itemData(newIndex).toString();
-    m_pChainSlot->loadEffect(m_pEffectSlot->getEffectSlotNumber(0), id);
+    m_pEffectsManager->loadEffect(m_pChainSlot, m_pEffectSlot->getEffectSlotNumber(), id)
     setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
 }
 
