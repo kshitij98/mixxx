@@ -136,7 +136,7 @@ class EffectSlot : public QObject {
     // NOTE(Kshitij) : remove
     void clearEffect(unsigned int iEffectNumber);
 
-    void updated();
+    void effectChanged();
 
   private:
     QString debugString() const {

@@ -196,14 +196,12 @@ void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
         EffectInstantiatorPointer pInstantiator) {
     EffectSlotPointer pEffectSlot = getEffectSlot(iEffectSlotNumber);
 
-    if (pEffectSlot == nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pManifest != nullptr && pInstantiator != nullptr && pEffectSlot != nullptr) {
         return;
     }
 
     if (pEffectSlot->getManifest() == nullptr || pEffectSlot->getManifest()->id() != id) {
-        VERIFY_OR_DEBUG_ASSERT(pEffectSlot->loadEffect(pManifest, pInstantiator, m_enabledInputChannels)) {
-            qWarning() << "WARNING: Unable to load effect " << id;
-        }
+        pEffectSlot->loadEffect(pManifest, pInstantiator, m_enabledInputChannels);
     }
 }
 

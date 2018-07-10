@@ -170,7 +170,7 @@ void EffectsManager::loadEqualizerEffect(const QString& group,
 void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
         const int iEffectSlotNumber, const QString& effectId,
         EffectBackendType backendType) {
-    foreach (EffectsBackend* pBackend, m_effectsBackends) {
+    for (auto pBackend : m_effectsBackends) {
         if (pBackend->canInstantiateEffect(effectId) &&
                 (backendType == EffectBackendType::Unknown ||
                     pBackend->getType() == backendType)) {

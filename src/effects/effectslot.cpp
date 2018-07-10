@@ -305,17 +305,17 @@ bool EffectSlot::loadEffect(EffectManifestPointer pManifest, EffectInstantiatorP
         unloadEffect();
     }
 
-    m_pManifest = pManifest;
-
-    VERIFY_OR_DEBUG_ASSERT(m_pManifest != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pManifest != nullptr && pInstantiator != nullptr) {
         return false;
     }
+
+    m_pManifest = pManifest;
 
     for (const auto& pManifestParameter: m_pManifest->parameters()) {
         EffectParameter* pParameter = new EffectParameter(
                 this, m_pEffectsManager, m_parameters.size(), pManifestParameter);
         m_parameters.append(pParameter);
-        if (m_parametersById.contains(pParameter->id())) {
+        VERIFY_OR_DEBUG_ASSERT(m_parametersById.contains(pParameter->id())) {
             qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
         }
         m_parametersById[pParameter->id()] = pParameter;
@@ -350,7 +350,7 @@ bool EffectSlot::loadEffect(EffectManifestPointer pManifest, EffectInstantiatorP
         slotEffectMetaParameter(getMetaknobDefault(), true);
     }
 
-    emit(updated());
+    emit(effectChanged());
 
     return true;
 }
@@ -374,7 +374,7 @@ void EffectSlot::unloadEffect() {
     }
 
     removeFromEngine();
-    emit(updated());
+    emit(effectChanged());
 }
 
 void EffectSlot::slotPrevEffect(double v) {

@@ -27,7 +27,7 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
     if (m_pEffectSlot != nullptr) {
         connect(m_pEffectsManager, SIGNAL(visibleEffectsUpdated()),
                 this, SLOT(populate()));
-        connect(m_pEffectSlot.data(), SIGNAL(updated()),
+        connect(m_pEffectSlot.data(), SIGNAL(effectChanged()),
                 this, SLOT(slotEffectUpdated()));
         connect(this, SIGNAL(currentIndexChanged(int)),
                 this, SLOT(slotEffectSelected(int)));
