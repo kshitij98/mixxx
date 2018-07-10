@@ -3,6 +3,7 @@
 
 #include <QDebug>
 
+#include "effects/defs.h"
 #include "control/controlpushbutton.h"
 #include "control/controlencoder.h"
 #include "control/controlproxy.h"

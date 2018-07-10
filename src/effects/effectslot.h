@@ -12,6 +12,7 @@
 #include "controllers/softtakeover.h"
 #include "engine/channelhandle.h"
 #include "engine/engine.h"
+#include "engine/effects/engineeffect.h"
 #include "effects/effectbuttonparameterslot.h"
 #include "effects/effectinstantiator.h"
 #include "effects/effectmanifest.h"
@@ -26,6 +27,8 @@ class EffectsManager;
 class EngineEffect;
 class EngineEffectChain;
 class ControlProxy;
+class EffectParameter;
+class EffectParameterSlot;
 
 
 class EffectSlot : public QObject {
