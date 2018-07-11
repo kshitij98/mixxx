@@ -30,15 +30,15 @@ class ControlProxy;
 class EffectParameter;
 class EffectParameterSlot;
 
-
 class EffectSlot : public QObject {
     Q_OBJECT
   public:
     typedef bool (*ParameterFilterFnc)(EffectParameter*);
 
     EffectSlot(const QString& group,
+               EffectsManager* pEffectsManager,
                const unsigned int iEffectNumber,
-               const EngineEffectChain* pEngineEffectChain);
+               EngineEffectChain* pEngineEffectChain);
     virtual ~EffectSlot();
 
     inline int getEffectSlotNumber() const {
@@ -130,7 +130,7 @@ class EffectSlot : public QObject {
     void slotPrevEffect(double v);
     void slotClear(double v);
     void slotEffectSelector(double v);
-    void slotEffectEnabledChanged(bool enabled);
+    // void slotEffectEnabledChanged(bool enabled);
     void slotEffectMetaParameter(double v, bool force = false);
 
   signals:

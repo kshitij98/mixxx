@@ -7,13 +7,14 @@
 
 #include "control/controlobject.h"
 // kshitij : removed
-#include "effects/effectslot.h"
+// #include "effects/effectslot.h"
 #include "effects/effectmanifest.h"
 #include "util/class.h"
 
 class ControlObject;
 class ControlPushButton;
 class EffectParameter;
+class EffectSlot;
 
 class EffectParameterSlotBase : public QObject {
     Q_OBJECT

@@ -205,6 +205,25 @@ void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
     }
 }
 
+void EffectChainSlot::unloadEffect(const unsigned int iEffectSlotNumber) {
+    EffectSlotPointer pEffectSlot = getEffectSlot(iEffectSlotNumber);
+
+    VERIFY_OR_DEBUG_ASSERT(pEffectSlot != nullptr) {
+        return;
+    }
+
+    pEffectSlot->unloadEffect();
+}
+
+void EffectChainSlot::refreshAllEffects() {
+    for (int i=0 ; i<m_effectSlots.size() ; ++i) {
+        auto pEffectSlot = m_effectSlots.at(i);
+        if (pEffectSlot->isLoaded()) {
+            m_pEffectsManager->loadEffect(EffectChainSlotPointer(this), i, pEffectSlot->getManifest()->id());
+        }
+    }
+}
+
 void EffectChainSlot::sendParameterUpdate() {
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS;
@@ -270,7 +289,7 @@ void EffectChainSlot::clear() {
 
 EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
     // qDebug() << debugString() << "addEffectSlot" << group;
-    EffectSlot* pEffectSlot = new EffectSlot(group, m_slots.size(), m_pEngineEffectChain);
+    EffectSlot* pEffectSlot = new EffectSlot(group, m_pEffectsManager, m_slots.size(), m_pEngineEffectChain);
     connect(pEffectSlot, SIGNAL(clearEffect(unsigned int)),
             this, SLOT(slotClearEffect(unsigned int)));
 
@@ -307,7 +326,7 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_g
 }
 
 void EffectChainSlot::slotClearEffect(unsigned int iEffectSlotNumber) {
-    removeEffect(iEffectSlotNumber);
+    unloadEffect(iEffectSlotNumber);
 }
 
 EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {

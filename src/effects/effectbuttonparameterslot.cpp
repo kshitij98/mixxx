@@ -1,5 +1,6 @@
 #include <QtDebug>
 
+#include "effects/effectslot.h"
 #include "effects/effectbuttonparameterslot.h"
 #include "control/controleffectknob.h"
 #include "effects/effectxmlelements.h"

@@ -73,13 +73,13 @@ EffectManifestPointer LV2Backend::getManifest(const QString& effectId) const {
     return EffectManifestPointer();
 }
 
-EffectInstantiatorPointer getInstantiator(const QString& effectId) const {
+EffectInstantiatorPointer LV2Backend::getInstantiator(const QString& effectId) const {
     LV2Manifest* pLV2Mainfest = getLV2Manifest(effectId);
     if (pLV2Mainfest != nullptr) {
-        return new LV2EffectProcessorInstantiator(
+        return EffectInstantiatorPointer(new LV2EffectProcessorInstantiator(
                 pLV2Mainfest->getPlugin(),
                 pLV2Mainfest->getAudioPortIndices(),
-                pLV2Mainfest->getControlPortIndices());
+                pLV2Mainfest->getControlPortIndices()));
     }
     return EffectInstantiatorPointer();
 

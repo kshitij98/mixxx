@@ -2,6 +2,8 @@
 
 #include "effects/effectparameterslot.h"
 
+#include "effects/effectslot.h"
+#include "effects/effectparameter.h"
 #include "control/controleffectknob.h"
 #include "effects/effectxmlelements.h"
 #include "control/controlobject.h"
@@ -107,7 +109,7 @@ void EffectParameterSlot::clear() {
     //qDebug() << debugString() << "clear";
     if (m_pEffectParameter) {
         m_pEffectParameter->disconnect(this);
-        m_pEffectParameter = NULL;
+        m_pEffectParameter = nullptr;
     }
 
     m_pControlLoaded->forceSet(0.0);
@@ -160,7 +162,7 @@ void EffectParameterSlot::slotLinkInverseChanged(double v) {
 
 void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool force) {
     m_dChainParameter = parameter;
-    if (m_pEffectParameter != NULL) {
+    if (m_pEffectParameter != nullptr) {
         // Intermediate cast to integer is needed for VC++.
         EffectManifestParameter::LinkType type =
                 static_cast<EffectManifestParameter::LinkType>(

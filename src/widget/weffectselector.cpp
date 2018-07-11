@@ -77,7 +77,7 @@ void WEffectSelector::populate() {
 
 void WEffectSelector::slotEffectSelected(int newIndex) {
     const QString id = itemData(newIndex).toString();
-    m_pEffectsManager->loadEffect(m_pChainSlot, m_pEffectSlot->getEffectSlotNumber(), id)
+    m_pEffectsManager->loadEffect(m_pChainSlot, m_pEffectSlot->getEffectSlotNumber(), id);
     setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
 }
 
@@ -85,8 +85,8 @@ void WEffectSelector::slotEffectUpdated() {
     int newIndex;
 
     if (m_pEffectSlot != nullptr) {
-        if (pEffectSlot->getManifest() != nullptr) {
-            EffectManifestPointer pManifest = pEffectSlot->getManifest();
+        if (m_pEffectSlot->getManifest() != nullptr) {
+            EffectManifestPointer pManifest = m_pEffectSlot->getManifest();
             newIndex = findData(QVariant(pManifest->id()));
         } else {
             newIndex = findData(QVariant());

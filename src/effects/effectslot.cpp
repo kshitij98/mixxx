@@ -14,10 +14,12 @@
 const unsigned int kDefaultMaxParameters = 16;
 
 EffectSlot::EffectSlot(const QString& group,
+                       EffectsManager* pEffectsManager,
                        const unsigned int iEffectnumber,
                        EngineEffectChain* pEngineEffectChain)
         : m_iEffectNumber(iEffectnumber),
           m_group(group),
+          m_pEffectsManager(pEffectsManager),
           m_pEngineEffectChain(pEngineEffectChain) {
     VERIFY_OR_DEBUG_ASSERT(m_pEngineEffectChain != nullptr) {
         return;
@@ -73,12 +75,16 @@ EffectSlot::EffectSlot(const QString& group,
 
     m_pSoftTakeover = new SoftTakeover();
 
-    unloadEffect();
+    m_pControlLoaded->forceSet(0.0);
+    m_pControlNumParameters->forceSet(0.0);
+    m_pControlNumButtonParameters->forceSet(0.0);
 }
 
 EffectSlot::~EffectSlot() {
     //qDebug() << debugString() << "destroyed";
-    unloadEffect();
+    if (isLoaded()) {
+        unloadEffect();
+    }
 
     delete m_pControlLoaded;
     delete m_pControlNumParameters;
@@ -314,9 +320,9 @@ bool EffectSlot::loadEffect(EffectManifestPointer pManifest, EffectInstantiatorP
 
     for (const auto& pManifestParameter: m_pManifest->parameters()) {
         EffectParameter* pParameter = new EffectParameter(
-                this, m_pEffectsManager, m_parameters.size(), pManifestParameter);
+                EffectSlotPointer(this), m_pEffectsManager, m_parameters.size(), pManifestParameter);
         m_parameters.append(pParameter);
-        VERIFY_OR_DEBUG_ASSERT(m_parametersById.contains(pParameter->id())) {
+        VERIFY_OR_DEBUG_ASSERT(!m_parametersById.contains(pParameter->id())) {
             qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
         }
         m_parametersById[pParameter->id()] = pParameter;
@@ -338,10 +344,10 @@ bool EffectSlot::loadEffect(EffectManifestPointer pManifest, EffectInstantiatorP
     }
 
     for (const auto& pParameter : m_parameterSlots) {
-        pParameter->loadEffect(this);
+        pParameter->loadEffect(EffectSlotPointer(this));
     }
     for (const auto& pParameter : m_buttonParameters) {
-        pParameter->loadEffect(this);
+        pParameter->loadEffect(EffectSlotPointer(this));
     }
 
     if (m_pEffectsManager->isAdoptMetaknobValueEnabled()) {

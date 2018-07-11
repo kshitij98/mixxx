@@ -83,6 +83,10 @@ class EffectsManager : public QObject {
             const int iEffectSlotNumber, const QString& effectId,
             EffectBackendType backendType = EffectBackendType::Unknown);
 
+    void loadEffect(EffectChainSlotPointer pChainSlot,
+            const int iEffectSlotNumber, const QString& effectId,
+            EffectBackendType backendType = EffectBackendType::Unknown);
+
     void addStandardEffectChainSlots();
     EffectChainSlotPointer getStandardEffectChainSlot(int unitNumber) const;
 
@@ -157,10 +161,6 @@ class EffectsManager : public QObject {
     QString debugString() const {
         return "EffectsManager";
     }
-
-    void loadEffect(EffectChainSlotPointer pChainSlot,
-            const int iEffectSlotNumber, const QString& effectId,
-            EffectBackendType backendType = EffectBackendType::Unknown);
 
     void processEffectsResponses();
     void collectGarbage(const EffectsRequest* pResponse);

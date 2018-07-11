@@ -83,10 +83,12 @@ class EffectChainSlot : public QObject {
         }
     }
 
+    void refreshAllEffects();
+
     void loadEffect(const unsigned int iEffectSlotNumber,
                     const QString& id, EffectManifestPointer pManifest,
                     EffectInstantiatorPointer pInstantiator);
-    void removeEffect(unsigned int effectSlotNumber);
+    void unloadEffect(const unsigned int iEffectSlotNumber);
 
   signals:
     // Signal that whoever is in charge of this EffectChainSlot should load the
@@ -118,7 +120,7 @@ class EffectChainSlot : public QObject {
     ControlObject* m_pControlChainMix;
 
   private slots:
-    void slotChainEffectChanged(unsigned int effectSlotNumber);
+    // void slotChainEffectChanged(unsigned int effectSlotNumber);
     // Clears the effect in the given position in the loaded EffectChain.
     void slotClearEffect(unsigned int iEffectSlotNumber);
 
