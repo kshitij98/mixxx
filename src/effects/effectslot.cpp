@@ -125,6 +125,7 @@ void EffectSlot::addToEngine(EffectInstantiatorPointer pInstantiator,
 
 void EffectSlot::removeFromEngine() {
     VERIFY_OR_DEBUG_ASSERT(m_pEngineEffect != nullptr) {
+        qDebug() << "Assertion condition value = " << (m_pEngineEffect != nullptr);
         return;
     }
 
