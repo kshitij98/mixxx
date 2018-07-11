@@ -29,7 +29,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     }
 
     // Load the parameter of the given effect into this EffectParameterSlot
-    void loadEffect(EffectSlotPointer pEffectSlot);
+    void loadEffect(EffectSlot* pEffectSlot);
 
     double getValueParameter() const;
 

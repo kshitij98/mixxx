@@ -26,7 +26,7 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
 
     // Load the parameter of the given effect into this EffectButtonParameterSlot
     // kshitij : change all calls
-    void loadEffect(EffectSlotPointer pEffectSlot);
+    void loadEffect(EffectSlot* pEffectSlot);
 
     // Clear the currently loaded effect
     void clear();

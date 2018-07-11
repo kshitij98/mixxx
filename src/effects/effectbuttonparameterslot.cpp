@@ -38,7 +38,7 @@ EffectButtonParameterSlot::~EffectButtonParameterSlot() {
     delete m_pControlValue;
 }
 
-void EffectButtonParameterSlot::loadEffect(EffectSlotPointer pEffectSlot) {
+void EffectButtonParameterSlot::loadEffect(EffectSlot* pEffectSlot) {
     //qDebug() << debugString() << "loadEffect" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
     if (m_pEffectParameter) {
         clear();
@@ -90,10 +90,10 @@ void EffectButtonParameterSlot::clear() {
     //qDebug() << debugString() << "clear";
     if (m_pEffectParameter) {
         m_pEffectParameter->disconnect(this);
-        m_pEffectParameter = NULL;
+        m_pEffectParameter = nullptr;
     }
 
-    m_pEffectSlot.clear();
+    m_pEffectSlot = nullptr;
     m_pControlLoaded->forceSet(0.0);
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);

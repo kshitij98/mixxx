@@ -124,8 +124,7 @@ void EffectSlot::addToEngine(EffectInstantiatorPointer pInstantiator,
 }
 
 void EffectSlot::removeFromEngine() {
-    VERIFY_OR_DEBUG_ASSERT(m_pEngineEffect != nullptr) {
-        qDebug() << "Assertion condition value = " << (m_pEngineEffect != nullptr);
+    VERIFY_OR_DEBUG_ASSERT(isLoaded()) {
         return;
     }
 
@@ -321,7 +320,7 @@ bool EffectSlot::loadEffect(EffectManifestPointer pManifest, EffectInstantiatorP
 
     for (const auto& pManifestParameter: m_pManifest->parameters()) {
         EffectParameter* pParameter = new EffectParameter(
-                EffectSlotPointer(this), m_pEffectsManager, m_parameters.size(), pManifestParameter);
+                this, m_pEffectsManager, m_parameters.size(), pManifestParameter);
         m_parameters.append(pParameter);
         VERIFY_OR_DEBUG_ASSERT(!m_parametersById.contains(pParameter->id())) {
             qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
@@ -345,10 +344,10 @@ bool EffectSlot::loadEffect(EffectManifestPointer pManifest, EffectInstantiatorP
     }
 
     for (const auto& pParameter : m_parameterSlots) {
-        pParameter->loadEffect(EffectSlotPointer(this));
+        pParameter->loadEffect(this);
     }
     for (const auto& pParameter : m_buttonParameters) {
-        pParameter->loadEffect(EffectSlotPointer(this));
+        pParameter->loadEffect(this);
     }
 
     if (m_pEffectsManager->isAdoptMetaknobValueEnabled()) {
@@ -377,9 +376,10 @@ void EffectSlot::unloadEffect() {
     m_parametersById.clear();
     for (int i = 0; i < m_parameters.size(); ++i) {
         EffectParameter* pParameter = m_parameters.at(i);
-        m_parameters[i] = NULL;
+        m_parameters[i] = nullptr;
         delete pParameter;
     }
+    m_parameters.clear();
 
     removeFromEngine();
     emit(effectChanged());

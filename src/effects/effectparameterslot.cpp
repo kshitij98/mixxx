@@ -58,7 +58,7 @@ EffectParameterSlot::~EffectParameterSlot() {
     delete m_pSoftTakeover;
 }
 
-void EffectParameterSlot::loadEffect(EffectSlotPointer pEffectSlot) {
+void EffectParameterSlot::loadEffect(EffectSlot* pEffectSlot) {
     //qDebug() << debugString() << "loadEffect" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
     clear();
     if (pEffectSlot) {

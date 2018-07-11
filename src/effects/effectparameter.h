@@ -19,7 +19,7 @@ class EffectsManager;
 class EffectParameter : public QObject {
     Q_OBJECT
   public:
-    EffectParameter(EffectSlotPointer pEffectSlot, EffectsManager* pEffectsManager,
+    EffectParameter(EffectSlot* pEffectSlot, EffectsManager* pEffectsManager,
                     int iParameterNumber, EffectManifestParameterPointer pParameter);
     virtual ~EffectParameter();
 

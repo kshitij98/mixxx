@@ -45,7 +45,7 @@ class EffectSlot : public QObject {
         return m_iEffectNumber;
     }
 
-    bool isLoaded() const {
+    inline const bool isLoaded() const {
         return m_pEngineEffect != nullptr;
     }
 
