@@ -118,6 +118,7 @@ class EffectChainSlot : public QObject {
 
     EffectsManager* m_pEffectsManager;
     ControlObject* m_pControlChainMix;
+    QList<EffectSlotPointer> m_effectSlots;
 
   private slots:
     // void slotChainEffectChanged(unsigned int effectSlotNumber);
@@ -186,7 +187,6 @@ class EffectChainSlot : public QObject {
     SignalProcessingStage m_signalProcessingStage;
     bool m_bHasMetaknob;
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;
-    QList<EffectSlotPointer> m_effectSlots;
     EngineEffectChain* m_pEngineEffectChain;
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
 };
