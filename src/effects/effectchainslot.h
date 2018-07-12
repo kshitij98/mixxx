@@ -179,7 +179,6 @@ class EffectChainSlot : public QObject {
     };
 
     QMap<QString, ChannelInfo*> m_channelInfoByName;
-    QList<EffectSlotPointer> m_slots;
     QSignalMapper m_channelStatusMapper;
     QString m_id;
     QString m_name;

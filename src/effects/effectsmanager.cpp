@@ -170,6 +170,9 @@ void EffectsManager::loadEqualizerEffect(const QString& group,
 void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
         const int iEffectSlotNumber, const QString& effectId,
         EffectBackendType backendType) {
+    if (kEffectDebugOutput) {
+        qDebug() << debugString() << "loading effect" << iEffectSlotNumber << effectId;
+    }
     for (auto pBackend : m_effectsBackends) {
         if (pBackend->canInstantiateEffect(effectId) &&
                 (backendType == EffectBackendType::Unknown ||
@@ -474,7 +477,7 @@ void EffectsManager::collectGarbage(const EffectsRequest* pRequest) {
         delete pRequest->RemoveEffectFromChain.pEffect;
     } else if (pRequest->type == EffectsRequest::REMOVE_EFFECT_CHAIN) {
         if (kEffectDebugOutput) {
-            qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
+            qDebug() << debugString() << "delete" << pRequest->RemoveEffectChain.pChain;
         }
         delete pRequest->RemoveEffectChain.pChain;
     } else if (pRequest->type == EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL) {

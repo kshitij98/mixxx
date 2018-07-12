@@ -20,7 +20,8 @@ EffectSlot::EffectSlot(const QString& group,
         : m_iEffectNumber(iEffectnumber),
           m_group(group),
           m_pEffectsManager(pEffectsManager),
-          m_pEngineEffectChain(pEngineEffectChain) {
+          m_pEngineEffectChain(pEngineEffectChain),
+          m_pEngineEffect(nullptr) {
     VERIFY_OR_DEBUG_ASSERT(m_pEngineEffectChain != nullptr) {
         return;
     }
@@ -136,6 +137,7 @@ void EffectSlot::removeFromEngine() {
     request->RemoveEffectFromChain.pEffect = m_pEngineEffect;
     request->RemoveEffectFromChain.iIndex = m_iEffectNumber;
     m_pEffectsManager->writeRequest(request);
+
     m_pEngineEffect = nullptr;
 }
 
@@ -161,6 +163,9 @@ void EffectSlot::sendParameterUpdate() {
 }
 
 EffectState* EffectSlot::createState(const mixxx::EngineParameters& bufferParameters) {
+    if (m_pEngineEffect == nullptr) {
+        return new EffectState(bufferParameters);
+    }
     return m_pEngineEffect->createState(bufferParameters);
 }
 
@@ -360,6 +365,7 @@ bool EffectSlot::loadEffect(EffectManifestPointer pManifest, EffectInstantiatorP
     }
 
     emit(effectChanged());
+    updateEngineState();
 
     return true;
 }

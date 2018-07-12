@@ -75,7 +75,7 @@ class EffectParameter : public QObject {
     bool clampDefault();
     bool clampRanges();
 
-    EffectSlotPointer m_pEffectSlot;
+    EffectSlot* m_pEffectSlot;
     EffectsManager* m_pEffectsManager;
     int m_iParameterNumber;
     EffectManifestParameterPointer m_pParameter;

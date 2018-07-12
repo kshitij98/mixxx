@@ -187,6 +187,10 @@ class ChannelHandleMap {
         m_data.clear();
     }
 
+    unsigned int size() const {
+        return m_data.size();
+    }
+
     typename container_type::iterator begin() {
         return m_data.begin();
     }
