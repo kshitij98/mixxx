@@ -44,6 +44,8 @@ EffectSlot::EffectSlot(const QString& group,
     // at the beginning of a set.
     m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
     m_pControlEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
+    connect(m_pControlEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(updateEngineState()));
 
     m_pControlNextEffect = new ControlPushButton(ConfigKey(m_group, "next_effect"));
     connect(m_pControlNextEffect, SIGNAL(valueChanged(double)),

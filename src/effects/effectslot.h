@@ -105,13 +105,12 @@ class EffectSlot : public QObject {
 
     EngineEffect* getEngineEffect();
 
-    void addToEngine(EffectInstantiatorPointer pInstantiator,
-            const QSet<ChannelHandleAndGroup>& activeInputChannels);
-    void removeFromEngine();
-    void updateEngineState();
 
     // static EffectPointer createFromXml(EffectsManager* pEffectsManager,
     //                              const QDomElement& element);
+    void addToEngine(EffectInstantiatorPointer pInstantiator,
+            const QSet<ChannelHandleAndGroup>& activeInputChannels);
+    void removeFromEngine();
 
     double getMetaknobDefault();
     // NOTE(Kshitij) : END EFFECT
@@ -140,6 +139,9 @@ class EffectSlot : public QObject {
     void clearEffect(unsigned int iEffectNumber);
 
     void effectChanged();
+
+  private slots:
+    void updateEngineState();
 
   private:
     QString debugString() const {
