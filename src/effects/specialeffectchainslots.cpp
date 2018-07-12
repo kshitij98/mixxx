@@ -46,6 +46,7 @@ OutputEffectChainSlot::OutputEffectChainSlot(EffectsManager* pEffectsManager)
                           SignalProcessingStage::Postfader, true,
                           formatEffectChainSlotGroup("[Master]")) {
     addEffectSlot("[OutputEffectRack_[Master]_Effect1]");
+    m_effectSlots[0]->setEnabled(true);
 
     // Register the master channel
     const ChannelHandleAndGroup* masterHandleAndGroup = nullptr;
@@ -104,6 +105,7 @@ QuickEffectChainSlot::QuickEffectChainSlot(const QString& group,
                                   pEffectsManager) {
     // Add a single effect slot
     addEffectSlot(formatEffectSlotGroup(group));
+    m_effectSlots[0]->setEnabled(true);
     // DlgPrefEq loads the Effect with loadEffectToGroup
 
     setSuperParameter(0.5);
@@ -128,6 +130,7 @@ EqualizerEffectChainSlot::EqualizerEffectChainSlot(const QString& group,
                                   pEffectsManager) {
     // Add a single effect slot
     addEffectSlot(formatEffectSlotGroup(group));
+    m_effectSlots[0]->setEnabled(true);
     // DlgPrefEq loads the Effect with loadEffectToGroup
 
     setupLegacyAliasesForGroup(group);
