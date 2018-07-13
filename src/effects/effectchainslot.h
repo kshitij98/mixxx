@@ -46,9 +46,6 @@ class EffectChainSlot : public QObject {
     void setSuperParameter(double value, bool force = false);
     void setSuperParameterDefaultValue(double value);
 
-    // Unload the loaded EffectChain.
-    void clear();
-
     const QString& getGroup() const {
         return m_group;
     }
@@ -85,9 +82,8 @@ class EffectChainSlot : public QObject {
     }
 
     void loadEffect(const unsigned int iEffectSlotNumber,
-                    const QString& id, EffectManifestPointer pManifest,
+                    EffectManifestPointer pManifest,
                     EffectInstantiatorPointer pInstantiator);
-    void unloadEffect(const unsigned int iEffectSlotNumber);
 
   signals:
     // Signal that whoever is in charge of this EffectChainSlot should load the
@@ -122,9 +118,6 @@ class EffectChainSlot : public QObject {
     QList<EffectSlotPointer> m_effectSlots;
 
   private slots:
-    // Clears the effect in the given position in the loaded EffectChain.
-    void slotClearEffect(unsigned int iEffectSlotNumber);
-
     void slotControlClear(double v);
     void slotControlChainSuperParameter(double v, bool force = false);
     void slotControlChainSelector(double v);

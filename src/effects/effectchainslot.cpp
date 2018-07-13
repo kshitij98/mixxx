@@ -111,7 +111,9 @@ EffectChainSlot::EffectChainSlot(const QString& group,
 
 EffectChainSlot::~EffectChainSlot() {
     //qDebug() << debugString() << "destroyed";
-    clear();
+
+    m_effectSlots.clear();
+
     delete m_pControlClear;
     delete m_pControlNumEffects;
     delete m_pControlNumEffectSlots;
@@ -133,7 +135,6 @@ EffectChainSlot::~EffectChainSlot() {
         it = m_channelInfoByName.erase(it);
     }
 
-    m_effectSlots.clear();
     removeFromEngine();
 }
 
@@ -153,12 +154,8 @@ void EffectChainSlot::addToEngine() {
 }
 
 void EffectChainSlot::removeFromEngine() {
-    // Order doesn't matter when removing.
-    for (int i = 0; i < m_effectSlots.size(); ++i) {
-        EffectSlotPointer pEffectSlot = m_effectSlots[i];
-        if (pEffectSlot) {
-            pEffectSlot->unloadEffect();
-        }
+    VERIFY_OR_DEBUG_ASSERT(m_effectSlots.isEmpty()) {
+        m_effectSlots.clear();
     }
 
     EffectsRequest* pRequest = new EffectsRequest();
@@ -189,25 +186,10 @@ void EffectChainSlot::setDescription(const QString& description) {
 }
 
 void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
-        const QString& id, EffectManifestPointer pManifest,
-        EffectInstantiatorPointer pInstantiator) {
-    EffectSlotPointer pEffectSlot = getEffectSlot(iEffectSlotNumber);
-
-    VERIFY_OR_DEBUG_ASSERT(pManifest != nullptr && pInstantiator != nullptr && pEffectSlot != nullptr) {
-        return;
-    }
-
-    pEffectSlot->loadEffect(pManifest, pInstantiator, m_enabledInputChannels);
-}
-
-void EffectChainSlot::unloadEffect(const unsigned int iEffectSlotNumber) {
-    EffectSlotPointer pEffectSlot = getEffectSlot(iEffectSlotNumber);
-
-    VERIFY_OR_DEBUG_ASSERT(pEffectSlot != nullptr) {
-        return;
-    }
-
-    pEffectSlot->unloadEffect();
+                                 EffectManifestPointer pManifest,
+                                 EffectInstantiatorPointer pInstantiator) {
+    m_effectSlots[iEffectSlotNumber]->loadEffect(pManifest, pInstantiator,
+                                                 m_enabledInputChannels);
 }
 
 void EffectChainSlot::sendParameterUpdate() {
@@ -242,19 +224,9 @@ void EffectChainSlot::setSuperParameterDefaultValue(double value) {
     m_pControlChainSuperParameter->setDefaultValue(value);
 }
 
-
-void EffectChainSlot::clear() {
-    m_pControlNumEffects->forceSet(0.0);
-    m_pControlChainLoaded->forceSet(0.0);
-    m_pControlChainMixMode->set(
-            static_cast<double>(EffectChainMixMode::DrySlashWet));
-}
-
 EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
     // qDebug() << debugString() << "addEffectSlot" << group;
     EffectSlot* pEffectSlot = new EffectSlot(group, m_pEffectsManager, m_effectSlots.size(), m_pEngineEffectChain);
-    connect(pEffectSlot, SIGNAL(clearEffect(unsigned int)),
-            this, SLOT(slotClearEffect(unsigned int)));
 
     EffectSlotPointer pSlot(pEffectSlot);
     m_effectSlots.append(pSlot);
@@ -288,10 +260,6 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_g
             &m_channelStatusMapper, SLOT(map()));
 }
 
-void EffectChainSlot::slotClearEffect(unsigned int iEffectSlotNumber) {
-    unloadEffect(iEffectSlotNumber);
-}
-
 EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
     //qDebug() << debugString() << "getEffectSlot" << slotNumber;
     if (slotNumber >= static_cast<unsigned int>(m_effectSlots.size())) {
@@ -302,11 +270,8 @@ EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
 }
 
 void EffectChainSlot::slotControlClear(double v) {
-    if (v > 0) {
-        for (EffectSlotPointer pSlot : m_effectSlots) {
-            pSlot->unloadEffect();
-        }
-        clear();
+    for (EffectSlotPointer pSlot : m_effectSlots) {
+        pSlot->slotClear(v);
     }
 }
 
@@ -379,7 +344,7 @@ void EffectChainSlot::enableForInputChannel(const ChannelHandleAndGroup& handle_
     // TODO: Simplify by defining a method to create an EffectState for the input channel
     for (int i = 0; i < m_effectSlots.size(); ++i) {
         auto& statesMap = (*pEffectStatesMapArray)[i];
-        if (m_effectSlots[i].isLoaded()) {
+        if (m_effectSlots[i]->isLoaded()) {
             for (const auto& outputChannel : m_pEffectsManager->registeredOutputChannels()) {
                 if (kEffectDebugOutput) {
                     qDebug() << debugString() << "EffectChain::enableForInputChannel creating EffectState for input" << handle_group << "output" << outputChannel;

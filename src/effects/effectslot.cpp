@@ -85,9 +85,7 @@ EffectSlot::EffectSlot(const QString& group,
 
 EffectSlot::~EffectSlot() {
     //qDebug() << debugString() << "destroyed";
-    if (isLoaded()) {
-        unloadEffect();
-    }
+    unloadEffect();
 
     delete m_pControlLoaded;
     delete m_pControlNumParameters;
@@ -299,18 +297,22 @@ EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsign
     return m_buttonParameters[slotNumber];
 }
 
-void EffectSlot::loadEffect(EffectManifestPointer pManifest, EffectInstantiatorPointer pInstantiator,
-        const QSet<ChannelHandleAndGroup>& activeChannels) {
-    // Remove an effect if already loaded in slot
-    if (m_pEngineEffect != nullptr) {
-        unloadEffect();
-    }
-
-    if (pManifest != nullptr || pInstantiator != nullptr) {
+void EffectSlot::loadEffect(EffectManifestPointer pManifest,
+                            EffectInstantiatorPointer pInstantiator,
+                            const QSet<ChannelHandleAndGroup>& activeChannels) {
+    if (pManifest == m_pManifest) {
         return;
     }
 
+    unloadEffect();
+
     m_pManifest = pManifest;
+
+    if (pManifest == nullptr || pInstantiator == nullptr) {
+        // No new effect to load; just unload the old effect and return.
+        emit(effectChanged());
+        return;
+    }
 
     for (const auto& pManifestParameter: m_pManifest->parameters()) {
         EffectParameter* pParameter = new EffectParameter(
@@ -356,6 +358,10 @@ void EffectSlot::loadEffect(EffectManifestPointer pManifest, EffectInstantiatorP
 }
 
 void EffectSlot::unloadEffect() {
+    if (!isLoaded()) {
+        return;
+    }
+
     m_pControlLoaded->forceSet(0.0);
     m_pControlNumParameters->forceSet(0.0);
     m_pControlNumButtonParameters->forceSet(0.0);
@@ -374,8 +380,9 @@ void EffectSlot::unloadEffect() {
     }
     m_parameters.clear();
 
+    m_pManifest = nullptr;
+
     removeFromEngine();
-    emit(effectChanged());
 }
 
 void EffectSlot::slotPrevEffect(double v) {
@@ -400,7 +407,8 @@ void EffectSlot::slotEffectSelector(double v) {
 
 void EffectSlot::slotClear(double v) {
     if (v > 0) {
-        emit(clearEffect(m_iEffectNumber));
+        unloadEffect();
+        emit(effectChanged());
     }
 }
 
