@@ -32,6 +32,7 @@ class EffectChainSlot : public QObject {
     QString group() const;
 
     EffectSlotPointer addEffectSlot(const QString& group);
+
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
     const unsigned int numEffectSlots() const {
         return m_effectSlots.size();

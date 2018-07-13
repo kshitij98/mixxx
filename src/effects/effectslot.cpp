@@ -299,15 +299,15 @@ EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsign
     return m_buttonParameters[slotNumber];
 }
 
-bool EffectSlot::loadEffect(EffectManifestPointer pManifest, EffectInstantiatorPointer pInstantiator,
+void EffectSlot::loadEffect(EffectManifestPointer pManifest, EffectInstantiatorPointer pInstantiator,
         const QSet<ChannelHandleAndGroup>& activeChannels) {
     // Remove an effect if already loaded in slot
     if (m_pEngineEffect != nullptr) {
         unloadEffect();
     }
 
-    VERIFY_OR_DEBUG_ASSERT(pManifest != nullptr && pInstantiator != nullptr) {
-        return false;
+    if (pManifest != nullptr || pInstantiator != nullptr) {
+        return;
     }
 
     m_pManifest = pManifest;
@@ -353,8 +353,6 @@ bool EffectSlot::loadEffect(EffectManifestPointer pManifest, EffectInstantiatorP
 
     emit(effectChanged());
     updateEngineState();
-
-    return true;
 }
 
 void EffectSlot::unloadEffect() {

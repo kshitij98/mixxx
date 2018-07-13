@@ -115,7 +115,7 @@ class EffectSlot : public QObject {
     // Request that this EffectSlot load the given Effect
     void setMetaParameter(double v, bool force = false);
 
-    bool loadEffect(EffectManifestPointer pManifest, EffectInstantiatorPointer pInstantiator,
+    void loadEffect(EffectManifestPointer pManifest, EffectInstantiatorPointer pInstantiator,
             const QSet<ChannelHandleAndGroup>& activeChannels);
 
     void slotNextEffect(double v);

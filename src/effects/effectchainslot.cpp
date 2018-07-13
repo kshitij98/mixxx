@@ -379,7 +379,7 @@ void EffectChainSlot::enableForInputChannel(const ChannelHandleAndGroup& handle_
     // TODO: Simplify by defining a method to create an EffectState for the input channel
     for (int i = 0; i < m_effectSlots.size(); ++i) {
         auto& statesMap = (*pEffectStatesMapArray)[i];
-        if (m_effectSlots[i] != nullptr) {
+        if (m_effectSlots[i].isLoaded()) {
             for (const auto& outputChannel : m_pEffectsManager->registeredOutputChannels()) {
                 if (kEffectDebugOutput) {
                     qDebug() << debugString() << "EffectChain::enableForInputChannel creating EffectState for input" << handle_group << "output" << outputChannel;
