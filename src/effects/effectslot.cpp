@@ -306,7 +306,7 @@ void EffectSlot::loadEffect(EffectManifestPointer pManifest, EffectInstantiatorP
         unloadEffect();
     }
 
-    if (pManifest != nullptr || pInstantiator != nullptr) {
+    if (pManifest == nullptr || pInstantiator == nullptr) {
         return;
     }
 
