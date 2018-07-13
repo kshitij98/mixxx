@@ -160,7 +160,7 @@ void EffectChainSlot::removeFromEngine() {
     for (int i = 0; i < m_effectSlots.size(); ++i) {
         EffectSlotPointer pEffectSlot = m_effectSlots[i];
         if (pEffectSlot) {
-            pEffectSlot->removeFromEngine();
+            pEffectSlot->unloadEffect();
         }
     }
 
@@ -200,9 +200,7 @@ void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
         return;
     }
 
-    if (pEffectSlot->getManifest() == nullptr || pEffectSlot->getManifest()->id() != id) {
-        pEffectSlot->loadEffect(pManifest, pInstantiator, m_enabledInputChannels);
-    }
+    pEffectSlot->loadEffect(pManifest, pInstantiator, m_enabledInputChannels);
 }
 
 void EffectChainSlot::unloadEffect(const unsigned int iEffectSlotNumber) {
@@ -213,15 +211,6 @@ void EffectChainSlot::unloadEffect(const unsigned int iEffectSlotNumber) {
     }
 
     pEffectSlot->unloadEffect();
-}
-
-void EffectChainSlot::refreshAllEffects() {
-    for (int i=0 ; i<m_effectSlots.size() ; ++i) {
-        auto pEffectSlot = m_effectSlots.at(i);
-        if (pEffectSlot->isLoaded()) {
-            m_pEffectsManager->loadEffect(EffectChainSlotPointer(this), i, pEffectSlot->getManifest()->id());
-        }
-    }
 }
 
 void EffectChainSlot::sendParameterUpdate() {

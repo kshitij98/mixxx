@@ -470,7 +470,6 @@ void DlgPrefEQ::applySelections() {
             VERIFY_OR_DEBUG_ASSERT(pChainSlot != nullptr);
 
             m_pEffectsManager->loadEqualizerEffect(chainSlotGroup, 0, effectId, EffectBackendType::Unknown);
-            pChainSlot->getEffectSlot(0)->setEnabled(true);
 
             m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
                     ConfigValue(effectId));
@@ -519,7 +518,6 @@ void DlgPrefEQ::applySelections() {
             VERIFY_OR_DEBUG_ASSERT(pChainSlot != nullptr);
 
             m_pEffectsManager->loadQuickEffect(chainSlotGroup, 0, effectId, EffectBackendType::Unknown);
-            pChainSlot->getEffectSlot(0)->setEnabled(true);
 
             // Force update metaknobs and parameters to match state of superknob
             pChainSlot->setSuperParameter(pChainSlot->getSuperParameter(), true);

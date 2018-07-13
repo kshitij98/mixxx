@@ -34,6 +34,9 @@ class EffectChainSlot : public QObject {
 
     EffectSlotPointer addEffectSlot(const QString& group);
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
+    const unsigned int numEffectSlots() const {
+        return m_effectSlots.size();
+    }
 
     void registerInputChannel(const ChannelHandleAndGroup& handle_group,
                               const double initialValue = 0.0);
@@ -82,8 +85,6 @@ class EffectChainSlot : public QObject {
             return EffectChainMixMode::NumMixModes;
         }
     }
-
-    void refreshAllEffects();
 
     void loadEffect(const unsigned int iEffectSlotNumber,
                     const QString& id, EffectManifestPointer pManifest,

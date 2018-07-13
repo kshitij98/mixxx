@@ -162,6 +162,7 @@ class EffectsManager : public QObject {
         return "EffectsManager";
     }
 
+    inline void refreshChainSlot(EffectChainSlotPointer pChainSlot);
     void processEffectsResponses();
     void collectGarbage(const EffectsRequest* pResponse);
 
