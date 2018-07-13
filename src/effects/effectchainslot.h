@@ -31,8 +31,6 @@ class EffectChainSlot : public QObject {
     QString id() const;
     QString group() const;
 
-    EffectSlotPointer addEffectSlot(const QString& group);
-
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
     const unsigned int numEffectSlots() const {
         return m_effectSlots.size();
@@ -113,6 +111,8 @@ class EffectChainSlot : public QObject {
     void sendParameterUpdate();
 
   protected:
+    EffectSlotPointer addEffectSlot(const QString& group);
+
     // Activates EffectChain processing for the provided channel.
     void enableForInputChannel(const ChannelHandleAndGroup& handle_group);
     void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
