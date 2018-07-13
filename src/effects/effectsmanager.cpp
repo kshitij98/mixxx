@@ -180,9 +180,11 @@ void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
             EffectManifestPointer pManifest = pBackend->getManifest(effectId);
             EffectInstantiatorPointer pInstantiator = pBackend->getInstantiator(effectId);
 
-            pChainSlot->loadEffect(iEffectSlotNumber, effectId, pManifest, pInstantiator);
+            pChainSlot->loadEffect(iEffectSlotNumber, pManifest, pInstantiator);
+            return;
         }
     }
+    pChainSlot->loadEffect(iEffectSlotNumber, nullptr, nullptr);
 }
 
 const QList<EffectManifestPointer> EffectsManager::getAvailableEffectManifestsFiltered(

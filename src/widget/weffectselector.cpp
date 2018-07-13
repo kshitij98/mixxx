@@ -29,7 +29,7 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
                 this, SLOT(populate()));
         connect(m_pEffectSlot.data(), SIGNAL(effectChanged()),
                 this, SLOT(slotEffectUpdated()));
-        connect(this, SIGNAL(currentIndexChanged(int)),
+        connect(this, SIGNAL(activated(int)),
                 this, SLOT(slotEffectSelected(int)));
     } else {
         SKIN_WARNING(node, context)
@@ -93,6 +93,12 @@ void WEffectSelector::slotEffectUpdated() {
         }
     } else {
         newIndex = findData(QVariant());
+    }
+
+    if (kEffectDebugOutput) {
+        qDebug() << "WEffectSelector::slotEffectUpdated"
+                 << "old" << itemData(currentIndex())
+                 << "new" << itemData(newIndex);
     }
 
     if (newIndex != -1 && newIndex != currentIndex()) {

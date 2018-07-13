@@ -70,9 +70,6 @@ class EffectSlot : public QObject {
     // ChainParameterChange. Uses for testing only
     void syncSofttakeover();
 
-    // Unload the currently loaded effect
-    void unloadEffect();
-
     const QString& getGroup() const {
         return m_group;
     }
@@ -115,6 +112,7 @@ class EffectSlot : public QObject {
     // Request that this EffectSlot load the given Effect
     void setMetaParameter(double v, bool force = false);
 
+    // Call with nullptr for pManifest and pInstantiator to unload an effect
     void loadEffect(EffectManifestPointer pManifest, EffectInstantiatorPointer pInstantiator,
             const QSet<ChannelHandleAndGroup>& activeChannels);
 
@@ -125,10 +123,6 @@ class EffectSlot : public QObject {
     void slotEffectMetaParameter(double v, bool force = false);
 
   signals:
-    // Signal that whoever is in charge of this EffectSlot should clear this
-    // EffectSlot (by deleting the effect from the underlying chain).
-    void clearEffect(unsigned int iEffectNumber);
-
     void effectChanged();
 
   private slots:
@@ -140,6 +134,7 @@ class EffectSlot : public QObject {
     }
 
     void sendParameterUpdate();
+    void unloadEffect();
 
     const unsigned int m_iEffectNumber;
     const QString m_group;
