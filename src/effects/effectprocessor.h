@@ -64,6 +64,9 @@ class EffectProcessor {
     // callback executes process() with EffectEnableState::Disabling
     virtual void deleteStatesForInputChannel(const ChannelHandle* inputChannel) = 0;
 
+    virtual void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters) = 0;
+
     // Take a buffer of audio samples as pInput, process the buffer according to
     // Effect-specific logic, and output it to the buffer pOutput. Both pInput
     // and pOutput are represented as stereo interleaved samples for now, but
