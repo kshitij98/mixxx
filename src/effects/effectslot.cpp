@@ -281,19 +281,6 @@ bool EffectSlot::enabled() const {
     return m_pControlEnabled->get();
 }
 
-// kshitij : remove dependencies
-// void EffectSlot::slotEnabled(double v) {
-//     //qDebug() << debugString() << "slotEnabled" << v;
-//     if (m_pEffect) {
-//         m_pEffect->setEnabled(v > 0);
-//     }
-// }
-
-// kshitij : remove dependencies
-// void EffectSlot::slotEffectEnabledChanged(bool enabled) {
-//     m_pControlEnabled->set(enabled);
-// }
-
 EffectParameterSlotPointer EffectSlot::getEffectParameterSlot(unsigned int slotNumber) {
     //qDebug() << debugString() << "getEffectParameterSlot" << slotNumber;
     if (slotNumber >= static_cast<unsigned int>(m_parameterSlots.size())) {

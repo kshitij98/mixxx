@@ -80,8 +80,6 @@ class EffectSlot : public QObject {
     QDomElement toXml(QDomDocument* doc) const;
     void loadEffectSlotFromXml(const QDomElement& effectElement);
 
-
-    // NOTE(Kshitij) : START EFFECT
     EffectState* createState(const mixxx::EngineParameters& bufferParameters);
 
     EffectManifestPointer getManifest() const;
@@ -105,7 +103,6 @@ class EffectSlot : public QObject {
 
     EngineEffect* getEngineEffect();
 
-
     // static EffectPointer createFromXml(EffectsManager* pEffectsManager,
     //                              const QDomElement& element);
     void addToEngine(EffectInstantiatorPointer pInstantiator,
@@ -113,8 +110,6 @@ class EffectSlot : public QObject {
     void removeFromEngine();
 
     double getMetaknobDefault();
-    // NOTE(Kshitij) : END EFFECT
-
 
   public slots:
     // Request that this EffectSlot load the given Effect
@@ -123,19 +118,15 @@ class EffectSlot : public QObject {
     bool loadEffect(EffectManifestPointer pManifest, EffectInstantiatorPointer pInstantiator,
             const QSet<ChannelHandleAndGroup>& activeChannels);
 
-    // NOTE(Kshitij) : remove
-    // void slotEnabled(double v);
     void slotNextEffect(double v);
     void slotPrevEffect(double v);
     void slotClear(double v);
     void slotEffectSelector(double v);
-    // void slotEffectEnabledChanged(bool enabled);
     void slotEffectMetaParameter(double v, bool force = false);
 
   signals:
     // Signal that whoever is in charge of this EffectSlot should clear this
     // EffectSlot (by deleting the effect from the underlying chain).
-    // NOTE(Kshitij) : remove
     void clearEffect(unsigned int iEffectNumber);
 
     void effectChanged();
@@ -148,9 +139,20 @@ class EffectSlot : public QObject {
         return QString("EffectSlot(%1)").arg(m_group);
     }
 
+    void sendParameterUpdate();
+
     const unsigned int m_iEffectNumber;
     const QString m_group;
     UserSettingsPointer m_pConfig;
+    EffectsManager* m_pEffectsManager;
+    EffectManifestPointer m_pManifest;
+    EffectInstantiatorPointer m_pInstantiator;
+    EngineEffect* m_pEngineEffect;
+    QList<EffectParameter*> m_parameters;
+    QMap<QString, EffectParameter*> m_parametersById;
+    EngineEffectChain* m_pEngineEffectChain;
+    QList<EffectParameterSlotPointer> m_parameterSlots;
+    QList<EffectButtonParameterSlotPointer> m_buttonParameters;
 
     ControlObject* m_pControlLoaded;
     ControlPushButton* m_pControlEnabled;
@@ -163,26 +165,8 @@ class EffectSlot : public QObject {
     ControlEncoder* m_pControlEffectSelector;
     ControlObject* m_pControlClear;
     ControlPotmeter* m_pControlMetaParameter;
-    QList<EffectParameterSlotPointer> m_parameterSlots;
-    QList<EffectButtonParameterSlotPointer> m_buttonParameters;
 
     SoftTakeover* m_pSoftTakeover;
-
-    // NOTE(Kshitij) : START EFFECT
-    void sendParameterUpdate();
-
-    EffectsManager* m_pEffectsManager;
-    EffectManifestPointer m_pManifest;
-    EffectInstantiatorPointer m_pInstantiator;
-    EngineEffect* m_pEngineEffect;
-    // bool m_bAddedToEngine;
-    // bool m_bEnabled;
-    // TODO(Kshitij) : rename
-    QList<EffectParameter*> m_parameters;
-    QMap<QString, EffectParameter*> m_parametersById;
-    // NOTE(Kshitij) : END EFFECT
-
-    EngineEffectChain* m_pEngineEffectChain;
 
     DISALLOW_COPY_AND_ASSIGN(EffectSlot);
 };

@@ -21,14 +21,12 @@
 EffectChainSlot::EffectChainSlot(const QString& group,
                                  EffectsManager* pEffectsManager,
                                  SignalProcessingStage stage,
-                                 const bool hasMetaknob,
                                  const QString& id)
         : // The control group names are 1-indexed while internally everything
           // is 0-indexed.
           m_group(group),
           m_pEffectsManager(pEffectsManager),
           m_signalProcessingStage(stage),
-          m_bHasMetaknob(hasMetaknob),
           m_id(id),
           m_name(""),
           m_description(""),
@@ -149,7 +147,6 @@ void EffectChainSlot::addToEngine() {
     pRequest->AddEffectChain.pChain = m_pEngineEffectChain;
     m_pEffectsManager->writeRequest(pRequest);
 
-    // TODO(Kshitij) : remove
     VERIFY_OR_DEBUG_ASSERT(!m_enabledInputChannels.size());
 
     sendParameterUpdate();
@@ -245,29 +242,6 @@ void EffectChainSlot::setSuperParameterDefaultValue(double value) {
     m_pControlChainSuperParameter->setDefaultValue(value);
 }
 
-// void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber) {
-//     qDebug() << debugString() << "slotChainEffectChanged" << effectSlotNumber;
-//     EffectSlotPointer pSlot;
-//     EffectPointer pEffect;
-
-//     if (m_effectSlots.size() > m_effectSlots.size()) {
-//         qWarning() << debugString() << "has too few slots for effect";
-//     }
-//     if (effectSlotNumber < (unsigned) m_effectSlots.size()) {
-//         pSlot = m_effectSlots.at(effectSlotNumber);
-//     }
-//     if (effectSlotNumber < (unsigned) m_effectSlots.size()) {
-//         pEffect = m_effectSlots.at(effectSlotNumber);
-//     }
-//     if (pSlot != nullptr) {
-//         // kshitij : this has not been implemented
-//         pSlot->loadEffect(pEffect, m_bHasMetaknob && m_pEffectsManager->isAdoptMetaknobValueEnabled());
-//     }
-
-//     m_pControlNumEffects->forceSet(math_min(
-//             static_cast<unsigned int>(m_effectSlots.size()),
-//             static_cast<unsigned int>(m_effectSlots.size())));
-// }
 
 void EffectChainSlot::clear() {
     m_pControlNumEffects->forceSet(0.0);
@@ -403,7 +377,6 @@ void EffectChainSlot::enableForInputChannel(const ChannelHandleAndGroup& handle_
           MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
 
     // TODO: Simplify by defining a method to create an EffectState for the input channel
-    qDebug() << "Effect Slots in EffectChainSlot" << m_effectSlots.size() << m_group;
     for (int i = 0; i < m_effectSlots.size(); ++i) {
         auto& statesMap = (*pEffectStatesMapArray)[i];
         if (m_effectSlots[i] != nullptr) {

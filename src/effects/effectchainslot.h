@@ -24,7 +24,6 @@ class EffectChainSlot : public QObject {
     EffectChainSlot(const QString& group,
                     EffectsManager* pEffectsManager,
                     SignalProcessingStage stage = SignalProcessingStage::Postfader,
-                    const bool hasMetaknob = true,
                     const QString& id = QString());
     virtual ~EffectChainSlot();
 
@@ -122,7 +121,6 @@ class EffectChainSlot : public QObject {
     QList<EffectSlotPointer> m_effectSlots;
 
   private slots:
-    // void slotChainEffectChanged(unsigned int effectSlotNumber);
     // Clears the effect in the given position in the loaded EffectChain.
     void slotClearEffect(unsigned int iEffectSlotNumber);
 
@@ -186,7 +184,6 @@ class EffectChainSlot : public QObject {
     QString m_name;
     QString m_description;
     SignalProcessingStage m_signalProcessingStage;
-    bool m_bHasMetaknob;
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;
     EngineEffectChain* m_pEngineEffectChain;
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);

@@ -186,8 +186,7 @@ class EffectProcessorImpl : public EffectProcessor {
               const EffectStatesMap* pStatesMap) final {
           if (kEffectDebugOutput) {
               qDebug() << "EffectProcessorImpl::loadStatesForInputChannel" << this
-                       << "input" << *inputChannel
-                       << "pStatesMap->size() = " << pStatesMap->size();
+                       << "input" << *inputChannel;
           }
 
           // NOTE: ChannelHandleMap is like a map in that it associates an

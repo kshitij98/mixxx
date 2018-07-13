@@ -11,8 +11,6 @@
 #include "controllers/softtakeover.h"
 #include "util/xml.h"
 
-class EffectSlot;
-
 EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned int iParameterSlotNumber)
         : EffectParameterSlotBase(group, iParameterSlotNumber) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
@@ -50,7 +48,7 @@ EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned in
 }
 
 EffectParameterSlot::~EffectParameterSlot() {
-    //qDebug() << debugString() << "destroyed";
+    // qDebug() << debugString() << "destroyed";
     delete m_pControlValue;
     // m_pControlLoaded and m_pControlType are deleted by ~EffectParameterSlotBase
     delete m_pControlLinkType;
@@ -59,7 +57,7 @@ EffectParameterSlot::~EffectParameterSlot() {
 }
 
 void EffectParameterSlot::loadEffect(EffectSlot* pEffectSlot) {
-    //qDebug() << debugString() << "loadEffect" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
+    // qDebug() << debugString() << "loadEffect" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
     clear();
     if (pEffectSlot) {
         // Returns null if it doesn't have a parameter for that number

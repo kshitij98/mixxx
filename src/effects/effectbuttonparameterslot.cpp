@@ -33,13 +33,13 @@ EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
 }
 
 EffectButtonParameterSlot::~EffectButtonParameterSlot() {
-    //qDebug() << debugString() << "destroyed";
+    // qDebug() << debugString() << "destroyed";
     // m_pControlLoaded and m_pControlType are deleted by ~EffectParameterSlotBase
     delete m_pControlValue;
 }
 
 void EffectButtonParameterSlot::loadEffect(EffectSlot* pEffectSlot) {
-    //qDebug() << debugString() << "loadEffect" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
+    // qDebug() << debugString() << "loadEffect" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
     if (m_pEffectParameter) {
         clear();
     }

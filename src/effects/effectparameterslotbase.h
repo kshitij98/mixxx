@@ -6,8 +6,6 @@
 #include <QString>
 
 #include "control/controlobject.h"
-// kshitij : removed
-// #include "effects/effectslot.h"
 #include "effects/effectmanifest.h"
 #include "util/class.h"
 

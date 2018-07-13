@@ -7,7 +7,6 @@
 #include <QString>
 
 #include "effects/defs.h"
-// kshitij :: removed
 #include "effects/effectslot.h"
 #include "effects/effectinstantiator.h"
 #include "preferences/usersettings.h"

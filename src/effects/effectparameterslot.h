@@ -5,10 +5,7 @@
 #include <QVariant>
 #include <QString>
 
-// #include "effects/defs.h"
 #include "control/controlobject.h"
-// kshitij : removed
-// #include "effects/effectslot.h"
 #include "effects/effectparameterslotbase.h"
 #include "util/class.h"
 
