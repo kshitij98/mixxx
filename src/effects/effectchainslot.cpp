@@ -187,8 +187,8 @@ void EffectChainSlot::setDescription(const QString& description) {
 
 void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
                                  EffectManifestPointer pManifest,
-                                 EffectInstantiatorPointer pInstantiator) {
-    m_effectSlots[iEffectSlotNumber]->loadEffect(pManifest, pInstantiator,
+                                 std::unique_ptr<EffectProcessor> pProcessor) {
+    m_effectSlots[iEffectSlotNumber]->loadEffect(pManifest, std::move(pProcessor),
                                                  m_enabledInputChannels);
 }
 

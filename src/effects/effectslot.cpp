@@ -101,7 +101,7 @@ EffectSlot::~EffectSlot() {
     delete m_pSoftTakeover;
 }
 
-void EffectSlot::addToEngine(EffectInstantiatorPointer pInstantiator,
+void EffectSlot::addToEngine(std::unique_ptr<EffectProcessor> pProcessor,
         const QSet<ChannelHandleAndGroup>& activeInputChannels) {
     VERIFY_OR_DEBUG_ASSERT(m_pManifest != nullptr) {
         return;
@@ -114,7 +114,7 @@ void EffectSlot::addToEngine(EffectInstantiatorPointer pInstantiator,
     m_pEngineEffect = new EngineEffect(m_pManifest,
             activeInputChannels,
             m_pEffectsManager,
-            pInstantiator);
+            std::move(pProcessor));
 
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
@@ -298,7 +298,7 @@ EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsign
 }
 
 void EffectSlot::loadEffect(EffectManifestPointer pManifest,
-                            EffectInstantiatorPointer pInstantiator,
+                            std::unique_ptr<EffectProcessor> pProcessor,
                             const QSet<ChannelHandleAndGroup>& activeChannels) {
     if (pManifest == m_pManifest) {
         return;
@@ -308,7 +308,7 @@ void EffectSlot::loadEffect(EffectManifestPointer pManifest,
 
     m_pManifest = pManifest;
 
-    if (pManifest == nullptr || pInstantiator == nullptr) {
+    if (pManifest == nullptr || pProcessor == nullptr) {
         // No new effect to load; just unload the old effect and return.
         emit(effectChanged());
         return;
@@ -323,7 +323,7 @@ void EffectSlot::loadEffect(EffectManifestPointer pManifest,
         }
         m_parametersById[pParameter->id()] = pParameter;
     }
-    addToEngine(pInstantiator, activeChannels);
+    addToEngine(std::move(pProcessor), activeChannels);
 
     m_pControlLoaded->forceSet(1.0);
 

@@ -40,6 +40,9 @@ constexpr int kNumEffectsPerUnit = 4;
 // enable this when debugging the effects system.
 constexpr bool kEffectDebugOutput = false;
 
+class EffectsBackend;
+typedef QSharedPointer<EffectsBackend> EffectsBackendPointer;
+
 class EffectState;
 // For sending EffectStates along the MessagePipe
 typedef ChannelHandleMap<EffectState*> EffectStatesMap;

@@ -9,14 +9,16 @@
 
 #include "control/controlobject.h"
 #include "effects/defs.h"
-#include "effects/effectinstantiator.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
+#include "util/memory.h"
 
 class ControlPushButton;
 class ControlEncoder;
 class EffectChainSlot;
 class EffectsManager;
+class EffectProcessor;
+class EngineEffectChain;
 
 class EffectChainSlot : public QObject {
     Q_OBJECT
@@ -83,7 +85,7 @@ class EffectChainSlot : public QObject {
 
     void loadEffect(const unsigned int iEffectSlotNumber,
                     EffectManifestPointer pManifest,
-                    EffectInstantiatorPointer pInstantiator);
+                    std::unique_ptr<EffectProcessor> pProcessor);
 
   signals:
     // Signal that whoever is in charge of this EffectChainSlot should load the

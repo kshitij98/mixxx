@@ -53,10 +53,8 @@ EffectsManager::~EffectsManager() {
     // This must be done here, since the engineRacks are deleted via
     // the queue
     processEffectsResponses();
-    while (!m_effectsBackends.isEmpty()) {
-        EffectsBackend* pBackend = m_effectsBackends.takeLast();
-        delete pBackend;
-    }
+
+    m_effectsBackends.clear();
     for (QHash<qint64, EffectsRequest*>::iterator it = m_activeRequests.begin();
          it != m_activeRequests.end();) {
         delete it.value();
@@ -80,7 +78,7 @@ bool alphabetizeEffectManifests(EffectManifestPointer pManifest1,
     return (backendNameComparision ? (backendNameComparision < 0) : (displayNameComparision < 0));
 }
 
-void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
+void EffectsManager::addEffectsBackend(EffectsBackendPointer pBackend) {
     VERIFY_OR_DEBUG_ASSERT(pBackend) {
         return;
     }
@@ -95,20 +93,6 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
 
     qSort(m_availableEffectManifests.begin(), m_availableEffectManifests.end(),
           alphabetizeEffectManifests);
-
-    connect(pBackend, SIGNAL(effectRegistered(EffectManifestPointer)),
-            this, SLOT(slotBackendRegisteredEffect(EffectManifestPointer)));
-
-    connect(pBackend, SIGNAL(effectRegistered(EffectManifestPointer)),
-            this, SIGNAL(availableEffectsUpdated(EffectManifestPointer)));
-}
-
-void EffectsManager::slotBackendRegisteredEffect(EffectManifestPointer pManifest) {
-    auto insertion_point = std::lower_bound(m_availableEffectManifests.begin(),
-                                            m_availableEffectManifests.end(),
-                                            pManifest, alphabetizeEffectManifests);
-    m_availableEffectManifests.insert(insertion_point, pManifest);
-    m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
 }
 
 bool EffectsManager::isAdoptMetaknobValueEnabled() const {
@@ -178,9 +162,9 @@ void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
                 (backendType == EffectBackendType::Unknown ||
                     pBackend->getType() == backendType)) {
             EffectManifestPointer pManifest = pBackend->getManifest(effectId);
-            EffectInstantiatorPointer pInstantiator = pBackend->getInstantiator(effectId);
+            std::unique_ptr<EffectProcessor> pProcessor = pBackend->createProcessor(effectId);
 
-            pChainSlot->loadEffect(iEffectSlotNumber, pManifest, pInstantiator);
+            pChainSlot->loadEffect(iEffectSlotNumber, pManifest, std::move(pProcessor));
             return;
         }
     }
@@ -249,10 +233,10 @@ QString EffectsManager::getPrevEffectId(const QString& effectId) {
 void EffectsManager::getEffectManifestAndBackend(
         const QString& effectId,
         EffectManifestPointer* ppManifest, EffectsBackend** ppBackend) const {
-    foreach (EffectsBackend* pBackend, m_effectsBackends) {
+    for (const auto& pBackend : m_effectsBackends) {
         if (pBackend->canInstantiateEffect(effectId)) {
             *ppManifest = pBackend->getManifest(effectId);
-            *ppBackend = pBackend;
+            *ppBackend = pBackend.data();
         }
     }
 }
