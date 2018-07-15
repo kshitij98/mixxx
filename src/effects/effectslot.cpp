@@ -76,7 +76,7 @@ EffectSlot::EffectSlot(const QString& group,
     m_pControlMetaParameter->set(0.0);
     m_pControlMetaParameter->setDefaultValue(0.0);
 
-    m_pSoftTakeover = new SoftTakeover();
+    m_pMetaknobSoftTakeover = new SoftTakeover();
 
     m_pControlLoaded->forceSet(0.0);
     m_pControlNumParameters->forceSet(0.0);
@@ -98,11 +98,10 @@ EffectSlot::~EffectSlot() {
     delete m_pControlClear;
     delete m_pControlEnabled;
     delete m_pControlMetaParameter;
-    delete m_pSoftTakeover;
+    delete m_pMetaknobSoftTakeover;
 }
 
-void EffectSlot::addToEngine(EffectInstantiatorPointer pInstantiator,
-        const QSet<ChannelHandleAndGroup>& activeInputChannels) {
+void EffectSlot::addToEngine(const QSet<ChannelHandleAndGroup>& activeChannels) {
     VERIFY_OR_DEBUG_ASSERT(m_pManifest != nullptr) {
         return;
     }
@@ -112,9 +111,9 @@ void EffectSlot::addToEngine(EffectInstantiatorPointer pInstantiator,
     }
 
     m_pEngineEffect = new EngineEffect(m_pManifest,
-            activeInputChannels,
+            activeChannels,
             m_pEffectsManager,
-            pInstantiator);
+            m_pInstantiator);
 
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
@@ -144,7 +143,7 @@ void EffectSlot::updateEngineState() {
         return;
     }
     sendParameterUpdate();
-    foreach (EffectParameter* pParameter, m_parameters) {
+    for (auto const& pParameter : m_parameters) {
         pParameter->updateEngineState();
     }
 }
@@ -161,7 +160,7 @@ void EffectSlot::sendParameterUpdate() {
 }
 
 EffectState* EffectSlot::createState(const mixxx::EngineParameters& bufferParameters) {
-    if (m_pEngineEffect == nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(m_pEngineEffect != nullptr) {
         return new EffectState(bufferParameters);
     }
     return m_pEngineEffect->createState(bufferParameters);
@@ -173,6 +172,10 @@ EngineEffect* EffectSlot::getEngineEffect() {
 
 EffectManifestPointer EffectSlot::getManifest() const {
     return m_pManifest;
+}
+
+void EffectSlot::reload(const QSet<ChannelHandleAndGroup>& activeChannels) {
+    loadEffect(m_pManifest, m_pInstantiator, activeChannels);
 }
 
 EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
@@ -195,8 +198,8 @@ EffectButtonParameterSlotPointer EffectSlot::addEffectButtonParameterSlot() {
 
 unsigned int EffectSlot::numKnobParameters() const {
     unsigned int num = 0;
-    foreach(const EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest()->controlHint() !=
+    for (auto const& pParameter : m_parameters) {
+        if (pParameter->manifest()->controlHint() !=
                 EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
             ++num;
         }
@@ -206,22 +209,13 @@ unsigned int EffectSlot::numKnobParameters() const {
 
 unsigned int EffectSlot::numButtonParameters() const {
     unsigned int num = 0;
-    foreach(const EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest()->controlHint() ==
+    for (auto const& pParameter : m_parameters) {
+        if (pParameter->manifest()->controlHint() ==
                 EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
             ++num;
         }
     }
     return num;
-}
-
-EffectParameter* EffectSlot::getParameterById(const QString& id) const {
-    EffectParameter* pParameter = m_parametersById.value(id, nullptr);
-    if (pParameter == nullptr) {
-        qWarning() << debugString() << "getParameterById"
-                   << "WARNING: parameter for id does not exist:" << id;
-    }
-    return pParameter;
 }
 
 // static
@@ -275,10 +269,6 @@ void EffectSlot::setEnabled(bool enabled) {
     m_pControlEnabled->set(enabled);
 }
 
-bool EffectSlot::enabled() const {
-    return m_pControlEnabled->get();
-}
-
 EffectParameterSlotPointer EffectSlot::getEffectParameterSlot(unsigned int slotNumber) {
     //qDebug() << debugString() << "getEffectParameterSlot" << slotNumber;
     if (slotNumber >= static_cast<unsigned int>(m_parameterSlots.size())) {
@@ -300,13 +290,10 @@ EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsign
 void EffectSlot::loadEffect(EffectManifestPointer pManifest,
                             EffectInstantiatorPointer pInstantiator,
                             const QSet<ChannelHandleAndGroup>& activeChannels) {
-    if (pManifest == m_pManifest) {
-        return;
-    }
-
     unloadEffect();
 
     m_pManifest = pManifest;
+    m_pInstantiator = pInstantiator;
 
     if (pManifest == EffectManifestPointer() || pInstantiator == EffectInstantiatorPointer()) {
         // No new effect to load; just unload the old effect and return.
@@ -318,12 +305,8 @@ void EffectSlot::loadEffect(EffectManifestPointer pManifest,
         EffectParameter* pParameter = new EffectParameter(
                 this, m_pEffectsManager, m_parameters.size(), pManifestParameter);
         m_parameters.append(pParameter);
-        VERIFY_OR_DEBUG_ASSERT(!m_parametersById.contains(pParameter->id())) {
-            qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
-        }
-        m_parametersById[pParameter->id()] = pParameter;
     }
-    addToEngine(pInstantiator, activeChannels);
+    addToEngine(activeChannels);
 
     m_pControlLoaded->forceSet(1.0);
 
@@ -372,7 +355,6 @@ void EffectSlot::unloadEffect() {
         pParameter->clear();
     }
 
-    m_parametersById.clear();
     for (int i = 0; i < m_parameters.size(); ++i) {
         EffectParameter* pParameter = m_parameters.at(i);
         m_parameters[i] = nullptr;
@@ -424,7 +406,7 @@ double EffectSlot::getMetaParameter() const {
 // This function is for the superknob to update individual effects' meta knobs
 // slotEffectMetaParameter does not need to update m_pControlMetaParameter's value
 void EffectSlot::setMetaParameter(double v, bool force) {
-    if (!m_pSoftTakeover->ignore(m_pControlMetaParameter, v)
+    if (!m_pMetaknobSoftTakeover->ignore(m_pControlMetaParameter, v)
             || !m_pControlEnabled->toBool()
             || force) {
         m_pControlMetaParameter->set(v);

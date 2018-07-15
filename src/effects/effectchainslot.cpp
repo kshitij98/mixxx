@@ -192,6 +192,12 @@ void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
                                                  m_enabledInputChannels);
 }
 
+void EffectChainSlot::reloadAllEffects() {
+    for (EffectSlotPointer pSlot : m_effectSlots) {
+        pSlot->reload(m_enabledInputChannels);
+    }
+}
+
 void EffectChainSlot::sendParameterUpdate() {
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS;

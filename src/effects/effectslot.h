@@ -66,7 +66,7 @@ class EffectSlot : public QObject {
 
     double getMetaParameter() const;
 
-    // ensures that Softtakover is bypassed for the following
+    // Ensures that Softtakover is bypassed for the following
     // ChainParameterChange. Uses for testing only
     void syncSofttakeover();
 
@@ -92,24 +92,19 @@ class EffectSlot : public QObject {
     EffectParameter* getKnobParameterForSlot(unsigned int slotNumber);
     EffectParameter* getButtonParameterForSlot(unsigned int slotNumber);
 
-    EffectParameter* getParameterById(const QString& id) const;
-    EffectParameter* getButtonParameterById(const QString& id) const;
-
     void setEnabled(bool enabled);
-    bool enabled() const;
 
     EngineEffect* getEngineEffect();
 
     // static EffectPointer createFromXml(EffectsManager* pEffectsManager,
     //                              const QDomElement& element);
-    void addToEngine(EffectInstantiatorPointer pInstantiator,
-            const QSet<ChannelHandleAndGroup>& activeInputChannels);
+    void addToEngine(const QSet<ChannelHandleAndGroup>& activeChannels);
     void removeFromEngine();
 
     double getMetaknobDefault();
+    void reload(const QSet<ChannelHandleAndGroup>& activeChannels);
 
   public slots:
-    // Request that this EffectSlot load the given Effect
     void setMetaParameter(double v, bool force = false);
 
     // Call with nullptr for pManifest and pInstantiator to unload an effect
@@ -142,9 +137,10 @@ class EffectSlot : public QObject {
     EffectsManager* m_pEffectsManager;
     EffectManifestPointer m_pManifest;
     EffectInstantiatorPointer m_pInstantiator;
+    QSet<ChannelHandleAndGroup> m_pActiveChannels;
+
     EngineEffect* m_pEngineEffect;
     QList<EffectParameter*> m_parameters;
-    QMap<QString, EffectParameter*> m_parametersById;
     EngineEffectChain* m_pEngineEffectChain;
     QList<EffectParameterSlotPointer> m_parameterSlots;
     QList<EffectButtonParameterSlotPointer> m_buttonParameters;
@@ -161,7 +157,7 @@ class EffectSlot : public QObject {
     ControlObject* m_pControlClear;
     ControlPotmeter* m_pControlMetaParameter;
 
-    SoftTakeover* m_pSoftTakeover;
+    SoftTakeover* m_pMetaknobSoftTakeover;
 
     DISALLOW_COPY_AND_ASSIGN(EffectSlot);
 };

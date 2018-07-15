@@ -82,6 +82,8 @@ class EffectChainSlot : public QObject {
                     EffectManifestPointer pManifest,
                     EffectInstantiatorPointer pInstantiator);
 
+    void reloadAllEffects();
+
   signals:
     // Signal that whoever is in charge of this EffectChainSlot should load the
     // next EffectChain into it.

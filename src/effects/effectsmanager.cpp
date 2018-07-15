@@ -401,24 +401,15 @@ void EffectsManager::setup() {
 //     m_pEffectChainManager->loadEffectChains();
 // }
 
-inline void EffectsManager::refreshChainSlot(EffectChainSlotPointer pChainSlot) {
-    for (int i=0 ; i<pChainSlot->numEffectSlots() ; ++i) {
-        auto pEffectSlot = pChainSlot->getEffectSlot(i);
-        if (pEffectSlot->isLoaded()) {
-            loadEffect(pChainSlot, i, pEffectSlot->getManifest()->id());
-        }
-    }
-}
-
 void EffectsManager::refreshAllChainSlots() {
     for (auto& pChainSlot : m_standardEffectChainSlots) {
-        refreshChainSlot(pChainSlot);
+        pChainSlot->reloadAllEffects();
     }
     for (auto& pChainSlot : m_equalizerEffectChainSlots) {
-        refreshChainSlot(pChainSlot);
+        pChainSlot->reloadAllEffects();
     }
     for (auto& pChainSlot : m_quickEffectChainSlots) {
-        refreshChainSlot(pChainSlot);
+        pChainSlot->reloadAllEffects();
     }
 }
 
