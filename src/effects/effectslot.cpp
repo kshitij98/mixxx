@@ -308,7 +308,7 @@ void EffectSlot::loadEffect(EffectManifestPointer pManifest,
 
     m_pManifest = pManifest;
 
-    if (pManifest == nullptr || pInstantiator == nullptr) {
+    if (pManifest == EffectManifestPointer() || pInstantiator == EffectInstantiatorPointer()) {
         // No new effect to load; just unload the old effect and return.
         emit(effectChanged());
         return;
@@ -379,8 +379,7 @@ void EffectSlot::unloadEffect() {
         delete pParameter;
     }
     m_parameters.clear();
-
-    m_pManifest = nullptr;
+    m_pManifest.clear();
 
     removeFromEngine();
 }

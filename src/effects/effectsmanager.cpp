@@ -184,7 +184,7 @@ void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
             return;
         }
     }
-    pChainSlot->loadEffect(iEffectSlotNumber, nullptr, nullptr);
+    pChainSlot->loadEffect(iEffectSlotNumber, EffectManifestPointer(), EffectInstantiatorPointer());
 }
 
 const QList<EffectManifestPointer> EffectsManager::getAvailableEffectManifestsFiltered(
