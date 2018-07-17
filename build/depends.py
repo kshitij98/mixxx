@@ -767,7 +767,6 @@ class MixxxCore(Feature):
                    "effects/effectparameterslot.cpp",
                    "effects/effectbuttonparameterslot.cpp",
                    "effects/effectsmanager.cpp",
-                   "effects/effectsbackend.cpp",
 
                    "effects/builtin/builtinbackend.cpp",
                    "effects/builtin/bitcrushereffect.cpp",
