@@ -118,14 +118,38 @@ class EffectManifest {
     }
 
     EffectManifestParameterPointer addParameter() {
-        EffectManifestParameterPointer effectManifestParameterPointer(
+        EffectManifestParameterPointer pManifestParameter(
                 new EffectManifestParameter());
-        m_parameters.append(effectManifestParameterPointer);
-        return effectManifestParameterPointer;
+        m_parameters.append(pManifestParameter);
+        return pManifestParameter;
     }
 
     EffectManifestParameterPointer parameter(int i) {
         return m_parameters[i];
+    }
+
+    unsigned int numKnobParameters() const {
+        unsigned int num = 0;
+        for (const auto& pManifestParameter : m_parameters) {
+            if (pManifestParameter->controlHint() ==
+                    EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
+                ++num;
+            }
+        }
+        qDebug() << "### NUM KNOB PARAMETERS = " << num;
+        return num;
+    }
+
+    unsigned int numButtonParameters() const {
+        unsigned int num = 0;
+        for (const auto& pManifestParameter : m_parameters) {
+            if (pManifestParameter->controlHint() !=
+                    EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
+                ++num;
+            }
+        }
+        qDebug() << "### NUM BUTTON PARAMETERS = " << num;
+        return num;
     }
 
     bool effectRampsFromDry() const {

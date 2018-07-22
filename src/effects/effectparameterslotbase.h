@@ -7,19 +7,26 @@
 
 #include "control/controlobject.h"
 #include "effects/effectmanifest.h"
+// #include "engine/effects/engineeffect.h"
 #include "util/class.h"
 
 class ControlObject;
 class ControlPushButton;
 class EffectParameter;
 class EffectSlot;
+class EngineEffect;
+class EffectsManager;
 
 class EffectParameterSlotBase : public QObject {
     Q_OBJECT
   public:
-    EffectParameterSlotBase(const QString& group, const unsigned int iParameterSlotNumber);
+    EffectParameterSlotBase(EffectsManager* pEffectsManager, const QString& group,
+            const unsigned int iParameterSlotNumber);
     virtual ~EffectParameterSlotBase();
 
+    const bool isLoaded() const {
+        return m_pEngineEffect != nullptr;
+    }
     QString name() const;
     QString shortName() const;
     QString description() const;
@@ -33,10 +40,10 @@ class EffectParameterSlotBase : public QObject {
     void updated();
 
   protected:
+    EffectsManager* m_pEffectsManager;
     const unsigned int m_iParameterSlotNumber;
     QString m_group;
-    EffectSlot* m_pEffectSlot;
-    EffectParameter* m_pEffectParameter;
+    EngineEffect* m_pEngineEffect;
     EffectManifestParameterPointer m_pManifestParameter;
 
     // Controls exposed to the rest of Mixxx

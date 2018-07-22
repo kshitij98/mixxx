@@ -26,19 +26,22 @@ class EffectsManager;
 class EngineEffect;
 class EngineEffectChain;
 class ControlProxy;
-class EffectParameter;
 class EffectParameterSlot;
 
 class EffectSlot : public QObject {
     Q_OBJECT
   public:
-    typedef bool (*ParameterFilterFnc)(EffectParameter*);
+    typedef bool (*ParameterFilterFnc)(EffectManifestParameterPointer);
 
     EffectSlot(const QString& group,
                EffectsManager* pEffectsManager,
                const unsigned int iEffectNumber,
                EngineEffectChain* pEngineEffectChain);
     virtual ~EffectSlot();
+
+    void addToEngine(std::unique_ptr<EffectProcessor>,
+            const QSet<ChannelHandleAndGroup>& activeInputChannels);
+    void removeFromEngine();
 
     // Call with nullptr for pManifest and pProcessor to unload an effect
     void loadEffect(const EffectManifestPointer pManifest,
@@ -57,16 +60,10 @@ class EffectSlot : public QObject {
     EffectParameterSlotPointer addEffectParameterSlot();
     EffectParameterSlotPointer getEffectParameterSlot(unsigned int slotNumber);
     EffectParameterSlotPointer getEffectParameterSlotForConfigKey(unsigned int slotNumber);
-    inline const QList<EffectParameterSlotPointer>& getEffectParameterSlots() const {
-        return m_parameterSlots;
-    };
 
     unsigned int numButtonParameterSlots() const;
     EffectButtonParameterSlotPointer addEffectButtonParameterSlot();
     EffectButtonParameterSlotPointer getEffectButtonParameterSlot(unsigned int slotNumber);
-    inline const QList<EffectButtonParameterSlotPointer>& getEffectButtonParameterSlots() const {
-        return m_buttonParameters;
-    };
 
     double getMetaParameter() const;
 
@@ -88,23 +85,22 @@ class EffectSlot : public QObject {
     unsigned int numKnobParameters() const;
     unsigned int numButtonParameters() const;
 
-    static bool isButtonParameter(EffectParameter* parameter);
-    static bool isKnobParameter(EffectParameter* parameter);
+    static bool isButtonParameter(EffectManifestParameterPointer parameter);
+    static bool isKnobParameter(EffectManifestParameterPointer parameter);
 
-    EffectParameter* getFilteredParameterForSlot(
+    EffectManifestParameterPointer getFilteredParameterForSlot(
             ParameterFilterFnc filterFnc, unsigned int slotNumber);
-    EffectParameter* getKnobParameterForSlot(unsigned int slotNumber);
-    EffectParameter* getButtonParameterForSlot(unsigned int slotNumber);
+    EffectManifestParameterPointer getKnobParameterForSlot(unsigned int slotNumber);
+    EffectManifestParameterPointer getButtonParameterForSlot(unsigned int slotNumber);
 
     void setEnabled(bool enabled);
 
     EngineEffect* getEngineEffect();
 
+
+
     // static EffectPointer createFromXml(EffectsManager* pEffectsManager,
     //                              const QDomElement& element);
-    void addToEngine(std::unique_ptr<EffectProcessor>,
-            const QSet<ChannelHandleAndGroup>& activeInputChannels);
-    void removeFromEngine();
 
     double getMetaknobDefault();
     void reload(const QSet<ChannelHandleAndGroup>& activeInputChannels);
@@ -138,7 +134,6 @@ class EffectSlot : public QObject {
     EffectsManager* m_pEffectsManager;
     EffectManifestPointer m_pManifest;
     EngineEffect* m_pEngineEffect;
-    QList<EffectParameter*> m_parameters;
     EngineEffectChain* m_pEngineEffectChain;
     QList<EffectParameterSlotPointer> m_parameterSlots;
     QList<EffectButtonParameterSlotPointer> m_buttonParameters;

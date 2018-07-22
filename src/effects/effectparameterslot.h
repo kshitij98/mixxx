@@ -18,7 +18,8 @@ class EffectSlot;
 class EffectParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:
-    EffectParameterSlot(const QString& group, const unsigned int iParameterSlotNumber);
+    EffectParameterSlot(EffectsManager* pEffectsManager, const QString& group,
+            const unsigned int iParameterSlotNumber);
     virtual ~EffectParameterSlot();
 
     static QString formatItemPrefix(const unsigned int iParameterSlotNumber) {
@@ -26,7 +27,10 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     }
 
     // Load the parameter of the given effect into this EffectParameterSlot
-    void loadEffect(EffectSlot* pEffectSlot);
+    void loadManifestParameter(EngineEffect* pEngineEffect,
+            EffectManifestParameterPointer pManifestParameter);
+
+    void setValue(double value);
 
     double getValueParameter() const;
 
@@ -43,10 +47,10 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     QDomElement toXml(QDomDocument* doc) const override;
     void loadParameterSlotFromXml(const QDomElement& parameterElement) override;
 
+  public slots:
+    void updateEngineState();
+
   private slots:
-    // Solely for handling control changes
-    void slotParameterValueChanged(double value);
-    void slotValueChanged(double v);
     void slotLinkTypeChanging(double v);
     void slotLinkInverseChanged(double v);
 

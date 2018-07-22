@@ -6,11 +6,13 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 
-EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
+EffectParameterSlotBase::EffectParameterSlotBase(EffectsManager* pEffectsManager,
+                                                 const QString& group,
                                                  const unsigned int iParameterSlotNumber)
-        : m_iParameterSlotNumber(iParameterSlotNumber),
+        : m_pEffectsManager(pEffectsManager),
+          m_iParameterSlotNumber(iParameterSlotNumber),
           m_group(group),
-          m_pEffectParameter(nullptr),
+          m_pEngineEffect(nullptr),
           m_pManifestParameter(nullptr),
           m_pControlLoaded(nullptr),
           m_pControlType(nullptr),
@@ -19,9 +21,8 @@ EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
 }
 
 EffectParameterSlotBase::~EffectParameterSlotBase() {
-    m_pEffectParameter = nullptr;
+    m_pEngineEffect = nullptr;
     m_pManifestParameter.clear();
-    m_pEffectSlot = nullptr;
     delete m_pControlLoaded;
     delete m_pControlType;
 }

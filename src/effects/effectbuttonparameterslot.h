@@ -5,7 +5,6 @@
 #include <QVariant>
 #include <QString>
 
-// #include "effects/defs.h"
 #include "control/controlobject.h"
 #include "effects/effectparameterslotbase.h"
 #include "util/class.h"
@@ -16,7 +15,8 @@ class ControlPushButton;
 class EffectButtonParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:
-    EffectButtonParameterSlot(const QString& group, const unsigned int iParameterSlotNumber);
+    EffectButtonParameterSlot(EffectsManager* pEffectsManager, const QString& group,
+            const unsigned int iParameterSlotNumber);
     virtual ~EffectButtonParameterSlot();
 
     static QString formatItemPrefix(const unsigned int iParameterSlotNumber) {
@@ -24,7 +24,10 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
     }
 
     // Load the parameter of the given effect into this EffectButtonParameterSlot
-    void loadEffect(EffectSlot* pEffectSlot);
+    void loadManifestParameter(EngineEffect* pEngineEffect,
+            EffectManifestParameterPointer pManifestParameter);
+
+    void setValue(double value);
 
     // Clear the currently loaded effect
     void clear();
@@ -32,10 +35,8 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
     QDomElement toXml(QDomDocument* doc) const override;
     void loadParameterSlotFromXml(const QDomElement& parameterElement) override;
 
-  private slots:
-    // Solely for handling control changes
-    void slotParameterValueChanged(double value);
-    void slotValueChanged(double v);
+  public slots:
+    void updateEngineState();
 
   private:
     QString debugString() const {

@@ -11,14 +11,16 @@
 #include "controllers/softtakeover.h"
 #include "util/xml.h"
 
-EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned int iParameterSlotNumber)
-        : EffectParameterSlotBase(group, iParameterSlotNumber) {
+EffectParameterSlot::EffectParameterSlot(EffectsManager* pEffectsManager,
+                                         const QString& group,
+                                         const unsigned int iParameterSlotNumber)
+        : EffectParameterSlotBase(pEffectsManager, group, iParameterSlotNumber) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
 
     m_pControlValue = new ControlEffectKnob(
             ConfigKey(m_group, itemPrefix));
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueChanged(double)));
+            this, SLOT(updateEngineState()));
 
     m_pControlLoaded = new ControlObject(
             ConfigKey(m_group, itemPrefix + QString("_loaded")));
@@ -56,62 +58,67 @@ EffectParameterSlot::~EffectParameterSlot() {
     delete m_pSoftTakeover;
 }
 
-void EffectParameterSlot::loadEffect(EffectSlot* pEffectSlot) {
-    // qDebug() << debugString() << "loadEffect" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
+void EffectParameterSlot::updateEngineState() {
+    if (!m_pEngineEffect) {
+        return;
+    }
+    EffectsRequest* pRequest = new EffectsRequest();
+    pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
+    pRequest->pTargetEffect = m_pEngineEffect;
+    pRequest->SetParameterParameters.iParameter = m_iParameterSlotNumber;
+    pRequest->value = m_pControlValue->get();
+    pRequest->minimum = m_pManifestParameter->getMinimum();
+    pRequest->maximum = m_pManifestParameter->getMaximum();
+    pRequest->default_value = m_pManifestParameter->getDefault();
+    m_pEffectsManager->writeRequest(pRequest);
+}
+
+void EffectParameterSlot::loadManifestParameter(EngineEffect* pEngineEffect,
+        EffectManifestParameterPointer pManifestParameter) {
+    // qDebug() << debugString() << "loadEffect" << (pManifestParameter ? pManifestParameter->name() : "(null)");
     clear();
-    if (pEffectSlot) {
-        // Returns null if it doesn't have a parameter for that number
-        m_pEffectParameter = pEffectSlot->getKnobParameterForSlot(m_iParameterSlotNumber);
+    if (pManifestParameter) {
+        m_pManifestParameter = pManifestParameter;
+        m_pEngineEffect = pEngineEffect;
 
-        if (m_pEffectParameter) {
-            m_pManifestParameter = m_pEffectParameter->manifest();
+        // qDebug() << debugString() << "Loading effect parameter" << m_pManifestParameter->name();
+        double dMinimum = m_pManifestParameter->getMinimum();
+        double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
+        double dMaximum = m_pManifestParameter->getMaximum();
+        double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
+        double dDefault = m_pManifestParameter->getDefault();
+        double dValue = dDefault;
 
-            // qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
-            double dValue = m_pEffectParameter->getValue();
-            double dMinimum = m_pManifestParameter->getMinimum();
-            double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
-            double dMaximum = m_pManifestParameter->getMaximum();
-            double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
-            double dDefault = m_pManifestParameter->getDefault();
-
-            if (dValue > dMaximum || dValue < dMinimum ||
-                dMinimum < dMinimumLimit || dMaximum > dMaximumLimit) {
-                qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
-            }
-
-            // qDebug() << debugString()
-            //          << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
-            //          .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
-
-            EffectManifestParameter::ControlHint type = m_pManifestParameter->controlHint();
-            m_pControlValue->setBehaviour(type, dMinimum, dMaximum);
-            m_pControlValue->setDefaultValue(dDefault);
-            m_pControlValue->set(dValue);
-            // TODO(rryan) expose this from EffectParameter
-            m_pControlType->forceSet(static_cast<double>(type));
-            // Default loaded parameters to loaded and unlinked
-            m_pControlLoaded->forceSet(1.0);
-
-            m_pControlLinkType->set(
-                static_cast<double>(m_pManifestParameter->defaultLinkType()));
-            m_pControlLinkInverse->set(
-                static_cast<double>(m_pManifestParameter->defaultLinkInversion()));
-
-            connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
-                    this, SLOT(slotParameterValueChanged(double)));
+        if (dValue > dMaximum || dValue < dMinimum ||
+            dMinimum < dMinimumLimit || dMaximum > dMaximumLimit) {
+            qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
         }
+
+        // qDebug() << debugString()
+        //          << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
+        //          .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
+
+        EffectManifestParameter::ControlHint type = m_pManifestParameter->controlHint();
+        m_pControlValue->setBehaviour(type, dMinimum, dMaximum);
+        m_pControlValue->setDefaultValue(dDefault);
+        m_pControlValue->set(dValue);
+        // TODO(rryan) expose this from EffectParameter
+        m_pControlType->forceSet(static_cast<double>(type));
+        // Default loaded parameters to loaded and unlinked
+        m_pControlLoaded->forceSet(1.0);
+
+        m_pControlLinkType->set(
+            static_cast<double>(m_pManifestParameter->defaultLinkType()));
+        m_pControlLinkInverse->set(
+            static_cast<double>(m_pManifestParameter->defaultLinkInversion()));
     }
     emit(updated());
 }
 
 void EffectParameterSlot::clear() {
     //qDebug() << debugString() << "clear";
-    if (m_pEffectParameter) {
-        m_pEffectParameter->disconnect(this);
-        m_pEffectParameter = nullptr;
-        m_pManifestParameter.clear();
-    }
-
+    m_pManifestParameter.clear();
+    m_pEngineEffect = nullptr;
     m_pControlLoaded->forceSet(0.0);
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);
@@ -123,8 +130,7 @@ void EffectParameterSlot::clear() {
     emit(updated());
 }
 
-void EffectParameterSlot::slotParameterValueChanged(double value) {
-    //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
+void EffectParameterSlot::setValue(double value) {
     m_pControlValue->set(value);
 }
 
@@ -162,7 +168,7 @@ void EffectParameterSlot::slotLinkInverseChanged(double v) {
 
 void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool force) {
     m_dChainParameter = parameter;
-    if (m_pEffectParameter != nullptr) {
+    if (m_pManifestParameter != nullptr) {
         // Intermediate cast to integer is needed for VC++.
         EffectManifestParameter::LinkType type =
                 static_cast<EffectManifestParameter::LinkType>(
@@ -253,12 +259,6 @@ void EffectParameterSlot::syncSofttakeover() {
 
 double EffectParameterSlot::getValueParameter() const {
     return m_pControlValue->getParameter();
-}
-
-void EffectParameterSlot::slotValueChanged(double v) {
-    if (m_pEffectParameter) {
-        m_pEffectParameter->setValue(v);
-    }
 }
 
 QDomElement EffectParameterSlot::toXml(QDomDocument* doc) const {
