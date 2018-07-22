@@ -313,18 +313,6 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
 
     m_pControlLoaded->forceSet(1.0);
 
-    unsigned int iNumKnobParameters = numKnobParameters();
-    while (static_cast<unsigned int>(m_parameterSlots.size())
-            < iNumKnobParameters) {
-        addEffectParameterSlot();
-    }
-
-    unsigned int iNumButtonParameters = numButtonParameters();
-    while (static_cast<unsigned int>(m_buttonParameters.size())
-            < iNumButtonParameters) {
-        addEffectButtonParameterSlot();
-    }
-
     for (const auto& pParameter : m_parameterSlots) {
         pParameter->loadEffect(this);
     }
