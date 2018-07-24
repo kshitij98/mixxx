@@ -135,8 +135,8 @@ class EffectSlot : public QObject {
     EffectManifestPointer m_pManifest;
     EngineEffect* m_pEngineEffect;
     EngineEffectChain* m_pEngineEffectChain;
-    QList<EffectParameterSlotPointer> m_parameterSlots;
-    QList<EffectButtonParameterSlotPointer> m_buttonParameters;
+    QList<EffectParameterSlotPointer> m_knobParameterSlots;
+    QList<EffectButtonParameterSlotPointer> m_buttonParameterSlots;
 
     ControlObject* m_pControlLoaded;
     ControlPushButton* m_pControlEnabled;
