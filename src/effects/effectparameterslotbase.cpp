@@ -13,7 +13,7 @@ EffectParameterSlotBase::EffectParameterSlotBase(EffectsManager* pEffectsManager
           m_iParameterSlotNumber(iParameterSlotNumber),
           m_group(group),
           m_pEngineEffect(nullptr),
-          m_pManifestParameter(nullptr),
+          m_pManifestParameter(EffectManifestParameterPointer()),
           m_pControlLoaded(nullptr),
           m_pControlType(nullptr),
           m_dChainParameter(0.0) {
@@ -22,7 +22,7 @@ EffectParameterSlotBase::EffectParameterSlotBase(EffectsManager* pEffectsManager
 
 EffectParameterSlotBase::~EffectParameterSlotBase() {
     m_pEngineEffect = nullptr;
-    m_pManifestParameter.clear();
+    m_pManifestParameter = EffectManifestParameterPointer();
     delete m_pControlLoaded;
     delete m_pControlType;
 }

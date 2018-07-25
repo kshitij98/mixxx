@@ -27,7 +27,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     }
 
     // Load the parameter of the given effect into this EffectParameterSlot
-    void loadManifestParameter(EngineEffect* pEngineEffect,
+    void loadManifestParameter(unsigned int iParameterNumber, EngineEffect* pEngineEffect,
             EffectManifestParameterPointer pManifestParameter);
 
     void setValue(double value);

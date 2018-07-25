@@ -7,7 +7,6 @@
 
 #include "control/controlobject.h"
 #include "effects/effectmanifest.h"
-// #include "engine/effects/engineeffect.h"
 #include "util/class.h"
 
 class ControlObject;
@@ -42,6 +41,7 @@ class EffectParameterSlotBase : public QObject {
   protected:
     EffectsManager* m_pEffectsManager;
     const unsigned int m_iParameterSlotNumber;
+    unsigned int m_iParameterNumber;
     QString m_group;
     EngineEffect* m_pEngineEffect;
     EffectManifestParameterPointer m_pManifestParameter;

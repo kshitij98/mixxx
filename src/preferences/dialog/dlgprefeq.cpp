@@ -620,7 +620,7 @@ void DlgPrefEQ::setUpMasterEQ() {
         int knobNum = pEffectSlot->getManifest()->numKnobParameters();
         for (int i = 0; i < knobNum; i++) {
             EffectManifestParameterPointer pManifestParameter = pEffectSlot->getKnobParameterForSlot(i);
-            if (pManifestParameter) {
+            if (pManifestParameter != EffectManifestParameterPointer()) {
                 QString strValue = m_pConfig->getValueString(ConfigKey(kConfigKey,
                         QString("EffectForGroup_[Master]_parameter%1").arg(i + 1)));
                 bool ok;
@@ -669,7 +669,7 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
             int i;
             for (i = 0; i < knobNum; i++) {
                 EffectManifestParameterPointer pManifestParameter = pEffectSlot->getKnobParameterForSlot(i);
-                if (pManifestParameter) {
+                if (pManifestParameter != EffectManifestParameterPointer()) {
                     // Setup Label
                     QLabel* centerFreqLabel = new QLabel(this);
                     QString labelText = pManifestParameter->name();
@@ -753,7 +753,7 @@ void DlgPrefEQ::slotMasterEQToDefault() {
         for (int i = 0; i < knobNum; i++) {
             EffectManifestParameterPointer pManifestParameter =
                     pEffectSlot->getKnobParameterForSlot(i);
-            if (pManifestParameter) {
+            if (pManifestParameter != EffectManifestParameterPointer()) {
                 double defaultValue = pManifestParameter->getDefault();
                 setMasterEQParameter(i, defaultValue);
             }
@@ -765,7 +765,7 @@ void DlgPrefEQ::setMasterEQParameter(int i, double value) {
     EffectSlotPointer pEffectSlot(m_pEffectMasterEQ);
     if (!pEffectSlot.isNull()) {
         EffectParameterSlotPointer pParameterSlot = pEffectSlot->getEffectParameterSlot(i);
-        if (pParameterSlot) {
+        if (pParameterSlot != EffectParameterSlotPointer()) {
             pParameterSlot->setValue(value);
             m_masterEQSliders[i]->setValue(value * 100);
 

@@ -131,24 +131,22 @@ class EffectManifest {
     unsigned int numKnobParameters() const {
         unsigned int num = 0;
         for (const auto& pManifestParameter : m_parameters) {
-            if (pManifestParameter->controlHint() ==
+            if (pManifestParameter->controlHint() !=
                     EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
                 ++num;
             }
         }
-        qDebug() << "### NUM KNOB PARAMETERS = " << num;
         return num;
     }
 
     unsigned int numButtonParameters() const {
         unsigned int num = 0;
         for (const auto& pManifestParameter : m_parameters) {
-            if (pManifestParameter->controlHint() !=
+            if (pManifestParameter->controlHint() ==
                     EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
                 ++num;
             }
         }
-        qDebug() << "### NUM BUTTON PARAMETERS = " << num;
         return num;
     }
 

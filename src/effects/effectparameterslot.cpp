@@ -59,13 +59,13 @@ EffectParameterSlot::~EffectParameterSlot() {
 }
 
 void EffectParameterSlot::updateEngineState() {
-    if (!m_pEngineEffect) {
+    if (!m_pEngineEffect || m_pManifestParameter == EffectManifestParameterPointer()) {
         return;
     }
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
     pRequest->pTargetEffect = m_pEngineEffect;
-    pRequest->SetParameterParameters.iParameter = m_iParameterSlotNumber;
+    pRequest->SetParameterParameters.iParameter = m_iParameterNumber;
     pRequest->value = m_pControlValue->get();
     pRequest->minimum = m_pManifestParameter->getMinimum();
     pRequest->maximum = m_pManifestParameter->getMaximum();
@@ -73,13 +73,14 @@ void EffectParameterSlot::updateEngineState() {
     m_pEffectsManager->writeRequest(pRequest);
 }
 
-void EffectParameterSlot::loadManifestParameter(EngineEffect* pEngineEffect,
-        EffectManifestParameterPointer pManifestParameter) {
+void EffectParameterSlot::loadManifestParameter(unsigned int iParameterNumber,
+        EngineEffect* pEngineEffect, EffectManifestParameterPointer pManifestParameter) {
     // qDebug() << debugString() << "loadEffect" << (pManifestParameter ? pManifestParameter->name() : "(null)");
     clear();
-    if (pManifestParameter) {
+    if (pManifestParameter != EffectManifestParameterPointer()) {
         m_pManifestParameter = pManifestParameter;
         m_pEngineEffect = pEngineEffect;
+        m_iParameterNumber = iParameterNumber;
 
         // qDebug() << debugString() << "Loading effect parameter" << m_pManifestParameter->name();
         double dMinimum = m_pManifestParameter->getMinimum();
@@ -87,10 +88,8 @@ void EffectParameterSlot::loadManifestParameter(EngineEffect* pEngineEffect,
         double dMaximum = m_pManifestParameter->getMaximum();
         double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
         double dDefault = m_pManifestParameter->getDefault();
-        double dValue = dDefault;
 
-        if (dValue > dMaximum || dValue < dMinimum ||
-            dMinimum < dMinimumLimit || dMaximum > dMaximumLimit) {
+        if (dMinimum < dMinimumLimit || dMaximum > dMaximumLimit) {
             qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
         }
 
@@ -101,7 +100,7 @@ void EffectParameterSlot::loadManifestParameter(EngineEffect* pEngineEffect,
         EffectManifestParameter::ControlHint type = m_pManifestParameter->controlHint();
         m_pControlValue->setBehaviour(type, dMinimum, dMaximum);
         m_pControlValue->setDefaultValue(dDefault);
-        m_pControlValue->set(dValue);
+        m_pControlValue->set(dDefault);
         // TODO(rryan) expose this from EffectParameter
         m_pControlType->forceSet(static_cast<double>(type));
         // Default loaded parameters to loaded and unlinked
@@ -117,7 +116,7 @@ void EffectParameterSlot::loadManifestParameter(EngineEffect* pEngineEffect,
 
 void EffectParameterSlot::clear() {
     //qDebug() << debugString() << "clear";
-    m_pManifestParameter.clear();
+    m_pManifestParameter = EffectManifestParameterPointer();
     m_pEngineEffect = nullptr;
     m_pControlLoaded->forceSet(0.0);
     m_pControlValue->set(0.0);
@@ -168,7 +167,7 @@ void EffectParameterSlot::slotLinkInverseChanged(double v) {
 
 void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool force) {
     m_dChainParameter = parameter;
-    if (m_pManifestParameter != nullptr) {
+    if (m_pManifestParameter != EffectManifestParameterPointer()) {
         // Intermediate cast to integer is needed for VC++.
         EffectManifestParameter::LinkType type =
                 static_cast<EffectManifestParameter::LinkType>(
