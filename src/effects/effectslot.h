@@ -82,9 +82,6 @@ class EffectSlot : public QObject {
 
     EffectManifestPointer getManifest() const;
 
-    unsigned int numKnobParameters() const;
-    unsigned int numButtonParameters() const;
-
     static bool isButtonParameter(EffectManifestParameterPointer parameter);
     static bool isKnobParameter(EffectManifestParameterPointer parameter);
 
