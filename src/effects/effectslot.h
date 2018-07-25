@@ -15,7 +15,6 @@
 #include "engine/effects/engineeffect.h"
 #include "effects/effectbuttonparameterslot.h"
 #include "effects/effectmanifest.h"
-#include "effects/effectparameter.h"
 #include "effects/effectparameterslot.h"
 #include "util/class.h"
 
