@@ -17,14 +17,16 @@ EffectButtonParameterSlot::EffectButtonParameterSlot(EffectsManager* pEffectsMan
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
     m_pControlLoaded = new ControlObject(
             ConfigKey(m_group, itemPrefix + QString("_loaded")));
+
     m_pControlValue = new ControlPushButton(
             ConfigKey(m_group, itemPrefix));
-    m_pControlValue->setButtonMode(ControlPushButton::POWERWINDOW);
-    m_pControlType = new ControlObject(
-            ConfigKey(m_group, itemPrefix + QString("_type")));
-
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
             this, SLOT(updateEngineState()));
+    ControlPushButton* pControlValue = static_cast<ControlPushButton*>(m_pControlValue);
+    pControlValue->setButtonMode(ControlPushButton::POWERWINDOW);
+
+    m_pControlType = new ControlObject(
+            ConfigKey(m_group, itemPrefix + QString("_type")));
 
     // Read-only controls.
     m_pControlType->setReadOnly();
@@ -42,9 +44,7 @@ EffectButtonParameterSlot::~EffectButtonParameterSlot() {
 void EffectButtonParameterSlot::loadManifestParameter(unsigned int iParameterNumber,
         EngineEffect* pEngineEffect, EffectManifestParameterPointer pManifestParameter) {
     // qDebug() << debugString() << "loadManifestParameter" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
-    if (m_pEngineEffect) {
-        clear();
-    }
+    clear();
 
     if (pManifestParameter != EffectManifestParameterPointer()) {
         m_pManifestParameter = pManifestParameter;
@@ -53,7 +53,8 @@ void EffectButtonParameterSlot::loadManifestParameter(unsigned int iParameterNum
 
         // Set the number of states
         int numStates = math_max(m_pManifestParameter->getSteps().size(), 2);
-        m_pControlValue->setStates(numStates);
+        ControlPushButton* pControlValue = static_cast<ControlPushButton*>(m_pControlValue);
+        pControlValue->setStates(numStates);
         //qDebug() << debugString() << "Loading effect parameter" << m_pManifestParameter->name();
         double dMinimum = m_pManifestParameter->getMinimum();
         double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
@@ -82,32 +83,6 @@ void EffectButtonParameterSlot::loadManifestParameter(unsigned int iParameterNum
 
 void EffectButtonParameterSlot::setValue(double value) {
     m_pControlValue->set(value);
-}
-
-void EffectButtonParameterSlot::updateEngineState() {
-    if (!m_pEngineEffect || m_pManifestParameter == EffectManifestParameterPointer()) {
-        return;
-    }
-    EffectsRequest* pRequest = new EffectsRequest();
-    pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
-    pRequest->pTargetEffect = m_pEngineEffect;
-    pRequest->SetParameterParameters.iParameter = m_iParameterNumber;
-    pRequest->value = m_pControlValue->get();
-    pRequest->minimum = m_pManifestParameter->getMinimum();
-    pRequest->maximum = m_pManifestParameter->getMaximum();
-    pRequest->default_value = m_pManifestParameter->getDefault();
-    m_pEffectsManager->writeRequest(pRequest);
-}
-
-void EffectButtonParameterSlot::clear() {
-    //qDebug() << debugString() << "clear";
-    m_pManifestParameter = EffectManifestParameterPointer();
-    m_pEngineEffect = nullptr;
-    m_pControlLoaded->forceSet(0.0);
-    m_pControlValue->set(0.0);
-    m_pControlValue->setDefaultValue(0.0);
-    m_pControlType->forceSet(0.0);
-    emit(updated());
 }
 
 QDomElement EffectButtonParameterSlot::toXml(QDomDocument* doc) const {

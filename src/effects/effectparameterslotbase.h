@@ -7,6 +7,7 @@
 
 #include "control/controlobject.h"
 #include "effects/effectmanifest.h"
+#include "engine/effects/message.h"
 #include "util/class.h"
 
 class ControlObject;
@@ -31,12 +32,18 @@ class EffectParameterSlotBase : public QObject {
     QString description() const;
     EffectManifestParameterPointer getManifest();
 
+    // Clear the currently loaded effect
+    void clear();
+
     virtual QDomElement toXml(QDomDocument* doc) const = 0;
     virtual void loadParameterSlotFromXml(const QDomElement& parameterElement) = 0;
 
   signals:
     // Signal that indicates that the EffectParameterSlotBase has been updated.
     void updated();
+
+  public slots:
+    void updateEngineState();
 
   protected:
     EffectsManager* m_pEffectsManager;
@@ -47,6 +54,7 @@ class EffectParameterSlotBase : public QObject {
     EffectManifestParameterPointer m_pManifestParameter;
 
     // Controls exposed to the rest of Mixxx
+    ControlObject* m_pControlValue;
     ControlObject* m_pControlLoaded;
     ControlObject* m_pControlType;
     double m_dChainParameter;

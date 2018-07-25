@@ -29,22 +29,13 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
 
     void setValue(double value);
 
-    // Clear the currently loaded effect
-    void clear();
-
     QDomElement toXml(QDomDocument* doc) const override;
     void loadParameterSlotFromXml(const QDomElement& parameterElement) override;
-
-  public slots:
-    void updateEngineState();
 
   private:
     QString debugString() const {
         return QString("EffectButtonParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterSlotNumber);
     }
-
-    // Control exposed to the rest of Mixxx
-    ControlPushButton* m_pControlValue;
 
     DISALLOW_COPY_AND_ASSIGN(EffectButtonParameterSlot);
 };

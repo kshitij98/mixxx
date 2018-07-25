@@ -47,9 +47,6 @@ class EffectKnobParameterSlot : public EffectParameterSlotBase {
     QDomElement toXml(QDomDocument* doc) const override;
     void loadParameterSlotFromXml(const QDomElement& parameterElement) override;
 
-  public slots:
-    void updateEngineState();
-
   private slots:
     void slotLinkTypeChanging(double v);
     void slotLinkInverseChanged(double v);
@@ -62,7 +59,6 @@ class EffectKnobParameterSlot : public EffectParameterSlotBase {
     SoftTakeover* m_pSoftTakeover;
 
     // Control exposed to the rest of Mixxx
-    ControlEffectKnob* m_pControlValue;
     ControlPushButton* m_pControlLinkType;
     ControlPushButton* m_pControlLinkInverse;
 

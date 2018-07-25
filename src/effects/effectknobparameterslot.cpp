@@ -57,25 +57,11 @@ EffectKnobParameterSlot::~EffectKnobParameterSlot() {
     delete m_pSoftTakeover;
 }
 
-void EffectKnobParameterSlot::updateEngineState() {
-    if (!m_pEngineEffect || m_pManifestParameter == EffectManifestParameterPointer()) {
-        return;
-    }
-    EffectsRequest* pRequest = new EffectsRequest();
-    pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
-    pRequest->pTargetEffect = m_pEngineEffect;
-    pRequest->SetParameterParameters.iParameter = m_iParameterNumber;
-    pRequest->value = m_pControlValue->get();
-    pRequest->minimum = m_pManifestParameter->getMinimum();
-    pRequest->maximum = m_pManifestParameter->getMaximum();
-    pRequest->default_value = m_pManifestParameter->getDefault();
-    m_pEffectsManager->writeRequest(pRequest);
-}
-
 void EffectKnobParameterSlot::loadManifestParameter(unsigned int iParameterNumber,
         EngineEffect* pEngineEffect, EffectManifestParameterPointer pManifestParameter) {
     // qDebug() << debugString() << "loadEffect" << (pManifestParameter ? pManifestParameter->name() : "(null)");
     clear();
+
     if (pManifestParameter != EffectManifestParameterPointer()) {
         m_pManifestParameter = pManifestParameter;
         m_pEngineEffect = pEngineEffect;
@@ -97,7 +83,8 @@ void EffectKnobParameterSlot::loadManifestParameter(unsigned int iParameterNumbe
         //          .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
 
         EffectManifestParameter::ControlHint type = m_pManifestParameter->controlHint();
-        m_pControlValue->setBehaviour(type, dMinimum, dMaximum);
+        ControlEffectKnob* pControlValue = static_cast<ControlEffectKnob*>(m_pControlValue);
+        pControlValue->setBehaviour(type, dMinimum, dMaximum);
         m_pControlValue->setDefaultValue(dDefault);
         m_pControlValue->set(dDefault);
         // TODO(rryan) expose this from EffectParameter
@@ -115,12 +102,7 @@ void EffectKnobParameterSlot::loadManifestParameter(unsigned int iParameterNumbe
 
 void EffectKnobParameterSlot::clear() {
     //qDebug() << debugString() << "clear";
-    m_pManifestParameter = EffectManifestParameterPointer();
-    m_pEngineEffect = nullptr;
-    m_pControlLoaded->forceSet(0.0);
-    m_pControlValue->set(0.0);
-    m_pControlValue->setDefaultValue(0.0);
-    m_pControlType->forceSet(0.0);
+    EffectParameterSlotBase::clear();
     m_pControlLinkType->setAndConfirm(
         static_cast<double>(EffectManifestParameter::LinkType::NONE));
     m_pSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
