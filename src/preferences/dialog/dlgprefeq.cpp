@@ -496,7 +496,7 @@ void DlgPrefEQ::slotUpdateMasterEQParameter(int value) {
     if (!pEffectSlot.isNull()) {
         QSlider* slider = qobject_cast<QSlider*>(sender());
         int index = slider->property("index").toInt();
-        EffectParameterSlotPointer pParameterSlot = pEffectSlot->getEffectParameterSlot(index);
+        EffectKnobParameterSlotPointer pParameterSlot = pEffectSlot->getEffectKnobParameterSlot(index);
         if (pParameterSlot->isLoaded()) {
             double dValue = value / 100.0;
             pParameterSlot->setValue(dValue);
@@ -764,8 +764,8 @@ void DlgPrefEQ::slotMasterEQToDefault() {
 void DlgPrefEQ::setMasterEQParameter(int i, double value) {
     EffectSlotPointer pEffectSlot(m_pEffectMasterEQ);
     if (!pEffectSlot.isNull()) {
-        EffectParameterSlotPointer pParameterSlot = pEffectSlot->getEffectParameterSlot(i);
-        if (pParameterSlot != EffectParameterSlotPointer()) {
+        EffectKnobParameterSlotPointer pParameterSlot = pEffectSlot->getEffectKnobParameterSlot(i);
+        if (pParameterSlot != EffectKnobParameterSlotPointer()) {
             pParameterSlot->setValue(value);
             m_masterEQSliders[i]->setValue(value * 100);
 

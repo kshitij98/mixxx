@@ -62,7 +62,7 @@ void EffectButtonParameterSlot::loadManifestParameter(unsigned int iParameterNum
         double dDefault = m_pManifestParameter->getDefault();
 
         if (dMinimum < dMinimumLimit || dMaximum > dMaximumLimit) {
-            qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
+            qWarning() << debugString() << "WARNING: EffectButtonParameter does not satisfy basic sanity checks.";
         }
 
         // qDebug() << debugString()

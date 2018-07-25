@@ -1,5 +1,5 @@
-#ifndef EFFECTPARAMETERSLOT_H
-#define EFFECTPARAMETERSLOT_H
+#ifndef EFFECTKNOBPARAMETERSLOT_H
+#define EFFECTKNOBPARAMETERSLOT_H
 
 #include <QObject>
 #include <QVariant>
@@ -15,18 +15,18 @@ class ControlEffectKnob;
 class SoftTakeover;
 class EffectSlot;
 
-class EffectParameterSlot : public EffectParameterSlotBase {
+class EffectKnobParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:
-    EffectParameterSlot(EffectsManager* pEffectsManager, const QString& group,
+    EffectKnobParameterSlot(EffectsManager* pEffectsManager, const QString& group,
             const unsigned int iParameterSlotNumber);
-    virtual ~EffectParameterSlot();
+    virtual ~EffectKnobParameterSlot();
 
     static QString formatItemPrefix(const unsigned int iParameterSlotNumber) {
         return QString("parameter%1").arg(iParameterSlotNumber + 1);
     }
 
-    // Load the parameter of the given effect into this EffectParameterSlot
+    // Load the parameter of the given effect into this EffectKnobParameterSlot
     void loadManifestParameter(unsigned int iParameterNumber, EngineEffect* pEngineEffect,
             EffectManifestParameterPointer pManifestParameter);
 
@@ -56,7 +56,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
   private:
     QString debugString() const {
-        return QString("EffectParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterSlotNumber);
+        return QString("EffectKnobParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterSlotNumber);
     }
 
     SoftTakeover* m_pSoftTakeover;
@@ -66,7 +66,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     ControlPushButton* m_pControlLinkType;
     ControlPushButton* m_pControlLinkInverse;
 
-    DISALLOW_COPY_AND_ASSIGN(EffectParameterSlot);
+    DISALLOW_COPY_AND_ASSIGN(EffectKnobParameterSlot);
 };
 
-#endif // EFFECTPARAMETERSLOT_H
+#endif // EFFECTKNOBPARAMETERSLOT_H

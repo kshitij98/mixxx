@@ -1,6 +1,6 @@
 #include <QtDebug>
 
-#include "effects/effectparameterslot.h"
+#include "effects/effectknobparameterslot.h"
 
 #include "effects/effectslot.h"
 #include "control/controleffectknob.h"
@@ -10,7 +10,7 @@
 #include "controllers/softtakeover.h"
 #include "util/xml.h"
 
-EffectParameterSlot::EffectParameterSlot(EffectsManager* pEffectsManager,
+EffectKnobParameterSlot::EffectKnobParameterSlot(EffectsManager* pEffectsManager,
                                          const QString& group,
                                          const unsigned int iParameterSlotNumber)
         : EffectParameterSlotBase(pEffectsManager, group, iParameterSlotNumber) {
@@ -48,7 +48,7 @@ EffectParameterSlot::EffectParameterSlot(EffectsManager* pEffectsManager,
     clear();
 }
 
-EffectParameterSlot::~EffectParameterSlot() {
+EffectKnobParameterSlot::~EffectKnobParameterSlot() {
     // qDebug() << debugString() << "destroyed";
     delete m_pControlValue;
     // m_pControlLoaded and m_pControlType are deleted by ~EffectParameterSlotBase
@@ -57,7 +57,7 @@ EffectParameterSlot::~EffectParameterSlot() {
     delete m_pSoftTakeover;
 }
 
-void EffectParameterSlot::updateEngineState() {
+void EffectKnobParameterSlot::updateEngineState() {
     if (!m_pEngineEffect || m_pManifestParameter == EffectManifestParameterPointer()) {
         return;
     }
@@ -72,7 +72,7 @@ void EffectParameterSlot::updateEngineState() {
     m_pEffectsManager->writeRequest(pRequest);
 }
 
-void EffectParameterSlot::loadManifestParameter(unsigned int iParameterNumber,
+void EffectKnobParameterSlot::loadManifestParameter(unsigned int iParameterNumber,
         EngineEffect* pEngineEffect, EffectManifestParameterPointer pManifestParameter) {
     // qDebug() << debugString() << "loadEffect" << (pManifestParameter ? pManifestParameter->name() : "(null)");
     clear();
@@ -89,7 +89,7 @@ void EffectParameterSlot::loadManifestParameter(unsigned int iParameterNumber,
         double dDefault = m_pManifestParameter->getDefault();
 
         if (dMinimum < dMinimumLimit || dMaximum > dMaximumLimit) {
-            qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
+            qWarning() << debugString() << "WARNING: EffectKnobParameter does not satisfy basic sanity checks.";
         }
 
         // qDebug() << debugString()
@@ -113,7 +113,7 @@ void EffectParameterSlot::loadManifestParameter(unsigned int iParameterNumber,
     emit(updated());
 }
 
-void EffectParameterSlot::clear() {
+void EffectKnobParameterSlot::clear() {
     //qDebug() << debugString() << "clear";
     m_pManifestParameter = EffectManifestParameterPointer();
     m_pEngineEffect = nullptr;
@@ -128,11 +128,11 @@ void EffectParameterSlot::clear() {
     emit(updated());
 }
 
-void EffectParameterSlot::setValue(double value) {
+void EffectKnobParameterSlot::setValue(double value) {
     m_pControlValue->set(value);
 }
 
-void EffectParameterSlot::slotLinkTypeChanging(double v) {
+void EffectKnobParameterSlot::slotLinkTypeChanging(double v) {
     m_pSoftTakeover->ignoreNext();
     EffectManifestParameter::LinkType newType =
         static_cast<EffectManifestParameter::LinkType>(
@@ -159,12 +159,12 @@ void EffectParameterSlot::slotLinkTypeChanging(double v) {
     m_pControlLinkType->setAndConfirm(static_cast<double>(newType));
 }
 
-void EffectParameterSlot::slotLinkInverseChanged(double v) {
+void EffectKnobParameterSlot::slotLinkInverseChanged(double v) {
     Q_UNUSED(v);
     m_pSoftTakeover->ignoreNext();
 }
 
-void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool force) {
+void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, bool force) {
     m_dChainParameter = parameter;
     if (m_pManifestParameter != EffectManifestParameterPointer()) {
         // Intermediate cast to integer is needed for VC++.
@@ -250,16 +250,16 @@ void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool fo
     }
 }
 
-void EffectParameterSlot::syncSofttakeover() {
+void EffectKnobParameterSlot::syncSofttakeover() {
     double parameter = m_pControlValue->getParameter();
     m_pSoftTakeover->ignore(m_pControlValue, parameter);
 }
 
-double EffectParameterSlot::getValueParameter() const {
+double EffectKnobParameterSlot::getValueParameter() const {
     return m_pControlValue->getParameter();
 }
 
-QDomElement EffectParameterSlot::toXml(QDomDocument* doc) const {
+QDomElement EffectKnobParameterSlot::toXml(QDomDocument* doc) const {
     QDomElement parameterElement;
     // if (m_pEffectParameter != nullptr) {
     //     parameterElement = doc->createElement(EffectXml::Parameter);
@@ -279,7 +279,7 @@ QDomElement EffectParameterSlot::toXml(QDomDocument* doc) const {
     return parameterElement;
 }
 
-void EffectParameterSlot::loadParameterSlotFromXml(const QDomElement& parameterElement) {
+void EffectKnobParameterSlot::loadParameterSlotFromXml(const QDomElement& parameterElement) {
     // if (m_pEffectParameter == nullptr) {
     //     return;
     // }
