@@ -290,14 +290,16 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
         addEffectButtonParameterSlot();
     }
 
-    unsigned int iParameterSlot = 0, iButtonParameterSlot = 0, iNumParameter = 0;
+    unsigned int iKnobParameterSlot = 0, iButtonParameterSlot = 0, iNumParameter = 0;
     for (const auto& pManifestParameter: m_pManifest->parameters()) {
         if (isKnobParameter(pManifestParameter)) {
-            m_knobParameterSlots[iParameterSlot++]->loadManifestParameter(
+            m_knobParameterSlots[iKnobParameterSlot]->loadManifestParameter(
                     iNumParameter, m_pEngineEffect, pManifestParameter);
+            ++iKnobParameterSlot;
         } else {
-            m_buttonParameterSlots[iButtonParameterSlot++]->loadManifestParameter(
+            m_buttonParameterSlots[iButtonParameterSlot]->loadManifestParameter(
                     iNumParameter, m_pEngineEffect, pManifestParameter);
+            ++iButtonParameterSlot;
         }
         ++iNumParameter;
     }
@@ -321,8 +323,8 @@ void EffectSlot::unloadEffect() {
     m_pControlLoaded->forceSet(0.0);
     m_pControlNumParameters->forceSet(0.0);
     m_pControlNumButtonParameters->forceSet(0.0);
-    for (const auto& pParameterSlot : m_knobParameterSlots) {
-        pParameterSlot->clear();
+    for (const auto& pKnobParameter : m_knobParameterSlots) {
+        pKnobParameter->clear();
     }
 
     for (const auto& pButtonParameter : m_buttonParameterSlots) {
