@@ -2,6 +2,9 @@
 
 #include <QMetaType>
 #include <QtAlgorithms>
+#include <QDir>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #include <algorithm>
 
@@ -404,11 +407,16 @@ void EffectsManager::setup() {
     addOutputEffectChainSlot();
 }
 
-// NOTE(Kshitij) : Use new functions for effect loading using Effect Preset
-// void EffectsManager::loadEffectChains() {
-//     // populate rack and restore state from effects.xml
-//     m_pEffectChainManager->loadEffectChains();
-// }
+// Load Effect Chains from effects.json
+void EffectsManager::loadEffectChains() {
+    QDir settingsPath(m_pConfig->getSettingsPath());
+    QFile file(settingsPath.absoluteFilePath("effects.json"));
+    file.open(QFile::ReadOnly);
+    QJsonDocument doc = QJsonDocument().fromJson(file.readAll());
+    QJsonObject object = doc.object();
+
+    qDebug() << object;
+}
 
 void EffectsManager::refreshAllChainSlots() {
     for (auto& pChainSlot : m_standardEffectChainSlots) {

@@ -52,7 +52,7 @@ class EffectsManager : public QObject {
 
     // NOTE(Kshitij) : New functions for saving and loading
     // bool saveEffectChains();
-    // void loadEffectChains();
+    void loadEffectChains();
 
     static const int kNumStandardEffectChains = 4;
 
