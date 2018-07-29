@@ -80,3 +80,12 @@ void EffectParameterSlotBase::clear() {
     m_pControlType->forceSet(0.0);
     emit(updated());
 }
+
+void EffectParameterSlotBase::reload() {
+    if (m_pManifestParameter && m_pManifestParameter->showInParameterSlot()) {
+        m_pControlLoaded->forceSet(1.0);
+    } else {
+        m_pControlLoaded->forceSet(0.0);
+    }
+    emit(updated());
+}

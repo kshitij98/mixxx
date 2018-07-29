@@ -62,7 +62,8 @@ void EffectKnobParameterSlot::loadManifestParameter(unsigned int iParameterNumbe
     // qDebug() << debugString() << "loadEffect" << (pManifestParameter ? pManifestParameter->name() : "(null)");
     clear();
 
-    if (pManifestParameter != EffectManifestParameterPointer()) {
+    if (pManifestParameter != EffectManifestParameterPointer() &&
+            pManifestParameter != m_pManifestParameter) {
         m_pManifestParameter = pManifestParameter;
         m_pEngineEffect = pEngineEffect;
         m_iParameterNumber = iParameterNumber;
@@ -96,8 +97,9 @@ void EffectKnobParameterSlot::loadManifestParameter(unsigned int iParameterNumbe
             static_cast<double>(m_pManifestParameter->defaultLinkType()));
         m_pControlLinkInverse->set(
             static_cast<double>(m_pManifestParameter->defaultLinkInversion()));
+
+        reload();
     }
-    emit(updated());
 }
 
 void EffectKnobParameterSlot::clear() {

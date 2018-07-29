@@ -77,6 +77,8 @@ void EffectButtonParameterSlot::loadManifestParameter(unsigned int iParameterNum
         m_pControlType->forceSet(static_cast<double>(type));
         // Default loaded parameters to loaded and unlinked
         m_pControlLoaded->forceSet(1.0);
+
+        reload();
     }
     emit(updated());
 }

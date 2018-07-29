@@ -194,7 +194,7 @@ void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
 
 void EffectChainSlot::reloadAllEffects() {
     for (EffectSlotPointer pSlot : m_effectSlots) {
-        pSlot->reload(m_enabledInputChannels);
+        pSlot->reload();
     }
 }
 

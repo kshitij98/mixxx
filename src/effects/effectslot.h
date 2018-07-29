@@ -57,12 +57,12 @@ class EffectSlot : public QObject {
 
     unsigned int numParameterSlots() const;
     EffectKnobParameterSlotPointer addEffectKnobParameterSlot();
-    EffectKnobParameterSlotPointer getEffectKnobParameterSlot(unsigned int slotNumber);
+    EffectKnobParameterSlotPointer getEffectKnobParameterSlot(unsigned int position);
     EffectKnobParameterSlotPointer getEffectKnobParameterSlotForConfigKey(unsigned int slotNumber);
 
     unsigned int numButtonParameterSlots() const;
     EffectButtonParameterSlotPointer addEffectButtonParameterSlot();
-    EffectButtonParameterSlotPointer getEffectButtonParameterSlot(unsigned int slotNumber);
+    EffectButtonParameterSlotPointer getEffectButtonParameterSlot(unsigned int position);
 
     double getMetaParameter() const;
 
@@ -99,7 +99,7 @@ class EffectSlot : public QObject {
     //                              const QDomElement& element);
 
     double getMetaknobDefault();
-    void reload(const QSet<ChannelHandleAndGroup>& activeInputChannels);
+    void reload();
 
   public slots:
     void setMetaParameter(double v, bool force = false);
@@ -133,6 +133,8 @@ class EffectSlot : public QObject {
     EngineEffectChain* m_pEngineEffectChain;
     QList<EffectKnobParameterSlotPointer> m_knobParameterSlots;
     QList<EffectButtonParameterSlotPointer> m_buttonParameterSlots;
+    QList<int> m_knobParameterPositionToSlot;
+    QList<int> m_buttonParameterPositionToSlot;
 
     ControlObject* m_pControlLoaded;
     ControlPushButton* m_pControlEnabled;

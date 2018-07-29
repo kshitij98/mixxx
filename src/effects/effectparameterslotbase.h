@@ -34,6 +34,7 @@ class EffectParameterSlotBase : public QObject {
 
     // Clear the currently loaded effect
     void clear();
+    void reload();
 
     virtual QDomElement toXml(QDomDocument* doc) const = 0;
     virtual void loadParameterSlotFromXml(const QDomElement& parameterElement) = 0;
